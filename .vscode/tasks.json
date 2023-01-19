@@ -1,0 +1,11 @@
+{
+    "tasks": [
+        {
+            "label": "cmake-tasksBuildCommand",
+            "type": "shell",
+            "command": "/bin/bash",
+            "args": [ "-c", "${command:cmake.tasksBuildCommand}" ],
+            "options": { "cwd": "${command:cmake.buildDirectory}" }
+       }
+    ]
+}
