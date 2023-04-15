@@ -1,29 +1,22 @@
 {
     "configurations": [
         {
-            "name": "(gdb) Launch",
+            "documentation": "code.visualstudio.com/docs/cpp/launch-json-reference",
+            "name": "gdb",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/devtemplate",
+            "program": "${workspaceFolder}/build/devtemplate_example",
+            "cwd": "${workspaceFolder}/build",
             "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/",
-            "environment": [],
-            "externalConsole": false,
             "MIMode": "gdb",
+            "preLaunchTask": "cmake-tasksBuildCommand",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
                 }
-            ],
-            "preLaunchTask": "cmake-tasksBuildCommand"
+            ]
         }
     ]
 }

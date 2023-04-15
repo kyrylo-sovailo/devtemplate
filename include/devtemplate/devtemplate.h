@@ -1,6 +1,15 @@
-/// Class example
-class Devtemplate
-{};
+#pragma once
+
+namespace devtemplate
+{
+    ///Class example
+    class Devtemplate
+    {
+    public:
+        ///Executes devtemplate example
+        int devtemplate();
+    };
+}
 
 /** @mainpage Template repository suitable for C++/CMake/Doxygen/VS Code stack
 

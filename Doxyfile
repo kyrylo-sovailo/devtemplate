@@ -3,6 +3,7 @@ PROJECT_BRIEF          = "Example C++ library"
 FILE_PATTERNS          = *.h
 INPUT                  = include
 OUTPUT_DIRECTORY       = documentation
+RECURSIVE              = YES
 
 GENERATE_DOCBOOK       = NO
 GENERATE_HTML          = YES
