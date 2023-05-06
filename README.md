@@ -1,4 +1,4 @@
-Template repository suitable for C++/CMake/Doxygen/VS Code stack
+Template repository for C++/Python/CMake/Doxygen/VS Code stack
 
 Do not forget to:
  1. Edit name and date in LICENSE.md

@@ -2,12 +2,13 @@
     "configurations": [
         {
             "documentation": "code.visualstudio.com/docs/cpp/launch-json-reference",
-            "name": "gdb",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/devtemplate_example",
-            "cwd": "${workspaceFolder}/build",
-            "args": [],
+            "name":     "gdb",
+            "type":     "cppdbg",
+            "request":  "launch",
+            "program":  "${workspaceFolder}/build/devtemplate_example",
+            "cwd":      "${workspaceFolder}/build",
+            "args":     [],
+
             "MIMode": "gdb",
             "preLaunchTask": "cmake-tasksBuildCommand",
             "setupCommands": [
@@ -17,6 +18,15 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "documentation": "code.visualstudio.com/docs/python/debugging",
+            "name":     "Python",
+            "type":     "python",
+            "request":  "launch",
+            "program":  "${workspaceFolder}/example/example.py",
+            "cwd":      "${workspaceFolder}/build",
+            "args":     []
         }
     ]
 }

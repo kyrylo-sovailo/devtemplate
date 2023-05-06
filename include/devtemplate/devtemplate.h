@@ -11,7 +11,7 @@ namespace devtemplate
     };
 }
 
-/** @mainpage Template repository suitable for C++/CMake/Doxygen/VS Code stack
+/** @mainpage Template repository for C++/Python/CMake/Doxygen/VS Code stack
 
 Do not forget to:
  1. Edit name and date in LICENSE.md
