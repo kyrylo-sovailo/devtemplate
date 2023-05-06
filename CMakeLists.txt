@@ -18,11 +18,23 @@ if (pybind11_FOUND AND Python_FOUND)
     target_link_libraries(${CMAKE_PROJECT_NAME}_python PUBLIC ${CMAKE_PROJECT_NAME})
     target_link_libraries(${CMAKE_PROJECT_NAME}_python PUBLIC pybind11::module)
     set_target_properties(${CMAKE_PROJECT_NAME}_python PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME} PREFIX "")
+
+    add_custom_target(test_python COMMAND python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR} "${CMAKE_SOURCE_DIR}/example/example.py")
+else()
+    message(WARNING "Python/pybind11 is not found, omitting Python bindings compilation")
 endif()
 
 # Example
-add_executable(${CMAKE_PROJECT_NAME}_example example/example.cpp)
-target_link_libraries(${CMAKE_PROJECT_NAME}_example PUBLIC ${CMAKE_PROJECT_NAME})
+find_package(GTest)
+if (GTest_FOUND)
+    add_executable(${CMAKE_PROJECT_NAME}_example example/example.cpp)
+    target_link_libraries(${CMAKE_PROJECT_NAME}_example PUBLIC ${CMAKE_PROJECT_NAME})
+    target_link_libraries(${CMAKE_PROJECT_NAME}_example PUBLIC GTest::gtest)
+
+    add_custom_target(test COMMAND ${CMAKE_PROJECT_NAME}_example)
+else()
+    message(WARNING "GTest not found, omitting example compilation")
+endif()
 
 # Installation
 include(GNUInstallDirs)
@@ -58,10 +70,9 @@ if (pybind11_FOUND AND Python_FOUND)
     execute_process(COMMAND python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR} "${CMAKE_SOURCE_DIR}/config/path.py" "${CMAKE_INSTALL_LIBDIR}" OUTPUT_VARIABLE PYTHONPATH RESULT_VARIABLE PYTHONRES)
     string(REGEX REPLACE "[\n\r]" "" PYTHONPATH "${PYTHONPATH}")
     if (${PYTHONRES} EQUAL 0)
-        install(TARGETS ${CMAKE_PROJECT_NAME}_python
-            LIBRARY DESTINATION "${PYTHONPATH}")
+        install(TARGETS ${CMAKE_PROJECT_NAME}_python LIBRARY DESTINATION "${PYTHONPATH}")
     else()
-        message(WARNING "Could not find Python site-packages directory, omitting installation of Python bindings")
+        message(WARNING "Python site-packages directory not found, omitting Python bindings installation")
     endif()
 endif()
 

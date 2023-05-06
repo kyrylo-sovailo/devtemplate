@@ -1,6 +1,6 @@
 PROJECT_NAME           = "Devtemplate"
 PROJECT_BRIEF          = "Template repository for C++/Python/CMake/Doxygen/VS Code stack"
-FILE_PATTERNS          = "*.h *.hpp
+FILE_PATTERNS          = *.h *.hpp
 INPUT                  = include
 OUTPUT_DIRECTORY       = documentation
 RECURSIVE              = YES
