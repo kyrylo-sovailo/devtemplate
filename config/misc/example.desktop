@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@
+Name=@PROJECT_NAME@
+Comment=@DESCRIPTION@
+Exec=@PROJECT_NAME@
+Icon=@PROJECT_NAME@
+Terminal=false
+Categories=Development;

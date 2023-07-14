@@ -1,0 +1,11 @@
+# Defining documentation generation
+find_package(Doxygen)
+if (Doxygen_FOUND)
+    file(MAKE_DIRECTORY "documentation")
+    configure_file("config/misc/Doxyfile" "${PROJECT_BINARY_DIR}/Doxyfile")
+    add_custom_target(doc COMMAND doxygen "${PROJECT_BINARY_DIR}/Doxyfile")
+elseif(${CMAKE_WARNING_FATAL})
+    message(FATAL_ERROR "Doxygen not found, terminating")
+else()
+    message(WARNING "Doxygen not found, omitting documentation generation")
+endif()

@@ -1,0 +1,12 @@
+# Defining test suite
+find_package(GTest)
+if (GTest_FOUND)
+    add_executable(${PROJECT_NAME}_test executable/test.cpp)
+    target_link_libraries(${PROJECT_NAME}_test ${${PROJECT_NAME}_PRIVATE_TYPE} ${PROJECT_NAME})
+    target_link_libraries(${PROJECT_NAME}_test PUBLIC GTest::gtest)
+    add_custom_target(test COMMAND ${PROJECT_NAME}_test)
+elseif(${CMAKE_WARNING_FATAL})
+    message(FATAL_ERROR "GTest not found, terminating")
+else()
+    message(WARNING "GTest not found, omitting example compilation")
+endif()

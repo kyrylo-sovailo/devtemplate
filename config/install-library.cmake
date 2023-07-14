@@ -1,0 +1,12 @@
+# Defining header files and library target
+set(${PROJECT_NAME}_TYPE PUBLIC)
+set(${PROJECT_NAME}_PUBLIC_TYPE PUBLIC)
+set(${PROJECT_NAME}_PRIVATE_TYPE PRIVATE)
+if (WIN32)
+    set(${PROJECT_NAME}_LINKING_TYPE STATIC)
+else()
+    set(${PROJECT_NAME}_LINKING_TYPE SHARED)
+endif()
+add_library(${PROJECT_NAME} ${${PROJECT_NAME}_LINKING_TYPE} "source/source.cpp")
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "include/devtemplate/devtemplate.h")
+target_include_directories(${PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:include>")

@@ -3,90 +3,46 @@ cmake_minimum_required(VERSION 3.15)
 project(devtemplate VERSION 0.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_WARNING_FATAL False)
 
-# Library
-add_library(${CMAKE_PROJECT_NAME} SHARED source/source.cpp)
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:include>")
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES PREFIX "lib")
+string(TOLOWER "${PROJECT_NAME}" PROJECT_NAME_LOWER)
+set(DESCRIPTION "Template repository for C++/Python/CMake/Doxygen/VS Code stack")
+set(AUTHOR "Kyrylo Sovailo")
+set(EMAIL "k.sovailo@gmail.com")
 
-# Bindings
-find_package(pybind11)
-find_package(Python)
-if (pybind11_FOUND AND Python_FOUND)
-    add_library(${CMAKE_PROJECT_NAME}_python MODULE python/python.cpp)
-    target_link_libraries(${CMAKE_PROJECT_NAME}_python PUBLIC ${CMAKE_PROJECT_NAME})
-    target_link_libraries(${CMAKE_PROJECT_NAME}_python PUBLIC pybind11::module)
-    set_target_properties(${CMAKE_PROJECT_NAME}_python PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME} PREFIX "")
+# Generic features:
+#include(config/header-only.cmake)
+include(config/library.cmake)
+include(config/executable.cmake)
+include(config/executable-gui.cmake)
+include(config/test.cmake)
+include(config/documentation.cmake)
+include(config/manual.cmake)
+include(config/export.cmake)
 
-    add_custom_target(test_python COMMAND python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR} "${CMAKE_SOURCE_DIR}/example/example.py")
-else()
-    message(WARNING "Python/pybind11 is not found, omitting Python bindings compilation")
-endif()
+# Installing generic features:
+#include(config/install-header-only.cmake)
+#include(config/install-library.cmake)
+#include(config/install-executable.cmake)
+#include(config/install-executable-gui.cmake)
+#include(config/install-test.cmake)
+#include(config/install-documentation.cmake)
+#include(config/install-manual.cmake)
+#include(config/install-cmake.cmake)
+include(config/uninstall.cmake)
 
-# Example
-find_package(GTest)
-if (GTest_FOUND)
-    add_executable(${CMAKE_PROJECT_NAME}_example example/example.cpp)
-    target_link_libraries(${CMAKE_PROJECT_NAME}_example PUBLIC ${CMAKE_PROJECT_NAME})
-    target_link_libraries(${CMAKE_PROJECT_NAME}_example PUBLIC GTest::gtest)
+# Python:
+#include(config/python-binding.cmake)
+#include(config/python-executable.cmake)
+#include(config/python-test.cmake)
+#include(config/install-python-binding.cmake)
+#include(config/install-python-executable.cmake)
+#include(config/install-python-test.cmake)
 
-    add_custom_target(test COMMAND ${CMAKE_PROJECT_NAME}_example)
-else()
-    message(WARNING "GTest not found, omitting example compilation")
-endif()
-
-# Installation
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file("${CMAKE_SOURCE_DIR}/config/config.cmake.in"
-    "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake"
-    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}")
-
-write_basic_package_version_file("${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake"
-    VERSION ${CMAKE_PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion)
-
-install(TARGETS ${CMAKE_PROJECT_NAME}
-    EXPORT ${CMAKE_PROJECT_NAME}_targets
-    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-
-install(EXPORT ${CMAKE_PROJECT_NAME}_targets
-    FILE "${CMAKE_PROJECT_NAME}Targets.cmake"
-    NAMESPACE ${CMAKE_PROJECT_NAME}::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}")
-
-install(FILES "include/${CMAKE_PROJECT_NAME}/${CMAKE_PROJECT_NAME}.h"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${CMAKE_PROJECT_NAME}")
-
-install(FILES "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}Config.cmake" "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}ConfigVersion.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}")
-
-if (pybind11_FOUND AND Python_FOUND)
-    execute_process(COMMAND python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR} "${CMAKE_SOURCE_DIR}/config/path.py" "${CMAKE_INSTALL_LIBDIR}" OUTPUT_VARIABLE PYTHONPATH RESULT_VARIABLE PYTHONRES)
-    string(REGEX REPLACE "[\n\r]" "" PYTHONPATH "${PYTHONPATH}")
-    if (${PYTHONRES} EQUAL 0)
-        install(TARGETS ${CMAKE_PROJECT_NAME}_python LIBRARY DESTINATION "${PYTHONPATH}")
-    else()
-        message(WARNING "Python site-packages directory not found, omitting Python bindings installation")
-    endif()
-endif()
-
-# Export
-export(EXPORT ${CMAKE_PROJECT_NAME}_targets
-    FILE "${CMAKE_PROJECT_NAME}Targets.cmake"
-    NAMESPACE ${CMAKE_PROJECT_NAME}::)
-
-# Uninstallation
-add_custom_target(uninstall WORKING_DIRECTORY "${CMAKE_BUILD_DIR}" COMMAND cmake -P "${CMAKE_SOURCE_DIR}/config/uninstall.cmake" ${CMAKE_PROJECT_NAME})
-
-# Documentation
-find_package(Doxygen)
-if (Doxygen_FOUND)
-    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/documentation")
-    add_custom_target(doc WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}" COMMAND doxygen "${CMAKE_SOURCE_DIR}/config/Doxyfile")
-endif()
+# Packaging:
+#include(config/package-rpm.cmake)      <-- package-rpm-bin     package-rpm-src     alias:package-rpm
+#include(config/package-debian.cmake)   <-- package-debian-bin  package-debian-src  alias:package-debian
+#include(config/package-tinycore.cmake) <-- package-tinycore-bin                    alias:package-tinycore
+#include(config/package-arch.cmake)     <-- package-arch-bin    package-arch-src    alias:package-arch
+#include(config/package-gentoo.cmake)   <-- package-gentoo-bin  package-gentoo-src  alias:package-gentoo package-gentoo-server
+#include(config/package-windows.cmake)  <-- package-windows-bin                     alias:package-windows

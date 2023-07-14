@@ -1,5 +1,5 @@
-PROJECT_NAME           = "Devtemplate"
-PROJECT_BRIEF          = "Template repository for C++/Python/CMake/Doxygen/VS Code stack"
+PROJECT_NAME           = "@NAME@"
+PROJECT_BRIEF          = "@DESCRIPTION@"
 FILE_PATTERNS          = *.h *.hpp
 INPUT                  = include
 OUTPUT_DIRECTORY       = documentation

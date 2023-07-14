@@ -3,6 +3,5 @@
 
 int devtemplate::Devtemplate::devtemplate()
 {
-    std::cout << "Hello devtemplate" << std::endl;
-    return 0;
+    return 42;
 }
