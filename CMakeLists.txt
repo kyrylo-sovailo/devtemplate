@@ -22,7 +22,7 @@ include(config/export.cmake)
 
 # Installing generic features:
 #include(config/install-header-only.cmake)
-#include(config/install-library.cmake)
+include(config/install-library.cmake)
 #include(config/install-executable.cmake)
 #include(config/install-executable-gui.cmake)
 #include(config/install-test.cmake)
