@@ -1,3 +1,4 @@
 # Defining executable
-add_executable(${PROJECT_NAME}_executable "executable/executable.cpp")
-target_link_libraries(${PROJECT_NAME}_executable ${${PROJECT_NAME}_PRIVATE_TYPE} ${PROJECT_NAME})
+add_executable(${PROJECT_NAME}_executable)
+target_sources(${PROJECT_NAME}_executable PRIVATE "executable/executable.cpp")
+target_link_libraries(${PROJECT_NAME}_executable PUBLIC ${PROJECT_NAME})

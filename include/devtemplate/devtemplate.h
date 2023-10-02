@@ -6,15 +6,16 @@ namespace devtemplate
     class Devtemplate
     {
     public:
-        ///Executes devtemplate example
+        ///Returns result of devtemplate calculations
         int devtemplate();
+        
+        #ifdef DEVTEMPLATE_ADVANCED
+            ///Returns result of advanced devtemplate calculations
+            int devtemplate_advanced();
+        #endif
     };
 }
 
-/** @mainpage Template repository for C++/Python/CMake/Doxygen/VS Code stack
-
-Do not forget to:
- 1. Edit name and date in LICENSE.md
- 2. Edit executable name in launch.json
- 3. Edit project name in Doxyfile
+/** @mainpage Template repository for CMake/C++
+This is a template repository
 */
