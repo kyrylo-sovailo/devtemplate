@@ -1,13 +1,23 @@
 #include "../include/devtemplate/devtemplate.h"
 #include <gtest/gtest.h>
 
-TEST(Example, Example)
+TEST(Test, Test)
 {
     devtemplate::Devtemplate *d;
     EXPECT_NO_THROW(d = new devtemplate::Devtemplate());
-    EXPECT_EQ(d->devtemplate(), 0);
+    EXPECT_EQ(d->devtemplate(), 42);
     EXPECT_NO_THROW(delete d);
 }
+
+#ifdef DEVTEMPLATE_ADVANCED
+TEST(Test, AdvancedTest)
+{
+    devtemplate::Devtemplate *d;
+    EXPECT_NO_THROW(d = new devtemplate::Devtemplate());
+    EXPECT_EQ(d->devtemplate_advanced(), 43);
+    EXPECT_NO_THROW(delete d);
+}
+#endif
 
 int main(int argc, char **argv)
 {
