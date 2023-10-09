@@ -1,7 +1,6 @@
 PROJECT_NAME           = "${DEV_NAME}"
 PROJECT_BRIEF          = "${DEV_DESCRIPTION}"
-#FILE_PATTERNS          = *
-INPUT                  = ${DEV_INTERFACE_SOURCES}
+INPUT                  = ${PROJECT_BINARY_DIR}/documentation.h ${DEV_INTERFACE_SOURCES}
 OUTPUT_DIRECTORY       = documentation
 RECURSIVE              = YES
 

@@ -6,7 +6,7 @@ else()
     target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
     target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
 endif()
-target_include_directories(${DEV_CMAKE_NAME} INTERFACE "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:include>")
+target_include_directories(${DEV_CMAKE_NAME} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>" "$<INSTALL_INTERFACE:include>")
 target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE
     ${DEV_MACRO_NAME}_NAME="${DEV_NAME}"
     ${DEV_MACRO_NAME}_CMAKE_NAME="${DEV_CMAKE_NAME}"

@@ -1,6 +1,6 @@
 # Defining documentation generation
 find_package(Doxygen REQUIRED)
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/documentation")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/documentation")
 get_target_property(DEV_INTERFACE_SOURCES ${DEV_CMAKE_NAME} INTERFACE_SOURCES)
 
 file(READ "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" DEV_DOXYFILE)
@@ -29,24 +29,24 @@ if (NOT "${DEV_DOCUMENTATION_ENVIRONMENT}" STREQUAL "${DEV_OLD_DOCUMENTATION_ENV
     file(WRITE "${PROJECT_BINARY_DIR}/documentation-environment.cmake" "${DEV_DOCUMENTATION_ENVIRONMENT}")
 endif()
 
-add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/Doxyfile"
-COMMAND cmake -P "${CMAKE_SOURCE_DIR}/config/script/doxyfile.cmake" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}"
-DEPENDS "${CMAKE_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake"
+add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/Doxyfile"
+COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/doxyfile.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+DEPENDS "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake"
 COMMENT "Generating Doxyfile"
 VERBATIM)
-add_custom_target(doxyfile ALL DEPENDS "${CMAKE_BINARY_DIR}/Doxyfile")
+add_custom_target(doxyfile ALL DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile")
 
-add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/documentation.h"
-COMMAND cmake -P "${CMAKE_SOURCE_DIR}/config/script/documentation.cmake" "${CMAKE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}"
-DEPENDS "${CMAKE_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation-environment.cmake"
+add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.h"
+COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/documentation.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+DEPENDS "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation-environment.cmake"
 COMMENT "Generating documentation.h"
 VERBATIM)
-add_custom_target(documentation ALL DEPENDS "${CMAKE_BINARY_DIR}/documentation.h")
+add_custom_target(documentation ALL DEPENDS "${PROJECT_BINARY_DIR}/documentation.h")
 
-add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/documentation.stamp"
-COMMAND doxygen "${CMAKE_BINARY_DIR}/Doxyfile"
-COMMAND cmake -E touch "${CMAKE_BINARY_DIR}/documentation.stamp"
-DEPENDS "${CMAKE_BINARY_DIR}/Doxyfile" "${CMAKE_BINARY_DIR}/documentation.h" "${DEV_INTERFACE_SOURCES}"
+add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.stamp"
+COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/doxygen.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+COMMAND cmake -E touch "${PROJECT_BINARY_DIR}/documentation.stamp"
+DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile" "${PROJECT_BINARY_DIR}/documentation.h" "${DEV_INTERFACE_SOURCES}"
 COMMENT "Generating documentation"
 VERBATIM)
-add_custom_target(doc ALL DEPENDS "${CMAKE_BINARY_DIR}/documentation.stamp")
+add_custom_target(doc ALL DEPENDS "${PROJECT_BINARY_DIR}/documentation.stamp")
