@@ -1,19 +1,17 @@
 # README.md generation
 file(READ "${PROJECT_SOURCE_DIR}/config/template/README.md" DEV_README)
 if (EXISTS "${PROJECT_BINARY_DIR}/readme-environment.cmake")
-    file(READ "${PROJECT_BINARY_DIR}/readme-environment.cmake" DEV_OLD_ENVIRONMENT)
+    file(READ "${PROJECT_BINARY_DIR}/readme-environment.cmake" DEV_OLD_README_ENVIRONMENT)
 endif()
-
 get_cmake_property(DEV_VARIABLES VARIABLES)
-set(DEV_ENVIRONMENT "")
+set(DEV_README_ENVIRONMENT "")
 foreach (DEV_VARIABLE ${DEV_VARIABLES})
     if ("${DEV_README}" MATCHES ".*${DEV_VARIABLE}.*")
-        set(DEV_ENVIRONMENT "${DEV_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
+        set(DEV_README_ENVIRONMENT "${DEV_README_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
     endif()
 endforeach()
-
-if (NOT "${DEV_ENVIRONMENT}" STREQUAL "${DEV_OLD_ENVIRONMENT}")
-    file(WRITE "${PROJECT_BINARY_DIR}/readme-environment.cmake" "${DEV_ENVIRONMENT}")
+if (NOT "${DEV_README_ENVIRONMENT}" STREQUAL "${DEV_OLD_README_ENVIRONMENT}")
+    file(WRITE "${PROJECT_BINARY_DIR}/readme-environment.cmake" "${DEV_README_ENVIRONMENT}")
 endif()
 
 add_custom_command(OUTPUT "${CMAKE_SOURCE_DIR}/README.md"
@@ -22,9 +20,3 @@ DEPENDS "${CMAKE_SOURCE_DIR}/config/template/README.md" "${PROJECT_BINARY_DIR}/r
 COMMENT "Generating README.md"
 VERBATIM)
 add_custom_target(readme ALL DEPENDS "${CMAKE_SOURCE_DIR}/README.md")
-
-#list (SORT DEV_VARIABLES)
-#file(WRITE "${PROJECT_BINARY_DIR}/variables.txt" "")
-#foreach (DEV_VARIABLE ${DEV_VARIABLES})
-#    file(APPEND "${PROJECT_BINARY_DIR}/variables.txt" "${DEV_VARIABLE}=${${DEV_VARIABLE}}\n")
-#endforeach()

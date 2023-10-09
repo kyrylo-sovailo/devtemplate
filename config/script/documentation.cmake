@@ -1,1 +1,7 @@
-message(WARNING HERE)
+set(CMAKE_SOURCE_DIR "${CMAKE_ARGV3}")
+set(CMAKE_BINARY_DIR "${CMAKE_ARGV4}")
+set(SOURCE "${CMAKE_SOURCE_DIR}/config/template/documentation.h")
+set(SOURCE_ENV "${CMAKE_BINARY_DIR}/documentation-environment.cmake")
+set(DEST "${CMAKE_BINARY_DIR}/documentation.h")
+include("${SOURCE_ENV}")
+configure_file("${SOURCE}" "${DEST}")
