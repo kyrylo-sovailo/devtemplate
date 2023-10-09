@@ -1,7 +1,7 @@
-PROJECT_NAME           = "@NAME@"
-PROJECT_BRIEF          = "@DESCRIPTION@"
-FILE_PATTERNS          = *.h *.hpp
-INPUT                  = include
+PROJECT_NAME           = "${DEV_NAME}"
+PROJECT_BRIEF          = "${DEV_DESCRIPTION}"
+#FILE_PATTERNS          = *
+INPUT                  = ${DEV_INTERFACE_SOURCES}
 OUTPUT_DIRECTORY       = documentation
 RECURSIVE              = YES
 

@@ -87,7 +87,7 @@ int _main(HINSTANCE hinstance)
     }
 }
 
-#ifdef WIN32_EXECUTABLE
+#ifdef DEV_WIN32_EXECUTABLE
 	extern "C" int APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevious, PSTR cmdline, int cmdshow)
 	{
 		return _main(hinstance);

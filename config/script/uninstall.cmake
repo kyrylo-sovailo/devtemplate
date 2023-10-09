@@ -1,4 +1,4 @@
-set(PROJECT_NAME "${CMAKE_ARGV3}")
+set(DEV_CMAKE_NAME "${CMAKE_ARGV3}")
 file(STRINGS "install_manifest.txt" MANIFEST_FILE)
 list(SORT MANIFEST_FILE)
 set(PROTECTED "")

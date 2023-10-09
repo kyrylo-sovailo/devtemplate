@@ -1,0 +1,7 @@
+set(CMAKE_SOURCE_DIR "${CMAKE_ARGV3}")
+set(CMAKE_BINARY_DIR "${CMAKE_ARGV4}")
+set(SOURCE "${CMAKE_SOURCE_DIR}/config/template/README.md")
+set(SOURCE_ENV "${CMAKE_BINARY_DIR}/readme-environment.cmake")
+set(DEST "${CMAKE_SOURCE_DIR}/README.md")
+include("${SOURCE_ENV}")
+configure_file("${SOURCE}" "${DEST}")

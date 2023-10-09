@@ -1,6 +1,6 @@
-# Welcome to Devtemplate v0.0.0
+# Welcome to ${DEV_NAME} v${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH}
 
-Template repository for CMake/C++ stack
+${DEV_DESCRIPTION}
 
 This library is designed to do nothing. At the same time, it has a lot of features that many repositories are expected to have, including:
  - Build process automation

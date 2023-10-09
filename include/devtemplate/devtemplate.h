@@ -15,7 +15,3 @@ namespace devtemplate
         #endif
     };
 }
-
-/** @mainpage Template repository for CMake/C++
-This is a template repository
-*/
