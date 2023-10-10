@@ -17,3 +17,5 @@ How to use:
  3. Disable unneeded modules.
  4. Put your code in `source` and your header files in `include`. Change the list of files in `library.cmake` accordingly.
  5. Modify the CMake code if necessary.
+
+### Generated on ${DEV_TIMESTAMP}

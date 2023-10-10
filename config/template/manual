@@ -1,0 +1,17 @@
+.\" Manpage for ${DEV_NAME}.
+.\" Contact ${DEV_EMAIL} to correct errors or typos.
+.TH man 1 "${DEV_TIMESTAMP}" "${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH}" "${DEV_NAME} man page"
+.SH NAME
+${DEV_NAME} - ${DEV_DESCRIPTION}
+.SH SYNOPSIS
+${DEV_FILE_NAME}
+.SH DESCRIPTION
+${DEV_DESCRIPTION}
+.SH OPTIONS
+${DEV_FILE_NAME} does not take any options.
+.SH SEE ALSO
+gcc(1), cmake(1), doxygen(1), man(1)
+.SH BUGS
+No known bugs.
+.SH AUTHOR
+${DEV_AUTHOR} (${DEV_EMAIL})

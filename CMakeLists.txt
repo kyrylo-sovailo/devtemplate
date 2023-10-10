@@ -29,7 +29,7 @@ include(config/executable-gui.cmake)
 include(config/test.cmake)
 include(config/readme.cmake)
 include(config/documentation.cmake)
-#include(config/manual.cmake)
+include(config/manual.cmake)
 #include(config/export.cmake)
 
 ###############################

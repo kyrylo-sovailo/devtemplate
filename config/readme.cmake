@@ -15,7 +15,7 @@ if (NOT "${DEV_README_ENVIRONMENT}" STREQUAL "${DEV_OLD_README_ENVIRONMENT}")
 endif()
 
 add_custom_command(OUTPUT "${PROJECT_SOURCE_DIR}/README.md"
-COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/readme.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${PROJECT_SOURCE_DIR}/config/template/README.md" "${PROJECT_BINARY_DIR}/readme-environment.cmake" "${PROJECT_SOURCE_DIR}/README.md"
 DEPENDS "${PROJECT_SOURCE_DIR}/config/template/README.md" "${PROJECT_BINARY_DIR}/readme-environment.cmake"
 COMMENT "Generating README.md"
 VERBATIM)

@@ -30,21 +30,22 @@ if (NOT "${DEV_DOCUMENTATION_ENVIRONMENT}" STREQUAL "${DEV_OLD_DOCUMENTATION_ENV
 endif()
 
 add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/Doxyfile"
-COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/doxyfile.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake" "${PROJECT_BINARY_DIR}/Doxyfile"
 DEPENDS "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake"
 COMMENT "Generating Doxyfile"
 VERBATIM)
-add_custom_target(doxyfile ALL DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile")
+add_custom_target(doxyfile DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile")
 
 add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.h"
-COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/documentation.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation-environment.cmake" "${PROJECT_BINARY_DIR}/documentation.h"
 DEPENDS "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation-environment.cmake"
 COMMENT "Generating documentation.h"
 VERBATIM)
-add_custom_target(documentation ALL DEPENDS "${PROJECT_BINARY_DIR}/documentation.h")
+add_custom_target(documentation DEPENDS "${PROJECT_BINARY_DIR}/documentation.h")
+add_dependencies(${DEV_CMAKE_NAME} documentation)
 
 add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.stamp"
-COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/doxygen.cmake" "${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}"
+COMMAND doxygen "${PROJECT_BINARY_DIR}/Doxyfile"
 COMMAND cmake -E touch "${PROJECT_BINARY_DIR}/documentation.stamp"
 DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile" "${PROJECT_BINARY_DIR}/documentation.h" "${DEV_INTERFACE_SOURCES}"
 COMMENT "Generating documentation"
