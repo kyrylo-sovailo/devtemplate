@@ -1,6 +1,34 @@
-# Defining GUI executable
+#########################
+# Define GUI executable #
+#########################
+
+# Dependencies
+if (NOT WIN32)
+    find_package(X11 REQUIRED)
+endif()
+
+# Define executable
+add_executable(${DEV_CMAKE_NAME}_executable_gui)
+
+# Define executable sources
 if (WIN32)
-    # Identifying resource compiler
+    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
+else()
+    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-x11.cpp")
+endif()
+
+# Define properties
+set_target_properties(${DEV_CMAKE_NAME}_executable_gui PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}_executable_gui")
+
+# Link dependencies
+target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PUBLIC ${DEV_CMAKE_NAME})
+if (NOT WIN32)
+    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11)
+endif()
+
+# Compile resource
+if (WIN32)
+    # Identify resource compiler
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
         set(DEV_RESOURCE_COMPILE "rc")
         set(DEV_RESOURCE_ARGUMENT "/fo ")
@@ -13,7 +41,7 @@ if (WIN32)
         message(WARNING "The compiler (${CMAKE_CXX_COMPILER_ID}) is not supported, compiling Windows application without icons")
     endif()
 
-    # Compiling resource
+    # Compile resource
     if(DEV_RESOURCE_COMPILE)
         add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}"
         COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_ARGUMENT}"${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}" "${PROJECT_SOURCE_DIR}/executable/executable-win32.rc"
@@ -22,23 +50,18 @@ if (WIN32)
         add_custom_target(${DEV_CMAKE_NAME}_executable_gui_res DEPENDS "${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}")
     endif()
 
-    # Compiling executable
-    add_executable(${DEV_CMAKE_NAME}_executable_gui WIN32)
-    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
+    # Add resource to target
     if (DEV_RESOURCE_COMPILE)
         add_dependencies(${DEV_CMAKE_NAME}_executable_gui ${DEV_CMAKE_NAME}_executable_gui_res)
         target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE "${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}")
     endif()
-    get_target_property(DEV_WIN32_EXECUTABLE ${DEV_CMAKE_NAME}_executable_gui WIN32_EXECUTABLE)
-    if(DEV_WIN32_EXECUTABLE)
-        target_compile_definitions(${DEV_CMAKE_NAME}_executable_gui PRIVATE DEV_WIN32_EXECUTABLE)
-    endif()
-else()
-    # Compiling executable
-    add_executable(${DEV_CMAKE_NAME}_executable_gui)
-    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-x11.cpp")
-    find_package(X11 REQUIRED)
-    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11)
 endif()
-target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PUBLIC ${DEV_CMAKE_NAME})
+
+# Set target type
+if (WIN32)
+    set_target_properties(${DEV_CMAKE_NAME}_executable_gui PROPERTIES WIN32_EXECUTABLE ON)
+    target_compile_definitions(${DEV_CMAKE_NAME}_executable_gui PRIVATE DEV_WIN32_EXECUTABLE)
+endif()
+
+# Define "run_gui" command
 add_custom_target(run_gui COMMAND ${DEV_CMAKE_NAME}_executable_gui)

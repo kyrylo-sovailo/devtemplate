@@ -30,19 +30,21 @@ include(config/test.cmake)
 include(config/readme.cmake)
 include(config/documentation.cmake)
 include(config/manual.cmake)
-#include(config/export.cmake)
 
 ###############################
 # Installing generic features #
 ###############################
+include(config/install.cmake)
+include(config/install-cmake.cmake)
+#include(config/export.cmake)
+
 #include(config/install-header-library.cmake)
-#include(config/install-library.cmake)
 #include(config/install-executable.cmake)
 #include(config/install-executable-gui.cmake)
 #include(config/install-test.cmake)
 #include(config/install-documentation.cmake)
 #include(config/install-manual.cmake)
-#include(config/install-cmake.cmake)
+#
 #include(config/uninstall.cmake)
 
 ##########
