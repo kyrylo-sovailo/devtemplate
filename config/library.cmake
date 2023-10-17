@@ -12,19 +12,13 @@ add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
 if ("${DEV_TYPE}" STREQUAL "INTERFACE")
     target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.hpp")
 else()
-    target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
+    target_sources(${DEV_CMAKE_NAME} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/devtemplate/devtemplate.h>$<INSTALL_INTERFACE:include/devtemplate/devtemplate.h>")
     target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
 endif()
 
 # Define properties
 set_target_properties(${DEV_CMAKE_NAME} PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}")
-target_include_directories(${DEV_CMAKE_NAME} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/>${CMAKE_INSTALL_INCLUDEDIR}")
-get_target_property(DEV_INTERFACE_SOURCES ${DEV_CMAKE_NAME} INTERFACE_SOURCES)
-foreach(DEV_INTERFACE_SOURCE ${DEV_INTERFACE_SOURCES})
-    file(RELATIVE_PATH DEV_RELATIVE_SOURCE "${PROJECT_SOURCE_DIR}" "${DEV_INTERFACE_SOURCE}")
-    list(APPEND DEV_RELATIVE_SOURCES "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/>${DEV_RELATIVE_SOURCE}")
-endforeach()
-set_target_properties(${DEV_CMAKE_NAME} PROPERTIES INTERFACE_SOURCES "${DEV_RELATIVE_SOURCES}")
+target_include_directories(${DEV_CMAKE_NAME} INTERFACE "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>$<INSTALL_INTERFACE:include>")
 
 # Define macros
 target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE

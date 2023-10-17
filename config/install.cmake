@@ -3,8 +3,9 @@
 ###############################
 
 # Install headers
-install(FILES "${DEV_RELATIVE_SOURCES}"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+get_target_property(DEV_INTERFACE_SOURCES ${DEV_CMAKE_NAME} INTERFACE_SOURCES)
+install(FILES "${DEV_INTERFACE_SOURCES}"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${DEV_FILE_NAME}")
 
 # Install library
 install(TARGETS ${DEV_CMAKE_NAME}

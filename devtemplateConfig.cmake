@@ -24,6 +24,6 @@ endmacro()
 
 ####################################################################################
 
-include("${CMAKE_CURRENT_LIST_DIR}/${DEV_FILE_NAME}-targets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/devtemplateTargets.cmake")
 
-check_required_components(${DEV_CMAKE_NAME})
+check_required_components(devtemplate)
