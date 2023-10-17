@@ -36,7 +36,7 @@ include(config/manual.cmake)
 ###############################
 include(config/install.cmake)
 include(config/install-cmake.cmake)
-#include(config/export.cmake)
+include(config/export.cmake)
 
 #include(config/install-header-library.cmake)
 #include(config/install-executable.cmake)

@@ -25,6 +25,6 @@ Thumbs.db
 
 # CMake #
 #########
-./*.cmake
+./*Config.cmake
 build/
 documentation/

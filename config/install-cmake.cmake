@@ -13,14 +13,14 @@ install(EXPORT ${DEV_CMAKE_NAME}_export
 
 # Generate config file
 configure_package_config_file("${PROJECT_SOURCE_DIR}/config/template/config.cmake.in"
-    "${PROJECT_SOURCE_DIR}/${DEV_FILE_NAME}Config.cmake"
+    "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${DEV_FILE_NAME}")
 
 # Generate version file
-write_basic_package_version_file("${PROJECT_SOURCE_DIR}/${DEV_FILE_NAME}ConfigVersion.cmake"
+write_basic_package_version_file("${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}ConfigVersion.cmake"
     COMPATIBILITY SameMajorVersion)
 
 # Install configuration files
-install(FILES "${PROJECT_SOURCE_DIR}/${DEV_FILE_NAME}Config.cmake"
-    "${PROJECT_SOURCE_DIR}/${DEV_FILE_NAME}ConfigVersion.cmake"
+install(FILES "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}Config.cmake"
+    "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}ConfigVersion.cmake"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${DEV_FILE_NAME}")
