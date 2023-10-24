@@ -41,9 +41,8 @@ include(config/install-cmake.cmake)
 include(config/install-executable-gui.cmake)
 include(config/install-documentation.cmake)
 include(config/install-manual.cmake)
-#include(config/export.cmake)
-
-#include(config/uninstall.cmake)
+include(config/export.cmake)
+include(config/uninstall.cmake)
 
 ##########
 # Python #
@@ -64,4 +63,3 @@ include(config/install-manual.cmake)
 #include(config/package-arch.cmake)
 #include(config/package-gentoo.cmake)
 #include(config/package-windows.cmake)
-#include(config/package-all.cmake)
