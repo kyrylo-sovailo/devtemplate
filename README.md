@@ -18,4 +18,4 @@ How to use:
  4. Put your code in `source` and your header files in `include`. Change the list of files in `library.cmake` accordingly.
  5. Modify the CMake code if necessary.
 
-### Generated on Tue, 17 Oct 2023 21:09:06 UTC
+### Generated on Mon, 23 Oct 2023 22:33:29 UTC

@@ -23,6 +23,10 @@ Thumbs.db
 ######################
 .vscode/
 
+# clangd #
+##########
+.cache/
+
 # CMake #
 #########
 ./*Config.cmake

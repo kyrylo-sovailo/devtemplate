@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=${DEV_MAJOR}.${DEV_MINOR}
+Name=${DEV_NAME}
+Comment=${DEV_DESCRIPTION}
+Exec=${DEV_FILE_NAME}_executable_gui
+Icon=${DEV_FILE_NAME}_executable_gui
+Terminal=false
+Categories=Development
+StartupNotify=false

@@ -5,7 +5,7 @@
             "name":     "gdb",
             "type":     "cppdbg",
             "request":  "launch",
-            "program":  "${workspaceFolder}/build/devtemplate_example",
+            "program":  "${workspaceFolder}/build/devtemplate_executable",
             "cwd":      "${workspaceFolder}/build",
             "args":     [],
 
@@ -20,11 +20,22 @@
             ]
         },
         {
+            "documentation": "https://github.com/vadimcn/codelldb/blob/v1.10.0/MANUAL.md",
+            "name":     "lldb",
+            "type":     "lldb",
+            "request":  "launch",
+            "program":  "${workspaceFolder}/build/devtemplate_executable_gui",
+            "cwd":      "${workspaceFolder}/build",
+            "args":     [],
+
+            "initCommands": [ "shell cmake --build ${workspaceFolder}/build" ],
+        },
+        {
             "documentation": "code.visualstudio.com/docs/python/debugging",
             "name":     "Python",
             "type":     "python",
             "request":  "launch",
-            "program":  "${workspaceFolder}/example/example.py",
+            "program":  "${workspaceFolder}/executable/executable.py",
             "cwd":      "${workspaceFolder}/build",
             "args":     []
         }

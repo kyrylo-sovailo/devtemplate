@@ -5,6 +5,7 @@
 # Dependencies
 if (NOT WIN32)
     find_package(X11 REQUIRED)
+    find_package(PNG REQUIRED)
 endif()
 
 # Define executable
@@ -23,7 +24,7 @@ set_target_properties(${DEV_CMAKE_NAME}_executable_gui PROPERTIES OUTPUT_NAME "$
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PUBLIC ${DEV_CMAKE_NAME})
 if (NOT WIN32)
-    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11)
+    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11::X11 PNG::PNG)
 endif()
 
 # Compile resource

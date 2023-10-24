@@ -1,6 +1,6 @@
-#########################
-# Install CMake package #
-#########################
+#############################
+# Install CMake description #
+#############################
 
 # Dependencies
 include(CMakePackageConfigHelpers)
