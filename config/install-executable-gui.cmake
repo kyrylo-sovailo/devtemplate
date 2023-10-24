@@ -2,32 +2,11 @@
 # Install icons and desktop files #
 ###################################
 
-# Update gui-environment.cmake
-file(READ "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" DEV_GUI)
-if (EXISTS "${PROJECT_BINARY_DIR}/gui-environment.cmake")
-    file(READ "${PROJECT_BINARY_DIR}/gui-environment.cmake" DEV_OLD_GUI_ENVIRONMENT)
-endif()
-get_cmake_property(DEV_VARIABLES VARIABLES)
-set(DEV_GUI_ENVIRONMENT "")
-foreach (DEV_VARIABLE ${DEV_VARIABLES})
-    if ("${DEV_GUI}" MATCHES ".*${DEV_VARIABLE}.*")
-        set(DEV_GUI_ENVIRONMENT "${DEV_GUI_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
-    endif()
-endforeach()
-if (NOT "${DEV_GUI_ENVIRONMENT}" STREQUAL "${DEV_OLD_GUI_ENVIRONMENT}")
-    file(WRITE "${PROJECT_BINARY_DIR}/gui-environment.cmake" "${DEV_GUI_ENVIRONMENT}")
-endif()
-
 # Generate gui.desktop
-add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/gui.desktop"
-    COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" "${PROJECT_BINARY_DIR}/gui-environment.cmake" "${PROJECT_BINARY_DIR}/gui.desktop"
-    DEPENDS "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" "${PROJECT_BINARY_DIR}/gui-environment.cmake"
-    COMMENT "Generating gui.desktop"
-    VERBATIM)
-add_custom_target(${DEV_FILE_NAME}_gui_desktop ALL DEPENDS "${PROJECT_BINARY_DIR}/gui.desktop")
+devtemplate_configure_file(${DEV_CMAKE_NAME}_gui_desktop TRUE "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop")
 
 # Install gui.desktop
-install(FILES "${PROJECT_BINARY_DIR}/gui.desktop"
+install(FILES "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop"
     RENAME "${DEV_FILE_NAME}_executable_gui.desktop"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications")
 

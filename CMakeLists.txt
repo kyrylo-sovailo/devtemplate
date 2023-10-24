@@ -11,6 +11,7 @@ set(DEV_MINOR 0)
 set(DEV_PATCH 0)
 set(DEV_TYPE SHARED)
 set(DEV_DESCRIPTION "Template repository for CMake/C++ stack")
+set(DEV_CATEGORY 1)
 set(DEV_HOMEPAGE "github.com/kyrylo-sovailo/devtemplate")
 set(DEV_EMAIL "k.sovailo@gmail.com")
 set(DEV_AUTHOR "Kyrylo Sovailo")
@@ -19,6 +20,7 @@ cmake_minimum_required(VERSION 3.15)
 project(${DEV_CMAKE_NAME} VERSION ${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+include(config/common.cmake)
 
 ####################
 # Generic features #
@@ -37,15 +39,10 @@ include(config/manual.cmake)
 include(config/install.cmake)
 include(config/install-cmake.cmake)
 include(config/install-executable-gui.cmake)
-include(config/export.cmake)
+include(config/install-documentation.cmake)
+include(config/install-manual.cmake)
+#include(config/export.cmake)
 
-#include(config/install-header-library.cmake)
-#include(config/install-executable.cmake)
-#
-#include(config/install-test.cmake)
-#include(config/install-documentation.cmake)
-#include(config/install-manual.cmake)
-#
 #include(config/uninstall.cmake)
 
 ##########

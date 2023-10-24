@@ -5,8 +5,8 @@
             "label": "cmake-tasksBuildCommand",
             "type": "shell",
             "command": "/bin/sh",
-            "args": [ "-c", "${command:cmake.tasksBuildCommand}" ],
-            "options": { "cwd": "${command:cmake.buildDirectory}" }
+            "args": [ "-c", "cmake --build ." ],
+            "options": { "cwd": "${workspaceFolder}/build" }
        }
     ]
 }

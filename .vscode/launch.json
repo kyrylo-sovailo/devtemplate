@@ -24,7 +24,7 @@
             "name":     "lldb",
             "type":     "lldb",
             "request":  "launch",
-            "program":  "${workspaceFolder}/build/devtemplate_executable_gui",
+            "program":  "${workspaceFolder}/build/devtemplate_executable",
             "cwd":      "${workspaceFolder}/build",
             "args":     [],
 

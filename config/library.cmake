@@ -2,9 +2,6 @@
 # Define the core library #
 ###########################
 
-# Dependencies
-include(GNUInstallDirs)
-
 # Define library
 add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
 

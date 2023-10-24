@@ -5,52 +5,15 @@
 # Dependencies
 find_package(Doxygen REQUIRED)
 
-# Update doxygen-environment.cmake and documentation-environment.cmake
-file(READ "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" DEV_DOXYFILE)
-file(READ "${PROJECT_SOURCE_DIR}/config/template/documentation.h" DEV_DOCUMENTATION)
-if (EXISTS "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake")
-    file(READ "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake" DEV_OLD_DOXYFILE_ENVIRONMENT)
-endif()
-if (EXISTS "${PROJECT_BINARY_DIR}/documentation-environment.cmake")
-    file(READ "${PROJECT_BINARY_DIR}/documentation-environment.cmake" DEV_OLD_DOCUMENTATION_ENVIRONMENT)
-endif()
-get_cmake_property(DEV_VARIABLES VARIABLES)
-set(DEV_DOXYFILE_ENVIRONMENT "")
-set(DEV_DOCUMENTATION_ENVIRONMENT "")
-foreach (DEV_VARIABLE ${DEV_VARIABLES})
-    if ("${DEV_DOXYFILE}" MATCHES ".*${DEV_VARIABLE}.*")
-        set(DEV_DOXYFILE_ENVIRONMENT "${DEV_DOXYFILE_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
-    endif()
-    if ("${DEV_DOCUMENTATION}" MATCHES ".*${DEV_VARIABLE}.*")
-        set(DEV_DOCUMENTATION_ENVIRONMENT "${DEV_DOCUMENTATION_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
-    endif()
-endforeach()
-if (NOT "${DEV_DOXYFILE_ENVIRONMENT}" STREQUAL "${DEV_OLD_DOXYFILE_ENVIRONMENT}")
-    file(WRITE "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake" "${DEV_DOXYFILE_ENVIRONMENT}")
-endif()
-if (NOT "${DEV_DOCUMENTATION_ENVIRONMENT}" STREQUAL "${DEV_OLD_DOCUMENTATION_ENVIRONMENT}")
-    file(WRITE "${PROJECT_BINARY_DIR}/documentation-environment.cmake" "${DEV_DOCUMENTATION_ENVIRONMENT}")
-endif()
-
 # Generate Doxyfile
-add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/Doxyfile"
-    COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake" "${PROJECT_BINARY_DIR}/Doxyfile"
-    DEPENDS "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/doxyfile-environment.cmake"
-    COMMENT "Generating Doxyfile"
-    VERBATIM)
-add_custom_target(${DEV_CMAKE_NAME}_doxyfile DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile")
+devtemplate_configure_file(${DEV_CMAKE_NAME}_doxyfile FALSE "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/Doxyfile")
 
 # Generate documentation.h
-add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.h"
-    COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation-environment.cmake" "${PROJECT_BINARY_DIR}/documentation.h"
-    DEPENDS "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation-environment.cmake"
-    COMMENT "Generating documentation.h"
-    VERBATIM)
-add_custom_target(${DEV_CMAKE_NAME}_documentation_header DEPENDS "${PROJECT_BINARY_DIR}/documentation.h")
+devtemplate_configure_file(${DEV_CMAKE_NAME}_documentation_header FALSE "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation.h")
 add_dependencies(${DEV_CMAKE_NAME} ${DEV_CMAKE_NAME}_documentation_header)
 
 # Run Doxygen
-file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/documentation")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}-${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH}")
 get_target_property(DEV_INTERFACE_SOURCES ${DEV_CMAKE_NAME} INTERFACE_SOURCES)
 add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.stamp"
     COMMAND doxygen "${PROJECT_BINARY_DIR}/Doxyfile"
