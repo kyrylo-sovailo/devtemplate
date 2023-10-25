@@ -1,6 +1,6 @@
-#############################
-# Define the Python wrapper #
-#############################
+#########################
+# Define Python wrapper #
+#########################
 
 # Dependencies
 find_package(pybind11 CONFIG REQUIRED)

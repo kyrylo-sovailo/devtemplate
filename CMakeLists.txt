@@ -36,7 +36,7 @@ include(config/manual.cmake)
 ###############################
 # Installing generic features #
 ###############################
-include(config/install.cmake)
+include(config/install-library.cmake)
 include(config/install-cmake.cmake)
 include(config/install-executable-gui.cmake)
 include(config/install-documentation.cmake)
@@ -48,9 +48,11 @@ include(config/uninstall.cmake)
 # Python #
 ##########
 include(config/python-library.cmake)
-#include(config/install-python-library.cmake)
-#include(config/install-python-executable.cmake)
-#include(config/install-python-test.cmake)
+include(config/python-executable.cmake)
+include(config/python-test.cmake)
+include(config/install-python-library.cmake)
+include(config/install-python-executable.cmake)
+include(config/install-python-test.cmake)
 
 #############
 # Packaging #

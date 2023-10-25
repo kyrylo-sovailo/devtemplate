@@ -1,6 +1,6 @@
-###########################
-# Define the core library #
-###########################
+#######################
+# Define core library #
+#######################
 
 # Define library
 add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
