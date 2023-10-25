@@ -7,4 +7,5 @@ Exec=${DEV_FILE_NAME}_executable_gui
 Icon=${DEV_FILE_NAME}_executable_gui
 Terminal=false
 Categories=Development
-StartupNotify=false
+StartupNotify=true
+StartupWMClass=${DEV_NAME}

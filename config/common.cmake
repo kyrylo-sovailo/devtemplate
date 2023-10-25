@@ -48,6 +48,12 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     add_custom_target(${DEV_TARGET_NAME} ${DEV_ALL} DEPENDS "${DEV_OUTPUT_PATH}")
 endfunction()
 
+function(devtemplate_install_icon INPUT_FILE_NAME OUTPUT_DIR_NAME OUTPUT_FILE_NAME)
+    install(FILES "${PROJECT_SOURCE_DIR}/icons/${INPUT_FILE_NAME}"
+        RENAME "${OUTPUT_FILE_NAME}"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${OUTPUT_DIR_NAME}/apps")
+endfunction()
+
 function(devtemplate_cleanup)
     get_cmake_property(DEV_VARIABLES VARIABLES)
     foreach (DEV_VARIABLE ${DEV_VARIABLES})

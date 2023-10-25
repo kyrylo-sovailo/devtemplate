@@ -1,5 +1,6 @@
 #include "../include/devtemplate/devtemplate.h"
 
+#include <X11/X.h>
 #include <png.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -37,11 +38,11 @@ void load_icon(const std::string directory, std::vector<unsigned long> *data, un
     FILE *file = fopen(path_probe.c_str(), "r");
     if (file == nullptr)
     {
-        path_probe = directory + "/../icon/" + size_string + ".png";
+        path_probe = directory + "/../icons/" + size_string + ".png";
         file = fopen(path_probe.c_str(), "r");
         if (file == nullptr)
         {
-            path_probe = directory + "/icon/" + size_string + ".png";
+            path_probe = directory + "/icons/" + size_string + ".png";
             file = fopen(path_probe.c_str(), "r");
             if (file == nullptr) throw std::runtime_error("Failed to open file");
         }
@@ -90,6 +91,51 @@ void load_icon(const std::string directory, std::vector<unsigned long> *data, un
         data->push_back((image[i * 4 + 0] << 16) | (image[i * 4 + 1] << 8) | (image[i * 4 + 2]) | (image[i * 4 + 3] << 24));
 }
 
+void load_icons(Display *display, Window window)
+{
+    Atom _NET_WM_ICON = XInternAtom(display, "_NET_WM_ICON", false);
+    std::string directory = get_directory();
+    std::vector<unsigned long> data;
+    load_icon(directory, &data, 16);
+    load_icon(directory, &data, 24);
+    load_icon(directory, &data, 32);
+    load_icon(directory, &data, 48);
+    load_icon(directory, &data, 64);
+    load_icon(directory, &data, 128);
+    load_icon(directory, &data, 256);
+    XChangeProperty(display, window, _NET_WM_ICON, XA_CARDINAL, 32, PropModeReplace, (unsigned char*) data.data(), data.size());
+}
+
+void startup_notification(int screen, Display *display, Window window)
+{
+    Atom _NET_STARTUP_INFO_BEGIN = XInternAtom(display, "_NET_STARTUP_INFO_BEGIN", false);
+    Atom _NET_STARTUP_INFO = XInternAtom(display, "_NET_STARTUP_INFO", false);
+    const char *DESKTOP_STARTUP_ID = getenv("DESKTOP_STARTUP_ID");
+    if (DESKTOP_STARTUP_ID == nullptr) return;
+    std::string message = "remove: ID=" + std::string(DESKTOP_STARTUP_ID);
+    Window root_window = RootWindow(display, screen);
+
+    XEvent event;
+    event.type = ClientMessage;
+    event.xclient.display = display;
+    event.xclient.window = window;
+    event.xclient.message_type = _NET_STARTUP_INFO_BEGIN;
+    event.xclient.format = 8;
+    
+    unsigned int buffer_i = 0;
+    for (unsigned int i = 0; i < message.size() + 1; i++)
+    {
+        event.xclient.data.b[buffer_i] = (i < message.size()) ? message[i] : '\0';
+        buffer_i++;
+        if (buffer_i == 20 || i == message.size())
+        {
+            buffer_i = 0;
+            XSendEvent(display, root_window, false, PropertyChangeMask, &event);
+            event.xclient.message_type = _NET_STARTUP_INFO;
+        }
+    }
+}
+
 int main()
 {
     try
@@ -106,18 +152,11 @@ int main()
         if (WM_DELETE_WINDOW == 0) throw std::runtime_error("XOpenDisplay failed");
         XSetWMProtocols(display, window, &WM_DELETE_WINDOW, 1);
 
-        // Set icon
-        Atom _NET_WM_ICON = XInternAtom(display, "_NET_WM_ICON", false);
-        std::string directory = get_directory();
-        std::vector<unsigned long> data;
-        load_icon(directory, &data, 16);
-        load_icon(directory, &data, 24);
-        load_icon(directory, &data, 32);
-        load_icon(directory, &data, 48);
-        load_icon(directory, &data, 64);
-        load_icon(directory, &data, 128);
-        load_icon(directory, &data, 256);
-        XChangeProperty(display, window, _NET_WM_ICON, XA_CARDINAL, 32, PropModeReplace, (unsigned char*) data.data(), data.size());
+        // Load icons
+        load_icons(display, window);
+
+        // Send startup notification
+        startup_notification(screen, display, window);
 
         // Loop
         XEvent event;
