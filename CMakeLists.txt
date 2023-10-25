@@ -47,9 +47,7 @@ include(config/uninstall.cmake)
 ##########
 # Python #
 ##########
-#include(config/python-library.cmake)
-#include(config/python-executable.cmake)
-#include(config/python-test.cmake)
+include(config/python-library.cmake)
 #include(config/install-python-library.cmake)
 #include(config/install-python-executable.cmake)
 #include(config/install-python-test.cmake)

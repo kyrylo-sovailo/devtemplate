@@ -10,6 +10,10 @@ endif()
 
 # Define executable
 add_executable(${DEV_CMAKE_NAME}_executable_gui)
+target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PUBLIC ${DEV_CMAKE_NAME})
+if (NOT WIN32)
+    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11::X11 PNG::PNG)
+endif()
 
 # Define executable sources
 if (WIN32)
@@ -20,12 +24,6 @@ endif()
 
 # Define properties
 set_target_properties(${DEV_CMAKE_NAME}_executable_gui PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}_executable_gui")
-
-# Link dependencies
-target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PUBLIC ${DEV_CMAKE_NAME})
-if (NOT WIN32)
-    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11::X11 PNG::PNG)
-endif()
 
 # Compile resource
 if (WIN32)

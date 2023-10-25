@@ -13,7 +13,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define STRING(s) #s
+#define STRING2(s) #s
+#define STRING(s) STRING2(s)
 
 std::string get_directory()
 {
@@ -34,7 +35,7 @@ void load_icon(const std::string directory, std::vector<unsigned long> *data, un
 {
     //Find png
     std::string size_string = std::to_string(size) + "x" + std::to_string(size);
-    std::string path_probe = directory + "/../share/icons/hicolor/" + size_string + "/apps/" DEVTEMPLATE_FILE_NAME "_executable_gui.png";
+    std::string path_probe = directory + "/../share/icons/hicolor/" + size_string + "/apps/" STRING(DEVTEMPLATE_FILE_NAME) "_executable_gui.png";
     FILE *file = fopen(path_probe.c_str(), "r");
     if (file == nullptr)
     {
