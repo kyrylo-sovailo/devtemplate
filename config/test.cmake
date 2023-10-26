@@ -7,8 +7,10 @@ find_package(GTest REQUIRED)
 
 # Define test
 add_executable(${DEV_CMAKE_NAME}_test)
-target_link_libraries(${DEV_CMAKE_NAME}_test PUBLIC ${DEV_CMAKE_NAME})
-target_link_libraries(${DEV_CMAKE_NAME}_test PUBLIC GTest::gtest)
+list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME}_test)
+list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_test)
+target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE ${DEV_CMAKE_NAME})
+target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE GTest::GTest)
 
 # Define test sources
 target_sources(${DEV_CMAKE_NAME}_test PRIVATE "executable/test.cpp")

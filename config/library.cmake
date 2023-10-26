@@ -4,12 +4,12 @@
 
 # Define library
 add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
+list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME})
+list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME})
 
 # Define headers and sources
-if ("${DEV_TYPE}" STREQUAL "INTERFACE")
-    target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.hpp")
-else()
-    target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
+target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
+if (NOT "${DEV_TYPE}" STREQUAL "INTERFACE")
     target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
 endif()
 devtemplate_expand_property(${DEV_CMAKE_NAME} INTERFACE_SOURCES)
@@ -31,6 +31,7 @@ target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE
     ${DEV_MACRO_NAME}_TYPE=${DEV_TYPE}
     ${DEV_MACRO_NAME}_${DEV_TYPE}
     ${DEV_MACRO_NAME}_DESCRIPTION=${DEV_DESCRIPTION}
+    ${DEV_MACRO_NAME}_CATEGORY=${DEV_CATEGORY}
     ${DEV_MACRO_NAME}_HOMEPAGE=${DEV_HOMEPAGE}
     ${DEV_MACRO_NAME}_EMAIL=${DEV_EMAIL}
     ${DEV_MACRO_NAME}_AUTHOR=${DEV_AUTHOR})

@@ -2,8 +2,14 @@
 # Common functions #
 ####################
 
+# Dependencies
 include(GNUInstallDirs)
 
+# Global variables
+unset(DEV_EXPORT_TARGETS)    #List of targets that should be exported via CMake file
+unset(DEV_PACKAGE_TARGETS)   #List of all targets that should be made before packaging
+
+# Common functions
 function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
     foreach(DEV_PATH ${DEV_PATHS})
@@ -40,10 +46,10 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
         DEPENDS "${DEV_INPUT_PATH}"
         COMMENT "Generating ${DEV_OUTPUT_NAME}"
         VERBATIM)
-    if (${DEV_ALL})
-        set(DEV_ALL ALL)
+    if (DEV_ALL)
+        set(DEV_ALL "ALL")
     else()
-        set(DEV_ALL)
+        set(DEV_ALL "")
     endif()
     add_custom_target(${DEV_TARGET_NAME} ${DEV_ALL} DEPENDS "${DEV_OUTPUT_PATH}")
 endfunction()

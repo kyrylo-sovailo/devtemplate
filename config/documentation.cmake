@@ -21,4 +21,5 @@ add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.stamp"
     DEPENDS "${PROJECT_BINARY_DIR}/Doxyfile" "${PROJECT_BINARY_DIR}/documentation.h" "${DEV_INTERFACE_SOURCES}"
     COMMENT "Generating documentation"
     VERBATIM)
-add_custom_target(${DEV_CMAKE_NAME}_documentation ALL DEPENDS "${PROJECT_BINARY_DIR}/documentation.stamp")
+add_custom_target(doc ALL DEPENDS "${PROJECT_BINARY_DIR}/documentation.stamp")
+list(APPEND DEV_PACKAGE_TARGETS doc)

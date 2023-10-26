@@ -4,7 +4,9 @@
 
 # Define executable
 add_executable(${DEV_CMAKE_NAME}_executable)
-target_link_libraries(${DEV_CMAKE_NAME}_executable PUBLIC ${DEV_CMAKE_NAME})
+list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME}_executable)
+list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_executable)
+target_link_libraries(${DEV_CMAKE_NAME}_executable PRIVATE ${DEV_CMAKE_NAME})
 
 # Define executable sources
 target_sources(${DEV_CMAKE_NAME}_executable PRIVATE "executable/executable.cpp")

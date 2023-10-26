@@ -10,9 +10,14 @@ endif()
 
 # Define executable
 add_executable(${DEV_CMAKE_NAME}_executable_gui)
-target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PUBLIC ${DEV_CMAKE_NAME})
+list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME}_executable_gui)
+list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_executable_gui)
+target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE ${DEV_CMAKE_NAME})
 if (NOT WIN32)
-    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11::X11 PNG::PNG)
+    # cmake >= 3.14: link_libraries(X11::X11 PNG::PNG)
+    target_compile_definitions(${DEV_CMAKE_NAME}_executable_gui PRIVATE ${PNG_DEFINITIONS})
+    target_include_directories(${DEV_CMAKE_NAME}_executable_gui PRIVATE ${X11_INCLUDE_DIR} ${PNG_INCLUDE_DIRS})
+    target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE ${X11_LIBRARIES} ${PNG_LIBRARIES})
 endif()
 
 # Define executable sources

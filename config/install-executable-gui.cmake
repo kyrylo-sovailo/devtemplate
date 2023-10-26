@@ -4,6 +4,7 @@
 
 # Generate gui.desktop
 devtemplate_configure_file(${DEV_CMAKE_NAME}_gui_desktop TRUE "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop")
+list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_gui_desktop)
 
 # Install gui.desktop
 install(FILES "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop"

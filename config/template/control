@@ -1,0 +1,10 @@
+Package: ${DEV_FILE_NAME}
+Version: ${DEV_MAJOR}.${DEV_MINOR}
+Section: custom
+Priority: optional
+Architecture: ${DEV_PROCESSOR}
+Essential: no
+Depends: libbsd0, libc6, libexpat1, libgcc1, libice6, libpng16-16, libpython3.7, libsm6, libstdc++6, libuuid1, libx11-6, libxau6, libxcb1, libxdmcp6, libxext6, zlib1g
+Maintainer: ${DEV_AUTHOR} <${DEV_EMAIL}>
+Description: ${DEV_DESCRIPTION}
+Homepage: ${DEV_HOMEPAGE}

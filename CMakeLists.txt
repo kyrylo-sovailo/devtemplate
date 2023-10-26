@@ -16,10 +16,10 @@ set(DEV_HOMEPAGE "github.com/kyrylo-sovailo/devtemplate")
 set(DEV_EMAIL "k.sovailo@gmail.com")
 set(DEV_AUTHOR "Kyrylo Sovailo")
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.13)
 project(${DEV_CMAKE_NAME} VERSION ${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH} LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 include(config/common.cmake)
 
 ####################
@@ -57,8 +57,8 @@ include(config/install-python-test.cmake)
 #############
 # Packaging #
 #############
+include(config/package-debian.cmake)
 #include(config/package-rpm.cmake)
-#include(config/package-debian.cmake)
 #include(config/package-tinycore.cmake)
 #include(config/package-arch.cmake)
 #include(config/package-gentoo.cmake)
