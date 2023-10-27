@@ -12,15 +12,16 @@ else()
 endif()
 
 # Create debian folder
-file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/DEBIAN/usr")
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/usr")
 
 # Generate control file
 devtemplate_configure_file(${DEV_CMAKE_NAME}_control TRUE "${PROJECT_SOURCE_DIR}/config/template/control" "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/DEBIAN/control")
 list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_control)
 
 # Define packaging command
+set(CMAKE_INSTALL_PREFIX "/usr")
 add_custom_target(package_debian
-    COMMAND cmake --install "${PROJECT_BINARY_DIR}" --prefix "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/DEBIAN/usr"
-    COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/clean.cmake" "${PROJECT_BINARY_DIR}" "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/DEBIAN/usr"
+    COMMAND DESTDIR=${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME} cmake --build "${PROJECT_BINARY_DIR}" --target install
+    COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/clean.cmake" "${PROJECT_BINARY_DIR}" "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}"
     COMMAND dpkg-deb --root-owner-group --build "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}"
     DEPENDS ${DEV_PACKAGE_TARGETS})
