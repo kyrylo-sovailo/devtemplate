@@ -12,7 +12,7 @@ install(FILES "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications")
 
 # Install icons
-foreach(DEV_ICON_SIZE 16 24 32 48 64 128 256)
+foreach(DEV_ICON_SIZE IN ITEMS 16 24 32 48 64 128 256)
     devtemplate_install_icon("${DEV_ICON_SIZE}x${DEV_ICON_SIZE}.png" "${DEV_ICON_SIZE}x${DEV_ICON_SIZE}" "${DEV_FILE_NAME}_executable_gui.png")
 endforeach()
 devtemplate_install_icon("scalable.svg" "scalable" "${DEV_FILE_NAME}_executable_gui.svg")

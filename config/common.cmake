@@ -9,10 +9,21 @@ include(GNUInstallDirs)
 unset(DEV_EXPORT_TARGETS)    #List of targets that should be exported via CMake file
 unset(DEV_PACKAGE_TARGETS)   #List of all targets that should be made before packaging
 
+# CMake version
+execute_process(COMMAND "${CMAKE_COMMAND}" --version OUTPUT_VARIABLE DEV_CMAKE_VERSION ERROR_VARIABLE DEV_CMAKE_VERSION_ERROR RESULT_VARIABLE DEV_CMAKE_VERSION_RESULT)
+string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" DEV_CMAKE_VERSION "${DEV_CMAKE_VERSION}")
+if ("${DEV_CMAKE_VERSION}" STREQUAL "" OR NOT "${DEV_CMAKE_VERSION_ERROR}" STREQUAL "" OR NOT ${DEV_CMAKE_VERSION_RESULT} EQUAL 0)
+    message(FATAL_ERROR "Cannot check CMake version")
+endif()
+string(REPLACE "\." ";" DEV_CMAKE_VERSION "${DEV_CMAKE_VERSION}")
+list(GET DEV_CMAKE_VERSION 0 DEV_CMAKE_MAJOR)
+list(GET DEV_CMAKE_VERSION 1 DEV_CMAKE_MINOR)
+list(GET DEV_CMAKE_VERSION 2 DEV_CMAKE_PATCH)
+
 # Common functions
 function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
-    foreach(DEV_PATH ${DEV_PATHS})
+    foreach(DEV_PATH IN LISTS DEV_PATHS)
         file(RELATIVE_PATH DEV_RELATIVE_PATH "${PROJECT_SOURCE_DIR}" "${DEV_PATH}")
         list(APPEND DEV_RELATIVE_PATHS "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/${DEV_RELATIVE_PATH}>$<INSTALL_INTERFACE:${DEV_RELATIVE_PATH}>")
     endforeach()
@@ -30,7 +41,7 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     endif()
     get_cmake_property(DEV_VARIABLES VARIABLES)
     set(DEV_ENVIRONMENT)
-    foreach (DEV_VARIABLE ${DEV_VARIABLES})
+    foreach (DEV_VARIABLE IN LISTS DEV_VARIABLES)
         if ("${DEV_INPUT}" MATCHES "^.*(\\\${${DEV_VARIABLE}}|\\\$${DEV_VARIABLE}|@${DEV_VARIABLE}@).*$")
             set(DEV_ENVIRONMENT "${DEV_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
         endif()
@@ -62,7 +73,7 @@ endfunction()
 
 function(devtemplate_cleanup)
     get_cmake_property(DEV_VARIABLES VARIABLES)
-    foreach (DEV_VARIABLE ${DEV_VARIABLES})
+    foreach (DEV_VARIABLE IN LISTS DEV_VARIABLES)
         if ("${DEV_VARIABLE}" MATCHES "^DEV_.+&" AND (NOT "${DEV_VARIABLE}" STREQUAL "DEV_VARIABLE") AND (NOT "${DEV_VARIABLE}" STREQUAL "DEV_VARIABLES"))
             unset(${DEV_VARIABLE} PARENT_SCOPE)
         endif()

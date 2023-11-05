@@ -6,16 +6,10 @@
 add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
 list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME})
 list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME})
-
-# Define headers and sources
-target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
-if (NOT "${DEV_TYPE}" STREQUAL "INTERFACE")
-    target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
-endif()
-devtemplate_expand_property(${DEV_CMAKE_NAME} INTERFACE_SOURCES)
-
-# Define properties
+set_target_properties(${DEV_CMAKE_NAME} PROPERTIES PREFIX "lib")
 set_target_properties(${DEV_CMAKE_NAME} PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}")
+
+# Define include directories
 target_include_directories(${DEV_CMAKE_NAME} INTERFACE "include")
 devtemplate_expand_property(${DEV_CMAKE_NAME} INTERFACE_INCLUDE_DIRECTORIES)
 
@@ -42,3 +36,10 @@ if (WIN32 AND "${DEV_TYPE}" STREQUAL "SHARED")
 else()
     target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME})
 endif()
+
+# Define headers and sources
+target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
+if (NOT "${DEV_TYPE}" STREQUAL "INTERFACE")
+    target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
+endif()
+devtemplate_expand_property(${DEV_CMAKE_NAME} INTERFACE_SOURCES)

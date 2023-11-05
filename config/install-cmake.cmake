@@ -3,6 +3,9 @@
 #############################
 
 # Dependencies
+if (NOT ${DEV_CMAKE_NAME}_export)
+    message(FATAL_ERROR "Export \"${DEV_CMAKE_NAME}_export\" does not exist, cannot install library")
+endif()
 include(CMakePackageConfigHelpers)
 
 # Install export set
