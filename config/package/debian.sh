@@ -54,8 +54,12 @@ else
 fi
 
 # Cleanup
-cmake -P "${DEV_SOURCE_DIR}/config/script/clean.cmake" -- "${DEV_BINARY_DIR}" "${DEV_INSTALL_ROOT}"
+cmake -P "${DEV_SOURCE_DIR}/config/script/check.cmake" -- "${DEV_BINARY_DIR}" "${DEV_INSTALL_ROOT}" "${DEV_INSTALL_ROOT}.deb"
+if [ $? -ne 0 ]; then echo "debian.sh: cleaning of installation directory failed"; exit 1; fi
 
 # Package
-dpkg-deb --root-owner-group --build "${DEV_INSTALL_ROOT}"
-if [ $? -ne 0 ]; then echo "debian.sh: creation of .deb package failed"; exit 1; fi
+if [ ! -f "${DEV_INSTALL_ROOT}.deb" ]; then
+    dpkg-deb --root-owner-group --build "${DEV_INSTALL_ROOT}"
+    if [ $? -ne 0 ]; then echo "debian.sh: creation of .deb package failed"; exit 1; fi
+fi
+echo debian.sh: success
