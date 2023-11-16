@@ -28,14 +28,14 @@ else()
     set(DEV_TASKS_CONFIGURE_ARGUMENTS "\\\"${DEV_VSCODE_SOURCE_DIR}\\\", -DCMAKE_BUILD_TYPE=Debug")
     set(DEV_TASKS_BUILD_ARGUMENTS "--build, \\\"${DEV_VSCODE_BINARY_DIR}\\\"")
 endif()
-set(DEV_TASKS_CONFIGURE_DIRECTORY "${DEV_BEGIN}/${DEV_RELATIVE_PATH}${DEV_END}")
-set(DEV_TASKS_BUILD_DIRECTORY "${DEV_BEGIN}/${DEV_RELATIVE_PATH}${DEV_END}")
+set(DEV_TASKS_CONFIGURE_DIRECTORY "${DEV_VSCODE_BINARY_DIR}")
+set(DEV_TASKS_BUILD_DIRECTORY "${DEV_VSCODE_BINARY_DIR}")
 
 # Generate tasks.json
-devtemplate_configure_file(${DEV_CMAKE_NAME}_tasks FALSE "${PROJECT_SOURCE_DIR}/config/template/tasks.json" "${PROJECT_SOURCE_DIR}/.vscode/tasks.json")
+devtemplate_configure_file(${DEV_CMAKE_NAME}_tasks TRUE "${PROJECT_SOURCE_DIR}/config/template/tasks.json" "${PROJECT_SOURCE_DIR}/.vscode/tasks.json")
 
 # Generate launch.json
-devtemplate_configure_file(${DEV_CMAKE_NAME}_launch FALSE "${PROJECT_SOURCE_DIR}/config/template/launch.json" "${PROJECT_SOURCE_DIR}/.vscode/launch.json")
+devtemplate_configure_file(${DEV_CMAKE_NAME}_launch TRUE "${PROJECT_SOURCE_DIR}/config/template/launch.json" "${PROJECT_SOURCE_DIR}/.vscode/launch.json")
 
 # Define "vscode" target
 add_custom_target(vscode)

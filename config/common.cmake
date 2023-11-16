@@ -54,7 +54,7 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     
     add_custom_command(OUTPUT "${DEV_OUTPUT_PATH}"
         COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT_PATH}"
-        DEPENDS "${DEV_INPUT_PATH}"
+        DEPENDS "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake"
         COMMENT "Generating ${DEV_OUTPUT_NAME}"
         VERBATIM)
     if (DEV_ALL)
