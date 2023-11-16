@@ -6,15 +6,15 @@
             "label": "DEV_TASKS_CONFIGURE",
             "type": "shell",
             "command": "cmake",
-            "args": [ ;", -DCMAKE_BUILD_TYPE=Debug" ],
-            "options": { "cwd": ";/build""" }
+            "args": [ ${DEV_TASKS_CONFIGURE_ARGUMENTS} ],
+            "options": { "cwd": "${DEV_TASKS_CONFIGURE_DIRECTORY}" }
         },
         {
             "label": "DEV_TASKS_BUILD",
             "type": "shell",
             "command": "cmake",
-            "args": [ --build ;/build"" ],
-            "options": { "cwd": ";/build""" },
+            "args": [ ${DEV_TASKS_BUILD_ARGUMENTS} ],
+            "options": { "cwd": "${DEV_TASKS_BUILD_DIRECTORY}" },
             "dependsOn": [ "DEV_TASKS_CONFIGURE" ]
         }
     ]

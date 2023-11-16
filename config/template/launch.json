@@ -11,9 +11,9 @@
             "preLaunchTask":"DEV_TASKS_CONFIGURE",
             "setupCommands": [ { "description": "Enable pretty-printing for gdb", "text": "-enable-pretty-printing", "ignoreFailures": true } ],
 
-            "program":      ""${workspaceFolder}/build/devtemplate"",
-            "cwd":          ""${workspaceFolder}/build"",
-            "args":         []
+            "program":      "${DEV_DEBUG_TARGET}",
+            "cwd":          "${DEV_DEBUG_DIRECTORY}",
+            "args":         [${DEV_DEBUG_ARGUMENTS}]
         },
         {
             "name":         "gdb (Native Debug)",
@@ -25,9 +25,9 @@
             "preLaunchTask":"DEV_TASKS_CONFIGURE",
             "valuesFormatting": "parseText",
 
-            "program":      ""${workspaceFolder}/build/devtemplate"",
-            "cwd":          ""${workspaceFolder}/build"",
-            "args":         []
+            "program":      "${DEV_DEBUG_TARGET}",
+            "cwd":          "${DEV_DEBUG_DIRECTORY}",
+            "args":         [${DEV_DEBUG_ARGUMENTS}]
         },
         {
             "name":         "lldb (Native Debug)",
@@ -39,9 +39,9 @@
             "preLaunchTask":"DEV_TASKS_CONFIGURE",
             "valuesFormatting": "parseText",
 
-            "program":      ""${workspaceFolder}/build/devtemplate"",
-            "cwd":          ""${workspaceFolder}/build"",
-            "args":         []
+            "program":      "${DEV_DEBUG_TARGET}",
+            "cwd":          "${DEV_DEBUG_DIRECTORY}",
+            "args":         [${DEV_DEBUG_ARGUMENTS}]
         },
         {
             "name":         "lldb (CodeLLDB)",
@@ -50,11 +50,11 @@
             "documentation":"github.com/vadimcn/codelldb/blob/v1.10.0/MANUAL.md",
             "type":         "lldb",
             "request":      "launch",
-            "initCommands": [ "shell cmake --build /home/kyrylo/Programming/devtemplate/build" ],
+            "initCommands": [ "shell cmake --build ${PROJECT_BINARY_DIR}" ],
 
-            "program":      ""${workspaceFolder}/build/devtemplate"",
-            "cwd":          ""${workspaceFolder}/build"",
-            "args":         []
+            "program":      "${DEV_DEBUG_TARGET}",
+            "cwd":          "${DEV_DEBUG_DIRECTORY}",
+            "args":         [${DEV_DEBUG_ARGUMENTS}]
         },
         {
             "name":         "Python",
@@ -64,9 +64,9 @@
             "type":         "python",
             "request":      "launch",
 
-            "program":      ""${workspaceFolder}/python/executable.py"",
-            "cwd":          ""${workspaceFolder}/build"",
-            "args":         []
+            "program":      "${DEV_DEBUG_PYTHON_TARGET}",
+            "cwd":          "${DEV_DEBUG_PYTHON_DIRECTORY}",
+            "args":         [${DEV_DEBUG_PYTHON_ARGUMENTS}]
         }
     ]
 }

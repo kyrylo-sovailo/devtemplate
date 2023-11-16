@@ -32,6 +32,7 @@ include(config/test.cmake)
 include(config/readme.cmake)
 include(config/documentation.cmake)
 include(config/manual.cmake)
+include(config/vscode.cmake)
 
 ###############################
 # Installing generic features #

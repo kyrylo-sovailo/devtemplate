@@ -34,8 +34,8 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     get_filename_component(DEV_OUTPUT_NAME "${DEV_OUTPUT_PATH}" NAME)
 
     file(READ "${DEV_INPUT_PATH}" DEV_INPUT)
-    if (EXISTS "${PROJECT_BINARY_DIR}/${DEV_OUTPUT_NAME}.cmake")
-        file(READ "${PROJECT_BINARY_DIR}/${DEV_OUTPUT_NAME}.cmake" DEV_OLD_ENVIRONMENT)
+    if (EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
+        file(READ "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" DEV_OLD_ENVIRONMENT)
     else()
         set(DEV_OLD_ENVIRONMENT)
     endif()
@@ -47,13 +47,13 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
         endif()
     endforeach()
     if (NOT "${DEV_ENVIRONMENT}" STREQUAL "${DEV_OLD_ENVIRONMENT}")
-        file(WRITE "${PROJECT_BINARY_DIR}/${DEV_OUTPUT_NAME}.cmake" "${DEV_ENVIRONMENT}")
-    elseif(NOT EXISTS "${PROJECT_BINARY_DIR}/${DEV_OUTPUT_NAME}.cmake")
-        file(WRITE "${PROJECT_BINARY_DIR}/${DEV_OUTPUT_NAME}.cmake")
+        file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_ENVIRONMENT}")
+    elseif(NOT EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
+        file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
     endif()
     
     add_custom_command(OUTPUT "${DEV_OUTPUT_PATH}"
-        COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT_PATH}"
+        COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT_PATH}"
         DEPENDS "${DEV_INPUT_PATH}"
         COMMENT "Generating ${DEV_OUTPUT_NAME}"
         VERBATIM)
