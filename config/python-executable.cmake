@@ -2,4 +2,10 @@
 # Define command for Python script #
 ####################################
 
-add_custom_target(run_python COMMAND python3 "${PROJECT_SOURCE_DIR}/python/executable.py" DEPENDS ${DEV_CMAKE_NAME}_python)
+# Dependecies
+if (NOT TARGET ${DEV_CMAKE_NAME}_python)
+    message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}_python\" does not exist, cannot create command for Python script")
+endif()
+
+# Define "run_python" command
+add_custom_target(run_python COMMAND "${Python_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/python/executable.py" DEPENDS ${DEV_CMAKE_NAME}_python)
