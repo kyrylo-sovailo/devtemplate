@@ -1,5 +1,9 @@
 #include "../include/devtemplate/devtemplate.h"
-#include <gtest/gtest.h>
+#ifndef WIN32
+    #include <gtest/gtest.h>
+#else
+    #include <gtest/gtest.h>
+#endif
 
 TEST(Test, Test)
 {

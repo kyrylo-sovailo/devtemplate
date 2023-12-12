@@ -78,7 +78,7 @@ int _main(HINSTANCE hinstance)
         }
 
         //Terminate
-        return message.wParam;
+        return static_cast<int>(message.wParam);
     }
     catch (const std::exception &e)
     {

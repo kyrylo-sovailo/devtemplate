@@ -5,7 +5,7 @@ namespace devtemplate
 #ifndef DEVTEMPLATE_TYPE_INTERFACE
 
     ///Class example
-    class Devtemplate
+    class DEVTEMPLATE_EXPORT Devtemplate
     {
     public:
         ///Returns result of devtemplate calculations

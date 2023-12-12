@@ -10,6 +10,8 @@ endif()
 # Define library
 add_library(${DEV_CMAKE_NAME}_python SHARED)
 list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_python)
+set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}")
+set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES PREFIX "")
 
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE ${DEV_CMAKE_NAME})
@@ -23,7 +25,3 @@ target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE pybind11::module)
 
 # Define executable sources
 target_sources(${DEV_CMAKE_NAME}_python PRIVATE "python/python.cpp")
-
-# Define properties
-set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}")
-set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES PREFIX "")

@@ -6,8 +6,8 @@
 add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
 list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME})
 list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME})
-set_target_properties(${DEV_CMAKE_NAME} PROPERTIES PREFIX "lib")
-set_target_properties(${DEV_CMAKE_NAME} PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}")
+set_target_properties(${DEV_CMAKE_NAME} PROPERTIES OUTPUT_NAME "lib${DEV_FILE_NAME}")
+set_target_properties(${DEV_CMAKE_NAME} PROPERTIES PREFIX "")
 
 # Define include directories
 target_include_directories(${DEV_CMAKE_NAME} INTERFACE "include")
@@ -31,10 +31,10 @@ target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE
     ${DEV_MACRO_NAME}_AUTHOR=${DEV_AUTHOR})
 
 if (WIN32 AND "${DEV_TYPE}" STREQUAL "SHARED")
-    target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME}_EXPORT="__declspec\(dllexport\)")
-    target_compile_definitions(${DEV_CMAKE_NAME} PRIVATE ${DEV_MACRO_NAME}_EXPORT="__declspec\(dllimport\)")
+    target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME}_EXPORT=__declspec\(dllimport\))
+    target_compile_definitions(${DEV_CMAKE_NAME} PRIVATE ${DEV_MACRO_NAME}_EXPORT=__declspec\(dllexport\))
 else()
-    target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME})
+    target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME}_EXPORT)
 endif()
 
 # Define headers and sources
