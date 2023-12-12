@@ -32,4 +32,4 @@ Template repository for CMake/C++ stack
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-#### Generated on Thu, 23 Nov 2023 01:55:05 UTC
+#### Generated on Tue, 12 Dec 2023 16:45:03 UTC

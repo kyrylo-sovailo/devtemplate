@@ -15,8 +15,16 @@ set_target_properties(${DEV_CMAKE_NAME}_test PROPERTIES OUTPUT_NAME "${DEV_FILE_
 
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE ${DEV_CMAKE_NAME})
-find_package(GTest REQUIRED)
-target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE GTest::GTest)
+if (NOT WIN32)
+    find_package(GTest REQUIRED)
+    target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE GTest::GTest)
+elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    find_package(GTest REQUIRED HINTS "$ENV{PROGRAMFILES}/googletest-distribution/lib/cmake/GTest")
+    target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE GTest)
+elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
+    find_package(GTest REQUIRED HINTS "$ENV{PROGRAMFILES\(X86\)}/googletest-distribution/lib/cmake/GTest")
+    target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE GTest)
+endif()
 
 # Define sources
 target_sources(${DEV_CMAKE_NAME}_test PRIVATE "executable/test.cpp")

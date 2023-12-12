@@ -14,7 +14,11 @@ list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_python)
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE ${DEV_CMAKE_NAME})
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-find_package(pybind11 CONFIG REQUIRED)
+if (NOT WIN32)
+    find_package(pybind11 CONFIG REQUIRED)
+else()
+    find_package(pybind11 CONFIG REQUIRED HINTS "${Python_SITELIB}/pybind11/share/cmake/pybind11")
+endif()
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE pybind11::module)
 
 # Define executable sources
