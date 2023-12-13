@@ -24,6 +24,13 @@ ${DEV_DESCRIPTION}
 #### Suported operative systems
  - Deabian (binary `.deb` files)
 
+#### Suported compilers
+Normally CMake would handle compilers for you. Unfortunately GTest, the most popular C++ testing framework, managed to royally mess the things up. To link agains GTest on Windows, compiler-specific commands are needed. Supported compilers:
+
+ - Microsoft Visual Studio
+ - LLVM/Clang
+ - MinGW
+
 #### How to use
  1. Clone the repository.
  2. Rename `devtemplate` in `CMakeLists.txt` to something else.

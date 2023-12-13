@@ -24,6 +24,13 @@ Template repository for CMake/C++ stack
 #### Suported operative systems
  - Deabian (binary `.deb` files)
 
+#### Suported compilers
+Normally CMake would handle compilers for you. Unfortunately GTest, the most popular C++ testing framework, managed to royally mess the things up. To link agains GTest on Windows, compiler-specific commands are needed. Supported compilers:
+
+ - Microsoft Visual Studio
+ - LLVM/Clang
+ - MinGW
+
 #### How to use
  1. Clone the repository.
  2. Rename `devtemplate` in `CMakeLists.txt` to something else.
@@ -32,4 +39,4 @@ Template repository for CMake/C++ stack
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-#### Generated on Tue, 12 Dec 2023 16:45:03 UTC
+#### Generated on Wed, 13 Dec 2023 16:47:52 UTC

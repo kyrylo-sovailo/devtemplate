@@ -6,12 +6,10 @@
 #include <X11/Xatom.h>
 #include <unistd.h>
 
-#include <stdexcept>
-#include <iostream>
 #include <string>
+#include <iostream>
+#include <stdexcept>
 #include <vector>
-#include <string.h>
-#include <stdlib.h>
 
 #define STRING2(s) #s
 #define STRING(s) STRING2(s)
@@ -167,12 +165,19 @@ int main()
             if (event.type == Expose)
             {
                 devtemplate::Devtemplate d;
+                bool correct, advanced;
                 #ifndef DEVTEMPLATE_ADVANCED
-                    const char *text = (d.devtemplate() == 42) ? "Devtemplate is functioning correctly" : "Devtemplate is malfunctioning";
+                    correct = d.devtemplate() == 42;
+                    advanced = false;
                 #else
-                    const char *text = (d.devtemplate_advanced() == 43) ? "Advanced Devtemplate is functioning correctly" : "Advanced Devtemplate is malfunctioning";
+                    correct = d.devtemplate_advanced() == 43;
+                    advanced = true;
                 #endif
-                XDrawString(display, window, DefaultGC(display, screen), 10, 20, text, strlen(text));
+                std::string text = (advanced ? "Advanced Devtemplate" : "Devtemplate") +
+                    ((sizeof(void*) == 8) ? " (64 bit)" : " (32 bit)") +
+                    (correct ? " is functioning correctly" : " is malfunctioning");
+                
+                XDrawString(display, window, DefaultGC(display, screen), 10, 20, text.c_str(), text.size());
             }
             else if ((event.type == ClientMessage) && (event.xclient.data.l[0] == WM_DELETE_WINDOW))
             {

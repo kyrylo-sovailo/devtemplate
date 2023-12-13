@@ -1,6 +1,6 @@
 #include "../include/devtemplate/devtemplate.h"
 #include <Windows.h>
-#include <string.h>
+#include <string>
 #include <iostream>
 #include <stdexcept>
 
@@ -23,12 +23,20 @@ LRESULT CALLBACK handler(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
         //Draw text
         devtemplate::Devtemplate d;
+        bool correct, advanced;
         #ifndef DEVTEMPLATE_ADVANCED
-            const TCHAR *text = (d.devtemplate() == 42) ? TEXT("Devtemplate is functioning correctly") : TEXT("Devtemplate is malfunctioning");
+            correct = d.devtemplate() == 42;
+            advanced = false;
         #else
-            const TCHAR *text = (d.devtemplate_advanced() == 43) ? TEXT("Advanced Devtemplate is functioning correctly") : TEXT("Advanced Devtemplate is malfunctioning");
+            correct = d.devtemplate_advanced() == 43;
+            advanced = true;
         #endif
-        ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &client_rect, text, lstrlen(text), NULL);
+        std::basic_string<TCHAR> text;
+        if (advanced) text += TEXT("Advanced Devtemplate"); else text += TEXT("Devtemplate");
+        if (sizeof(void*) == 8) text += TEXT(" (64 bit)"); else text += TEXT(" (32 bit)");
+        if (correct) text += TEXT(" is functioning correctly"); else text += TEXT(" is malfunctioning");
+        
+        ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &client_rect, text.c_str(), static_cast<UINT>(text.size()), NULL);
 
         //End paint
         EndPaint(hwnd, &paint);
