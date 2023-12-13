@@ -8,10 +8,14 @@ if (NOT TARGET ${DEV_CMAKE_NAME}_python)
 endif()
 
 # Install Python wrapper
-if ("${Python_SITELIB}" MATCHES "^/usr/")
-    string(REGEX REPLACE "^/usr/" "" DEV_PYTHON_PATH "${Python_SITELIB}")
+if (NOT WIN32)
+    if ("${Python_SITELIB}" MATCHES "^/usr/")
+        string(REGEX REPLACE "^/usr/" "" DEV_PYTHON_PATH "${Python_SITELIB}")
+    else()
+        set(DEV_PYTHON_PATH "${Python_SITELIB}")
+    endif()
+    install(TARGETS ${DEV_CMAKE_NAME}_python
+        LIBRARY DESTINATION "${DEV_PYTHON_PATH}")
 else()
-    set(DEV_PYTHON_PATH "${Python_SITELIB}")
+    
 endif()
-install(TARGETS ${DEV_CMAKE_NAME}_python
-    LIBRARY DESTINATION "${DEV_PYTHON_PATH}")

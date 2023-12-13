@@ -9,7 +9,7 @@ TEST(Test, Test)
 {
     devtemplate::Devtemplate *d;
     EXPECT_NO_THROW(d = new devtemplate::Devtemplate());
-    EXPECT_EQ(d->devtemplate(), 42);
+    EXPECT_EQ(d->calculate(), 42);
     EXPECT_NO_THROW(delete d);
 }
 
@@ -18,7 +18,7 @@ TEST(Test, AdvancedTest)
 {
     devtemplate::Devtemplate *d;
     EXPECT_NO_THROW(d = new devtemplate::Devtemplate());
-    EXPECT_EQ(d->devtemplate_advanced(), 43);
+    EXPECT_EQ(d->calculate_advanced(), 43);
     EXPECT_NO_THROW(delete d);
 }
 #endif

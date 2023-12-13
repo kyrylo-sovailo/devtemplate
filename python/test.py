@@ -7,7 +7,7 @@ import devtemplate
 class Example(unittest.TestCase):
     def test_devtemplate(self):
         d = devtemplate.Devtemplate()
-        self.assertEqual(d.devtemplate(), 42)
+        self.assertEqual(d.calculate(), 42)
 
 if __name__ == "__main__":
     unittest.main()

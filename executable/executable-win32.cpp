@@ -23,20 +23,16 @@ LRESULT CALLBACK handler(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
         //Draw text
         devtemplate::Devtemplate d;
-        bool correct, advanced;
         #ifndef DEVTEMPLATE_ADVANCED
-            correct = d.devtemplate() == 42;
-            advanced = false;
+            const bool correct = d.calculate() == 42;
         #else
-            correct = d.devtemplate_advanced() == 43;
-            advanced = true;
+            const bool correct = d.calculate_advanced() == 43;
         #endif
-        std::basic_string<TCHAR> text;
-        if (advanced) text += TEXT("Advanced Devtemplate"); else text += TEXT("Devtemplate");
-        if (sizeof(void*) == 8) text += TEXT(" (64 bit)"); else text += TEXT(" (32 bit)");
-        if (correct) text += TEXT(" is functioning correctly"); else text += TEXT(" is malfunctioning");
+        std::string text = devtemplate::Devtemplate::version() + (correct ? " is functioning correctly" : " is malfunctioning");
         
-        ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &client_rect, text.c_str(), static_cast<UINT>(text.size()), NULL);
+        std::basic_string<TCHAR> ttext(text.size(), '\0');
+        for (int i = 0; i < text.size(); i++) ttext[i] = static_cast<TCHAR>(text[i]);
+        ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &client_rect, ttext.c_str(), static_cast<UINT>(ttext.size()), NULL);
 
         //End paint
         EndPaint(hwnd, &paint);
@@ -74,7 +70,7 @@ int _main(HINSTANCE hinstance)
 
         //Create window
         HWND hwnd = CreateWindowEx(0, TEXT("devtemplate"), TEXT("Devtemplate"),
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 300, 200, NULL, NULL, hinstance, NULL);
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 400, 200, NULL, NULL, hinstance, NULL);
         if (hwnd == NULL) throw std::runtime_error("CreateWindowEx failed");
 
         //Loop

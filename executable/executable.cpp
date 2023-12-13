@@ -4,18 +4,11 @@
 int main(int argc, char **argv)
 {
     devtemplate::Devtemplate d;
-    bool correct, advanced;
     #ifndef DEVTEMPLATE_ADVANCED
-        correct = d.devtemplate() == 42;
-        advanced = false;
+        const bool correct = d.calculate() == 42;
     #else
-        correct = d.devtemplate_advanced() == 43;
-        advanced = true;
+        const bool correct = d.calculate_advanced() == 43;
     #endif
-    
-    std::cout << (advanced ? "Advanced Devtemplate" : "Devtemplate")
-        << " (" << static_cast<int>(8 * sizeof(void*)) << " bit)"
-        << (correct ? " is functioning correctly" : " is malfunctioning")
-        << std::endl;
+    std::cout << devtemplate::Devtemplate::version() << (correct ? " is functioning correctly" : " is malfunctioning") << std::endl;
     return correct ? 0 : 1;
 }

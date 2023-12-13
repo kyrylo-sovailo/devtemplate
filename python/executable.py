@@ -6,6 +6,6 @@ import devtemplate
 
 if __name__ == "__main__":
     d = devtemplate.Devtemplate()
-    correct = d.devtemplate() == 42
-    print("Devtemplate is functioning correctly" if correct else "Devtemplate is malfunctioning")
+    correct = d.calculate() == 42
+    print(devtemplate.Devtemplate.version + (" is functioning correctly" if correct else " is malfunctioning"))
     sys.exit(0 if correct else 1)

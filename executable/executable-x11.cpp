@@ -165,17 +165,12 @@ int main()
             if (event.type == Expose)
             {
                 devtemplate::Devtemplate d;
-                bool correct, advanced;
                 #ifndef DEVTEMPLATE_ADVANCED
-                    correct = d.devtemplate() == 42;
-                    advanced = false;
+                    const bool correct = d.calculate() == 42;
                 #else
-                    correct = d.devtemplate_advanced() == 43;
-                    advanced = true;
+                    const bool correct = d.calculate_advanced() == 43;
                 #endif
-                std::string text = (advanced ? "Advanced Devtemplate" : "Devtemplate") +
-                    ((sizeof(void*) == 8) ? " (64 bit)" : " (32 bit)") +
-                    (correct ? " is functioning correctly" : " is malfunctioning");
+                std::string text = devtemplate::Devtemplate::version() + (correct ? " is functioning correctly" : " is malfunctioning");
                 
                 XDrawString(display, window, DefaultGC(display, screen), 10, 20, text.c_str(), text.size());
             }

@@ -14,7 +14,7 @@ target_include_directories(${DEV_CMAKE_NAME} INTERFACE "include")
 devtemplate_expand_property(${DEV_CMAKE_NAME} INTERFACE_INCLUDE_DIRECTORIES)
 
 # Define macros
-target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE
+target_compile_definitions(${DEV_CMAKE_NAME} PUBLIC
     ${DEV_MACRO_NAME}_NAME=${DEV_NAME}
     ${DEV_MACRO_NAME}_CMAKE_NAME=${DEV_CMAKE_NAME}
     ${DEV_MACRO_NAME}_FILE_NAME=${DEV_FILE_NAME}
@@ -23,7 +23,7 @@ target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE
     ${DEV_MACRO_NAME}_MINOR=${DEV_MINOR}
     ${DEV_MACRO_NAME}_PATCH=${DEV_PATCH}
     ${DEV_MACRO_NAME}_TYPE=${DEV_TYPE}
-    ${DEV_MACRO_NAME}_${DEV_TYPE}
+    ${DEV_MACRO_NAME}_TYPE_${DEV_TYPE}
     ${DEV_MACRO_NAME}_DESCRIPTION=${DEV_DESCRIPTION}
     ${DEV_MACRO_NAME}_CATEGORY=${DEV_CATEGORY}
     ${DEV_MACRO_NAME}_HOMEPAGE=${DEV_HOMEPAGE}
@@ -34,7 +34,7 @@ if (WIN32 AND "${DEV_TYPE}" STREQUAL "SHARED")
     target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME}_EXPORT=__declspec\(dllimport\))
     target_compile_definitions(${DEV_CMAKE_NAME} PRIVATE ${DEV_MACRO_NAME}_EXPORT=__declspec\(dllexport\))
 else()
-    target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME}_EXPORT)
+    target_compile_definitions(${DEV_CMAKE_NAME} PUBLIC ${DEV_MACRO_NAME}_EXPORT)
 endif()
 
 # Define headers and sources
