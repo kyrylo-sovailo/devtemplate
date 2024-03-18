@@ -6,7 +6,7 @@
 add_library(${DEV_CMAKE_NAME} ${DEV_TYPE})
 list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME})
 list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME})
-set_target_properties(${DEV_CMAKE_NAME} PROPERTIES OUTPUT_NAME "lib${DEV_FILE_NAME}")
+set_target_properties(${DEV_CMAKE_NAME} PROPERTIES OUTPUT_NAME "lib${DEV_FILE_NAME}$<$<CONFIG:Debug>:-debug>")
 set_target_properties(${DEV_CMAKE_NAME} PROPERTIES PREFIX "")
 
 # Define include directories

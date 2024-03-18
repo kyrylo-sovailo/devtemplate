@@ -59,8 +59,8 @@ include(config/install-python-test.cmake)
 # Packaging #
 #############
 include(config/package-debian.cmake)
+include(config/package-windows.cmake)
 #include(config/package-redhat.cmake)
 #include(config/package-tinycore.cmake)
 #include(config/package-arch.cmake)
 #include(config/package-gentoo.cmake)
-#include(config/package-windows.cmake)

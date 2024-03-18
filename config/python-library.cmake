@@ -10,7 +10,7 @@ endif()
 # Define library
 add_library(${DEV_CMAKE_NAME}_python SHARED)
 list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_python)
-set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}")
+set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}$<$<CONFIG:Debug>:-debug>")
 set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES PREFIX "")
 
 # Link dependencies

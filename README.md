@@ -39,4 +39,4 @@ Normally CMake would handle compilers for you. Unfortunately GTest, the most pop
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-#### Generated on Wed, 13 Dec 2023 19:27:12 UTC
+#### Generated on Wed, 13 Dec 2023 20:40:54 UTC

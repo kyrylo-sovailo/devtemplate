@@ -15,7 +15,9 @@ if (NOT WIN32)
         set(DEV_PYTHON_PATH "${Python_SITELIB}")
     endif()
     install(TARGETS ${DEV_CMAKE_NAME}_python
-        LIBRARY DESTINATION "${DEV_PYTHON_PATH}")
+        LIBRARY DESTINATION "${DEV_PYTHON_PATH}"
+        ARCHIVE DESTINATION "${DEV_PYTHON_PATH}"
+        RUNTIME DESTINATION "${DEV_PYTHON_PATH}")
 else()
-    
+    install(FILES "$<TARGET_FILE:${DEV_CMAKE_NAME}_python>" TYPE BIN CONFIGURATIONS Release RENAME "${DEV_FILE_NAME}.pyd")
 endif()
