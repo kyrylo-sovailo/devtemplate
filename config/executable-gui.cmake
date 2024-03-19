@@ -2,7 +2,7 @@
 # Define GUI executable #
 #########################
 
-# Dependecies
+# Dependencies
 if (NOT TARGET ${DEV_CMAKE_NAME})
     message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}\" does not exist, cannot create graphical executable")
 endif()
@@ -34,20 +34,20 @@ endif()
 # Compile and link icon resource
 if (WIN32)
     # Identify resource compiler
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    if("${DEV_COMPILER}" STREQUAL "MSVC")
         set(DEV_RESOURCE_COMPILE "rc")
         set(DEV_RESOURCE_ARGUMENT "/fo ")
         set(DEV_RESOURCE_EXTENSION "res")
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    elseif("${DEV_COMPILER}" STREQUAL "GNU")
         set(DEV_RESOURCE_COMPILE "windres")
         set(DEV_RESOURCE_ARGUMENT "--output=")
         set(DEV_RESOURCE_EXTENSION "o")
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    elseif("${DEV_COMPILER}" STREQUAL "Clang")
         set(DEV_RESOURCE_COMPILE "llvm-rc")
         set(DEV_RESOURCE_ARGUMENT "/fo ")
         set(DEV_RESOURCE_EXTENSION "res")
     else()
-        message(WARNING "The compiler (${CMAKE_CXX_COMPILER_ID}) is not supported, compiling Windows application without icons")
+        message(WARNING "The compiler (${DEV_COMPILER}) is not supported, compiling Windows application without icons")
     endif()
 
     # Compile resource

@@ -2,7 +2,7 @@
 # Define Python wrapper #
 #########################
 
-# Dependecies
+# Dependencies
 if (NOT TARGET ${DEV_CMAKE_NAME})
     message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}\" does not exist, cannot create Python wrapper")
 endif()

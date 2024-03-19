@@ -1,6 +1,6 @@
-####################
-# Common functions #
-####################
+########################
+# Common functionality #
+########################
 
 # Dependencies
 include(GNUInstallDirs)
@@ -20,7 +20,51 @@ list(GET DEV_CMAKE_VERSION 0 DEV_CMAKE_MAJOR)
 list(GET DEV_CMAKE_VERSION 1 DEV_CMAKE_MINOR)
 list(GET DEV_CMAKE_VERSION 2 DEV_CMAKE_PATCH)
 
-# Common functions
+# Compiler identification
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(DEV_COMPILER "MSVC")
+    set(DEV_COMPILER_STYLE "MSVC")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(DEV_COMPILER "GNU")
+    set(DEV_COMPILER_STYLE "GNU")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(DEV_COMPILER "Clang")
+    if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC")
+        set(DEV_COMPILER_STYLE "MSVC")
+    else()
+        set(DEV_COMPILER_STYLE "GNU")
+    endif()
+else()
+    set(DEV_COMPILER "${CMAKE_CXX_COMPILER_ID}")
+    set(DEV_COMPILER_STYLE "${CMAKE_CXX_COMPILER_ID}")
+endif()
+
+# CRT forcing (This section is sponsored by some smarty pants from Google)
+if (WIN32 AND DEV_FORCE_CRT)
+    if (DEV_FORCE_CRT STREQUAL "static_release")
+        add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0)
+        if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
+            add_compile_options(/MT)
+        endif()
+    elseif (DEV_FORCE_CRT STREQUAL "dynamic_release")
+        add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0)
+        if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
+            add_compile_options(/MD)
+        endif()
+    elseif (DEV_FORCE_CRT STREQUAL "static_debug")
+        if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
+            add_compile_options(/MTd)
+        endif()
+    elseif (DEV_FORCE_CRT STREQUAL "dynamic_debug")
+        if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
+            add_compile_options(/MDd)
+        endif()
+    else()
+        message(FATAL_ERROR "Invalid DEV_FORCE_CRT")
+    endif()
+endif()
+
+# Functions
 function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
     foreach(DEV_PATH IN LISTS DEV_PATHS)

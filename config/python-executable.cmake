@@ -2,7 +2,7 @@
 # Define command for Python script #
 ####################################
 
-# Dependecies
+# Dependencies
 if (NOT TARGET ${DEV_CMAKE_NAME}_python)
     message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}_python\" does not exist, cannot create command for Python script")
 endif()
