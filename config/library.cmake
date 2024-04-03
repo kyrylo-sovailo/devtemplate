@@ -34,7 +34,7 @@ if (WIN32 AND "${DEV_TYPE}" STREQUAL "SHARED")
     target_compile_definitions(${DEV_CMAKE_NAME} INTERFACE ${DEV_MACRO_NAME}_EXPORT=__declspec\(dllimport\))
     target_compile_definitions(${DEV_CMAKE_NAME} PRIVATE ${DEV_MACRO_NAME}_EXPORT=__declspec\(dllexport\))
 else()
-    target_compile_definitions(${DEV_CMAKE_NAME} PUBLIC ${DEV_MACRO_NAME}_EXPORT)
+    target_compile_definitions(${DEV_CMAKE_NAME} PUBLIC ${DEV_MACRO_NAME}_EXPORT=)
 endif()
 
 # Define headers and sources
