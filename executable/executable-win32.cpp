@@ -20,7 +20,6 @@ LRESULT CALLBACK handler(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
         //Select objects
         SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT)); 
         SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
-        HFONT hfont = (HFONT)GetStockObject(SYSTEM_FONT);
 
         //Draw text
         devtemplate::Devtemplate d;
@@ -32,7 +31,7 @@ LRESULT CALLBACK handler(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
         std::string text = devtemplate::Devtemplate::version() + (correct ? " is functioning correctly" : " is malfunctioning");
         
         std::basic_string<TCHAR> ttext(text.size(), '\0');
-        for (int i = 0; i < text.size(); i++) ttext[i] = static_cast<TCHAR>(text[i]);
+        for (size_t i = 0; i < text.size(); i++) ttext[i] = static_cast<TCHAR>(text[i]);
         ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &client_rect, ttext.c_str(), static_cast<UINT>(ttext.size()), NULL);
 
         //End paint
@@ -60,13 +59,13 @@ int _main(HINSTANCE hinstance)
     try
     {
         //Register class
-        WNDCLASSEX window_class = { 0 };
+        WNDCLASSEX window_class;
+        memset(&window_class, 0, sizeof(window_class));
         window_class.cbSize = sizeof(window_class);
         window_class.lpfnWndProc = handler;
         window_class.hInstance = hinstance;
         window_class.lpszClassName = TEXT("devtemplate");
         window_class.hIcon = window_class.hIconSm = LoadIcon(hinstance, MAKEINTRESOURCE(1000));
-		DWORD error = GetLastError();
         if (RegisterClassEx(&window_class) == 0) throw std::runtime_error("RegisterClassEx failed");
 
         //Create window
@@ -93,7 +92,7 @@ int _main(HINSTANCE hinstance)
 }
 
 #ifdef DEV_WIN32_EXECUTABLE
-	extern "C" int APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE hprevious, PSTR cmdline, int cmdshow)
+	extern "C" int APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE, PSTR, int)
 	{
 		return _main(hinstance);
 	}
