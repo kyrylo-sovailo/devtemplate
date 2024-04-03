@@ -1,4 +1,5 @@
-#include "../include/devtemplate/devtemplate.h"
+#include <devtemplate/devtemplate.h>
+
 #include <pybind11/pybind11.h>
 
 PYBIND11_MODULE(DEVTEMPLATE_FILE_NAME, m)

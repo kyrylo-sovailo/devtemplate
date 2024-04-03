@@ -7,7 +7,7 @@
 
 TEST(Test, Test)
 {
-    devtemplate::Devtemplate *d;
+    devtemplate::Devtemplate *d = nullptr;
     EXPECT_NO_THROW(d = new devtemplate::Devtemplate());
     EXPECT_EQ(d->calculate(), 42);
     EXPECT_NO_THROW(delete d);
@@ -16,7 +16,7 @@ TEST(Test, Test)
 #ifdef DEVTEMPLATE_ADVANCED
 TEST(Test, AdvancedTest)
 {
-    devtemplate::Devtemplate *d;
+    devtemplate::Devtemplate *d = nullptr;
     EXPECT_NO_THROW(d = new devtemplate::Devtemplate());
     EXPECT_EQ(d->calculate_advanced(), 43);
     EXPECT_NO_THROW(delete d);

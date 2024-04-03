@@ -1,4 +1,4 @@
-#include "../include/devtemplate/devtemplate.h"
+#include <devtemplate/devtemplate.h>
 
 #include <X11/X.h>
 #include <png.h>

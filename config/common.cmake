@@ -39,6 +39,15 @@ else()
     set(DEV_COMPILER_STYLE "${CMAKE_CXX_COMPILER_ID}")
 endif()
 
+# Compiler flags
+if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
+    add_compile_options(/Wall)
+    add_compile_options(/wd4710) #C4710: Function not inlined
+    add_compile_options(/wd4711) #C4711: Selected for automatic inline expansion
+elseif ("${DEV_COMPILER_STYLE}" STREQUAL "GNU")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
 # CRT forcing (This section is sponsored by some smarty pants from Google)
 if (WIN32 AND DEV_FORCE_CRT)
     if (DEV_FORCE_CRT STREQUAL "static_release")
@@ -64,8 +73,8 @@ if (WIN32 AND DEV_FORCE_CRT)
     endif()
 endif()
 
-# Functions
-function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
+# Replaces replative paths in target's property with absolute paths
+function(devtemplate_make_absolute DEV_TARGET DEV_PROPERTY)
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
     foreach(DEV_PATH IN LISTS DEV_PATHS)
         file(RELATIVE_PATH DEV_RELATIVE_PATH "${PROJECT_SOURCE_DIR}" "${DEV_PATH}")
@@ -74,6 +83,7 @@ function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
     set_target_properties(${DEV_TARGET} PROPERTIES ${DEV_PROPERTY} "${DEV_RELATIVE_PATHS}")
 endfunction()
 
+# Checks the environment and configures file if needed
 function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_OUTPUT_PATH)
     get_filename_component(DEV_OUTPUT_NAME "${DEV_OUTPUT_PATH}" NAME)
 
@@ -109,12 +119,14 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     add_custom_target(${DEV_TARGET_NAME} ${DEV_ALL} DEPENDS "${DEV_OUTPUT_PATH}")
 endfunction()
 
+# Installs icon file
 function(devtemplate_install_icon INPUT_FILE_NAME OUTPUT_DIR_NAME OUTPUT_FILE_NAME)
     install(FILES "${PROJECT_SOURCE_DIR}/icons/${INPUT_FILE_NAME}"
         RENAME "${OUTPUT_FILE_NAME}"
         DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${OUTPUT_DIR_NAME}/apps")
 endfunction()
 
+# Unsets all variables used by Devtemplate
 function(devtemplate_cleanup)
     get_cmake_property(DEV_VARIABLES VARIABLES)
     foreach (DEV_VARIABLE IN LISTS DEV_VARIABLES)

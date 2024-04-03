@@ -1,4 +1,4 @@
-#include "../include/devtemplate/devtemplate.h"
+#include <devtemplate/devtemplate.h>
 
 std::string devtemplate::Devtemplate::version()
 {

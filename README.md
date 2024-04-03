@@ -38,4 +38,4 @@ This is a Windows-specific problem that exists because some of the libraries you
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-### Generated on Tue, 19 Mar 2024 00:34:57 UTC
+### Generated on Wed, 03 Apr 2024 16:13:20 UTC

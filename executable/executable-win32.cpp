@@ -1,4 +1,5 @@
-#include "../include/devtemplate/devtemplate.h"
+#include <devtemplate/devtemplate.h>
+
 #include <Windows.h>
 #include <string>
 #include <iostream>
