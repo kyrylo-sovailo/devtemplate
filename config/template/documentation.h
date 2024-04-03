@@ -23,13 +23,13 @@ ${DEV_DESCRIPTION}
  - etc.
 
 #### Suported operative systems
- - Deabian (binary `.deb` files)
+ - Debian (binary `.deb` files)
 
 #### How to use
  1. Clone the repository.
  2. Rename `devtemplate` in `CMakeLists.txt` to something else.
  3. Disable unneeded modules, delete unneeded files, get rid of unneeded functionality
- 4. Replace existing code with your own. Change the list of source files and headers in correspondent `config/*.cmake` files.
+ 4. Replace existing code with your own. Change the list of source files and headers in correspondent `config/<module-name>.cmake` files.
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
