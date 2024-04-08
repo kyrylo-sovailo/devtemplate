@@ -31,49 +31,14 @@ if (NOT WIN32)
     endif()
 endif()
 
-# Compile and link icon resource
+# Link resources
 if (WIN32)
-    # Identify resource compiler
-    if("${DEV_COMPILER}" STREQUAL "MSVC")
-        set(DEV_RESOURCE_COMPILE "DEFAULT")
-        #set(DEV_RESOURCE_COMPILE "rc")
-        #set(DEV_RESOURCE_ARGUMENT "/fo ")
-        #set(DEV_RESOURCE_EXTENSION "res")
-    elseif("${DEV_COMPILER}" STREQUAL "GNU")
-        set(DEV_RESOURCE_COMPILE "windres")
-        set(DEV_RESOURCE_ARGUMENT "--output=")
-        set(DEV_RESOURCE_EXTENSION "o")
-    elseif("${DEV_COMPILER}" STREQUAL "Clang")
-        set(DEV_RESOURCE_COMPILE "DEFAULT")
-        #set(DEV_RESOURCE_COMPILE "llvm-rc")
-        #set(DEV_RESOURCE_ARGUMENT "/fo ")
-        #set(DEV_RESOURCE_EXTENSION "res")
-    else()
-        message(WARNING "The compiler (${DEV_COMPILER}) is not supported, compiling Windows application without icons")
-    endif()
-
-    # Compile and link resource
-    if (DEV_RESOURCE_COMPILE AND NOT "${DEV_RESOURCE_COMPILE}" STREQUAL "DEFAULT")
-        add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}"
-        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_ARGUMENT}"${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}" "${PROJECT_SOURCE_DIR}/executable/executable-win32.rc"
-        DEPENDS "${PROJECT_SOURCE_DIR}/executable/executable-win32.rc"
-        COMMENT "Compiling executable-win32.rc")
-        add_custom_target(${DEV_CMAKE_NAME}_executable_gui_res DEPENDS "${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}")
-
-        add_dependencies(${DEV_CMAKE_NAME}_executable_gui ${DEV_CMAKE_NAME}_executable_gui_res)
-        target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE "${PROJECT_BINARY_DIR}/executable-win32.${DEV_RESOURCE_EXTENSION}")
-    endif()
+    devtemplate_configure_file(${DEV_CMAKE_NAME}_executable_gui_manifest FALSE "${PROJECT_SOURCE_DIR}/config/template/executable.manifest" "${PROJECT_BINARY_DIR}/executable.manifest")
+    devtemplate_compile_resource(${DEV_CMAKE_NAME}_executable_gui ${DEV_CMAKE_NAME}_executable_gui_resource "executable/executable-win32.rc" ${DEV_CMAKE_NAME}_executable_gui_manifest)
 endif()
 
 # Define sources
-if (WIN32)
-    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
-    if ("${DEV_RESOURCE_COMPILE}" STREQUAL "DEFAULT")
-        target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.rc")
-    endif()
-else()
-    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-x11.cpp")
-endif()
+target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
 
 # Define "run_gui" command
 add_custom_target(run_gui COMMAND ${DEV_CMAKE_NAME}_executable_gui)

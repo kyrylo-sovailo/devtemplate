@@ -1,2 +1,2 @@
-1    RT_MANIFEST "executable.manifest"
+1    RT_MANIFEST "installer.manifest"
 1000 ICON        "../icons/16-24-32-48-64-128-256.ico"

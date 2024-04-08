@@ -50,6 +50,27 @@ elseif ("${DEV_COMPILER_STYLE}" STREQUAL "GNU")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# Resource compilation
+if (WIN32)
+    if("${DEV_COMPILER}" STREQUAL "MSVC")
+        set(DEV_RESOURCE_COMPILE "DEFAULT")
+        #set(DEV_RESOURCE_COMPILE "rc")
+        #set(DEV_RESOURCE_ARGUMENT "/fo ")
+        #set(DEV_RESOURCE_EXTENSION "res")
+    elseif("${DEV_COMPILER}" STREQUAL "GNU")
+        set(DEV_RESOURCE_COMPILE "windres")
+        set(DEV_RESOURCE_ARGUMENT "--output=")
+        set(DEV_RESOURCE_EXTENSION "o")
+    elseif("${DEV_COMPILER}" STREQUAL "Clang")
+        set(DEV_RESOURCE_COMPILE "DEFAULT")
+        #set(DEV_RESOURCE_COMPILE "llvm-rc")
+        #set(DEV_RESOURCE_ARGUMENT "/fo ")
+        #set(DEV_RESOURCE_EXTENSION "res")
+    else()
+        message(WARNING "The compiler (${DEV_COMPILER}) is not supported, cannot compile resource")
+    endif()
+endif()
+
 # CRT forcing (This section is sponsored by some smarty pants from Google)
 if (WIN32 AND DEV_FORCE_CRT)
     if (DEV_FORCE_CRT STREQUAL "static_release")
@@ -75,7 +96,7 @@ if (WIN32 AND DEV_FORCE_CRT)
     endif()
 endif()
 
-# Replaces replative paths in target's property with absolute paths
+# Replaces relative paths in target's property with absolute paths
 function(devtemplate_make_absolute DEV_TARGET DEV_PROPERTY)
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
     foreach(DEV_PATH IN LISTS DEV_PATHS)
@@ -121,11 +142,38 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     add_custom_target(${DEV_TARGET_NAME} ${DEV_ALL} DEPENDS "${DEV_OUTPUT_PATH}")
 endfunction()
 
+# Compiles and links resource
+function(devtemplate_compile_resource DEV_TARGET_NAME DEV_RESOURCE_TARGET_NAME DEV_RESOURCE_PATH DEV_DEPENDENCIES)
+    get_filename_component(DEV_RESOURCE_PATH "${DEV_RESOURCE_PATH}" ABSOLUTE)
+        
+    if (DEV_RESOURCE_COMPILE AND "${DEV_RESOURCE_COMPILE}" STREQUAL "DEFAULT")
+        target_sources(${DEV_TARGET_NAME} PRIVATE "${DEV_RESOURCE_PATH}")
+        if (DEV_DEPENDENCIES)
+            add_dependencies(${DEV_TARGET_NAME} ${DEV_DEPENDENCIES})
+        endif()
+    elseif (DEV_RESOURCE_COMPILE)
+        get_filename_component(DEV_RESOURCE_NAME "${DEV_RESOURCE_PATH}" NAME)
+        
+        add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}"
+        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_ARGUMENT}"${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_RESOURCE_PATH}"
+        WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+        DEPENDS "${DEV_RESOURCE_PATH}"
+        COMMENT "Compiling ${DEV_RESOURCE_NAME}")
+        add_custom_target(${DEV_RESOURCE_TARGET_NAME} DEPENDS "${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}")
+        add_dependencies(${DEV_RESOURCE_TARGET_NAME} ${DEV_DEPENDENCIES})
+        
+        target_link_libraries(${DEV_TARGET_NAME} PRIVATE "${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}")
+        if (DEV_DEPENDENCIES)
+            add_dependencies(${DEV_TARGET_NAME} ${DEV_RESOURCE_TARGET_NAME})
+        endif()
+    endif()
+endfunction()
+
 # Installs icon file
-function(devtemplate_install_icon INPUT_FILE_NAME OUTPUT_DIR_NAME OUTPUT_FILE_NAME)
-    install(FILES "${PROJECT_SOURCE_DIR}/icons/${INPUT_FILE_NAME}"
-        RENAME "${OUTPUT_FILE_NAME}"
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${OUTPUT_DIR_NAME}/apps")
+function(devtemplate_install_icon DEV_INPUT_FILE_NAME DEV_OUTPUT_DIR_NAME DEV_OUTPUT_FILE_NAME)
+    install(FILES "${PROJECT_SOURCE_DIR}/icons/${DEV_INPUT_FILE_NAME}"
+        RENAME "${DEV_OUTPUT_FILE_NAME}"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${DEV_OUTPUT_DIR_NAME}/apps")
 endfunction()
 
 # Unsets all variables used by Devtemplate
