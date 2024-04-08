@@ -8,10 +8,10 @@ if (NOT TARGET ${DEV_CMAKE_NAME})
 endif()
 
 # Generate Doxyfile
-devtemplate_configure_file(${DEV_CMAKE_NAME}_doxyfile FALSE "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/Doxyfile")
+devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_doxyfile INPUT "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" OUTPUT "${PROJECT_BINARY_DIR}/Doxyfile")
 
 # Generate documentation.h
-devtemplate_configure_file(${DEV_CMAKE_NAME}_documentation_header FALSE "${PROJECT_SOURCE_DIR}/config/template/documentation.h" "${PROJECT_BINARY_DIR}/documentation.h")
+devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_documentation_header INPUT "${PROJECT_SOURCE_DIR}/config/template/documentation.h" OUTPUT "${PROJECT_BINARY_DIR}/documentation.h")
 
 # Generate documentation ("doc" target)
 find_package(Doxygen REQUIRED)

@@ -11,7 +11,7 @@ set_target_properties(${DEV_CMAKE_NAME} PROPERTIES PREFIX "")
 
 # Define include directories
 target_include_directories(${DEV_CMAKE_NAME} PUBLIC "include")
-devtemplate_make_absolute(${DEV_CMAKE_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+devtemplate_make_absolute(TARGET ${DEV_CMAKE_NAME} PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
 
 # Define macros
 target_compile_definitions(${DEV_CMAKE_NAME} PUBLIC
@@ -39,7 +39,7 @@ endif()
 
 # Define headers and sources
 target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
-devtemplate_make_absolute(${DEV_CMAKE_NAME} INTERFACE_SOURCES)
+devtemplate_make_absolute(TARGET ${DEV_CMAKE_NAME} PROPERTY INTERFACE_SOURCES)
 if (NOT "${DEV_TYPE}" STREQUAL "INTERFACE")
     target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
 endif()

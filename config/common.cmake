@@ -96,42 +96,71 @@ if (WIN32 AND DEV_FORCE_CRT)
     endif()
 endif()
 
+# Check if file exist
+function(devtemplate_check_file DEV_VAR DEV_PATH)
+    if (IS_ABSOLUTE "${DEV_PATH}")
+        set(DEV_ABSOLUTE_PATH "${DEV_PATH}")
+    else()
+        get_filename_component(DEV_ABSOLUTE_PATH "${DEV_PATH}" ABSOLUTE BASE_DIR "${PROJECT_SOURCE_DIR}")
+    endif()
+    if (NOT EXISTS "${DEV_ABSOLUTE_PATH}")
+        message(FATAL_ERROR "${DEV_PATH} does not exist")
+    endif()
+    set(${DEV_VAR} "${DEV_ABSOLUTE_PATH}" PARENT_SCOPE)
+endfunction()
+
 # Replaces relative paths in target's property with absolute paths
-function(devtemplate_make_absolute DEV_TARGET DEV_PROPERTY)
+function(devtemplate_make_absolute)
+    # Parse arguments
+    cmake_parse_arguments(DEV "" "TARGET;PROPERTY" "" ${ARGN})
+    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_TARGET OR NOT DEV_PROPERTY)
+        message(FATAL_ERROR "devtemplate_make_absolute called with incorrect arguments")
+    endif()
+    # Expand paths
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
     foreach(DEV_PATH IN LISTS DEV_PATHS)
         file(RELATIVE_PATH DEV_RELATIVE_PATH "${PROJECT_SOURCE_DIR}" "${DEV_PATH}")
-        list(APPEND DEV_RELATIVE_PATHS "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/${DEV_RELATIVE_PATH}>$<INSTALL_INTERFACE:${DEV_RELATIVE_PATH}>")
+        list(APPEND DEV_EXPANDED_PATHS "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/${DEV_RELATIVE_PATH}>$<INSTALL_INTERFACE:${DEV_RELATIVE_PATH}>")
     endforeach()
-    set_target_properties(${DEV_TARGET} PROPERTIES ${DEV_PROPERTY} "${DEV_RELATIVE_PATHS}")
+    set_target_properties(${DEV_TARGET} PROPERTIES ${DEV_PROPERTY} "${DEV_EXPANDED_PATHS}")
 endfunction()
 
 # Checks the environment and configures file if needed
-function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_OUTPUT_PATH)
-    get_filename_component(DEV_OUTPUT_NAME "${DEV_OUTPUT_PATH}" NAME)
-
-    file(READ "${DEV_INPUT_PATH}" DEV_INPUT)
+function(devtemplate_configure_file)
+    # Parse arguments
+    cmake_parse_arguments(DEV "ALL" "TARGET;INPUT;OUTPUT" "" ${ARGN})
+    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_TARGET OR NOT DEV_INPUT OR NOT DEV_OUTPUT)
+        message(FATAL_ERROR "devtemplate_configure_file called with incorrect arguments")
+    endif()
+    devtemplate_check_file(DEV_INPUT "${DEV_INPUT}")
+    get_filename_component(DEV_OUTPUT "${DEV_OUTPUT}" ABSOLUTE)
+    get_filename_component(DEV_OUTPUT_NAME "${DEV_OUTPUT}" NAME)
+    # Read input file
+    file(READ "${DEV_INPUT}" DEV_INPUT_FILE)
+    # Read environment file
     if (EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
         file(READ "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" DEV_OLD_ENVIRONMENT)
     else()
         set(DEV_OLD_ENVIRONMENT)
     endif()
+    # Compose new environment
     get_cmake_property(DEV_VARIABLES VARIABLES)
     set(DEV_ENVIRONMENT)
     foreach (DEV_VARIABLE IN LISTS DEV_VARIABLES)
-        if ("${DEV_INPUT}" MATCHES "^.*(\\\${${DEV_VARIABLE}}|\\\$${DEV_VARIABLE}|@${DEV_VARIABLE}@).*$")
+        if ("${DEV_INPUT_FILE}" MATCHES "^.*(\\\${${DEV_VARIABLE}}|\\\$${DEV_VARIABLE}|@${DEV_VARIABLE}@).*$")
             set(DEV_ENVIRONMENT "${DEV_ENVIRONMENT}set(${DEV_VARIABLE} \"${${DEV_VARIABLE}}\")\n")
         endif()
     endforeach()
+    # Compare environments and rewrite if needed
     if (NOT "${DEV_ENVIRONMENT}" STREQUAL "${DEV_OLD_ENVIRONMENT}")
         file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_ENVIRONMENT}")
     elseif(NOT EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
         file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
     endif()
-    
-    add_custom_command(OUTPUT "${DEV_OUTPUT_PATH}"
-        COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT_PATH}"
-        DEPENDS "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake"
+    # Execute configure.cmake
+    add_custom_command(OUTPUT "${DEV_OUTPUT}"
+        COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT}"
+        DEPENDS "${DEV_INPUT}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake"
         COMMENT "Generating ${DEV_OUTPUT_NAME}"
         VERBATIM)
     if (DEV_ALL)
@@ -139,41 +168,54 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
     else()
         set(DEV_ALL "")
     endif()
-    add_custom_target(${DEV_TARGET_NAME} ${DEV_ALL} DEPENDS "${DEV_OUTPUT_PATH}")
+    add_custom_target(${DEV_TARGET} ${DEV_ALL} DEPENDS "${DEV_OUTPUT}")
 endfunction()
 
 # Compiles and links resource
-function(devtemplate_compile_resource DEV_TARGET_NAME DEV_RESOURCE_TARGET_NAME DEV_RESOURCE_PATH DEV_DEPENDENCIES)
-    get_filename_component(DEV_RESOURCE_PATH "${DEV_RESOURCE_PATH}" ABSOLUTE)
-        
+function(devtemplate_compile_resource)
+    # Parse arguments
+    cmake_parse_arguments(DEV "" "TARGET;RESOURCE_TARGET;INPUT" "DEPENDS" ${ARGN})
+    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_TARGET OR NOT DEV_RESOURCE_TARGET OR NOT DEV_INPUT)
+        message(FATAL_ERROR "devtemplate_compile_resource called with incorrect arguments")
+    endif()
+    devtemplate_check_file(DEV_INPUT "${DEV_INPUT}")
+    get_filename_component(DEV_INPUT_NAME "${DEV_INPUT}" NAME)
+    # Compiler can compile resources directly
     if (DEV_RESOURCE_COMPILE AND "${DEV_RESOURCE_COMPILE}" STREQUAL "DEFAULT")
-        target_sources(${DEV_TARGET_NAME} PRIVATE "${DEV_RESOURCE_PATH}")
-        if (DEV_DEPENDENCIES)
-            add_dependencies(${DEV_TARGET_NAME} ${DEV_DEPENDENCIES})
+        target_sources(${DEV_TARGET} PRIVATE "${DEV_INPUT}")
+        if (DEV_DEPENDS)
+            add_dependencies(${DEV_TARGET} ${DEV_DEPENDS})
         endif()
+    # Compiler cannot compile resources directly
     elseif (DEV_RESOURCE_COMPILE)
-        get_filename_component(DEV_RESOURCE_NAME "${DEV_RESOURCE_PATH}" NAME)
-        
-        add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}"
-        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_ARGUMENT}"${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_RESOURCE_PATH}"
+        add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}"
+        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_ARGUMENT}"${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_INPUT}"
         WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-        DEPENDS "${DEV_RESOURCE_PATH}"
-        COMMENT "Compiling ${DEV_RESOURCE_NAME}")
-        add_custom_target(${DEV_RESOURCE_TARGET_NAME} DEPENDS "${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}")
-        add_dependencies(${DEV_RESOURCE_TARGET_NAME} ${DEV_DEPENDENCIES})
+        DEPENDS "${DEV_INPUT}"
+        COMMENT "Compiling ${DEV_INPUT_NAME}")
+        add_custom_target(${DEV_RESOURCE_TARGET} DEPENDS "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}")
+        add_dependencies(${DEV_RESOURCE_TARGET} ${DEV_DEPENDS})
         
-        target_link_libraries(${DEV_TARGET_NAME} PRIVATE "${PROJECT_BINARY_DIR}/${DEV_RESOURCE_TARGET_NAME}.${DEV_RESOURCE_EXTENSION}")
-        if (DEV_DEPENDENCIES)
-            add_dependencies(${DEV_TARGET_NAME} ${DEV_RESOURCE_TARGET_NAME})
+        target_link_libraries(${DEV_TARGET} PRIVATE "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}")
+        if (DEV_DEPENDS)
+            add_dependencies(${DEV_TARGET} ${DEV_RESOURCE_TARGET})
         endif()
     endif()
 endfunction()
 
 # Installs icon file
 function(devtemplate_install_icon DEV_INPUT_FILE_NAME DEV_OUTPUT_DIR_NAME DEV_OUTPUT_FILE_NAME)
-    install(FILES "${PROJECT_SOURCE_DIR}/icons/${DEV_INPUT_FILE_NAME}"
-        RENAME "${DEV_OUTPUT_FILE_NAME}"
-        DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${DEV_OUTPUT_DIR_NAME}/apps")
+    # Parse arguments
+    cmake_parse_arguments(DEV "" "INPUT_NAME;OUTPUT_NAME;DIRECTORY_NAME" "" ${ARGN})
+    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_INPUT_NAME OR NOT DEV_OUTPUT_NAME OR NOT DEV_DIRECTORY_NAME)
+        message(FATAL_ERROR "devtemplate_install_icon called with incorrect arguments")
+    elseif(NOT EXISTS "${PROJECT_SOURCE_DIR}/icons/${DEV_INPUT_NAME}")
+        message(FATAL_ERROR "${PROJECT_SOURCE_DIR}/icons/${DEV_INPUT_NAME} does not exist") #TODO: make more cmake similar
+    endif()
+    # Install
+    install(FILES "${PROJECT_SOURCE_DIR}/icons/${DEV_INPUT_NAME}"
+        RENAME "${DEV_OUTPUT_NAME}"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/${DEV_DIRECTORY_NAME}/apps")
 endfunction()
 
 # Unsets all variables used by Devtemplate

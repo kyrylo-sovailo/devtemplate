@@ -33,8 +33,13 @@ endif()
 
 # Link resources
 if (WIN32)
-    devtemplate_configure_file(${DEV_CMAKE_NAME}_executable_gui_manifest FALSE "${PROJECT_SOURCE_DIR}/config/template/executable.manifest" "${PROJECT_BINARY_DIR}/executable.manifest")
-    devtemplate_compile_resource(${DEV_CMAKE_NAME}_executable_gui ${DEV_CMAKE_NAME}_executable_gui_resource "executable/executable-win32.rc" ${DEV_CMAKE_NAME}_executable_gui_manifest)
+    devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_executable_gui_manifest
+        INPUT "${PROJECT_SOURCE_DIR}/config/template/executable.manifest"
+        OUTPUT "${PROJECT_BINARY_DIR}/executable.manifest")
+    devtemplate_compile_resource(TARGET ${DEV_CMAKE_NAME}_executable_gui
+        RESOURCE_TARGET ${DEV_CMAKE_NAME}_executable_gui_resource
+        INPUT "executable/executable-win32.rc"
+        DEPENDS ${DEV_CMAKE_NAME}_executable_gui_manifest)
 endif()
 
 # Define sources

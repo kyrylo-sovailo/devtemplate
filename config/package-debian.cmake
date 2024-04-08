@@ -14,7 +14,7 @@ elseif("${DEV_PROCESSOR}" STREQUAL "i686" OR "${DEV_PROCESSOR}" STREQUAL "x86" O
 else()
     message(WARNING "Could not recognize target architecture. Architecture of .deb files is set according to CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}")
 endif()
-devtemplate_configure_file(${DEV_CMAKE_NAME}_control FALSE "${PROJECT_SOURCE_DIR}/config/template/control" "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/DEBIAN/control")
+devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_control INPUT "${PROJECT_SOURCE_DIR}/config/template/control" OUTPUT "${PROJECT_BINARY_DIR}/debian/${DEV_FILE_NAME}/DEBIAN/control")
 
 # Define pre-packaging target
 add_custom_target(package_debian DEPENDS ${DEV_PACKAGE_TARGETS} ${DEV_CMAKE_NAME}_control)

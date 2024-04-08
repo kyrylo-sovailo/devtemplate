@@ -9,7 +9,7 @@ if (NOT WIN32)
     endif()
     
     # Generate gui.desktop
-    devtemplate_configure_file(${DEV_CMAKE_NAME}_gui_desktop TRUE "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop")
+    devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_gui_desktop INPUT "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" OUTPUT "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop" ALL)
     list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_gui_desktop)
 
     # Install gui.desktop
@@ -19,7 +19,11 @@ if (NOT WIN32)
 
     # Install icons
     foreach(DEV_ICON_SIZE IN ITEMS 16 24 32 48 64 128 256)
-        devtemplate_install_icon("${DEV_ICON_SIZE}x${DEV_ICON_SIZE}.png" "${DEV_ICON_SIZE}x${DEV_ICON_SIZE}" "${DEV_FILE_NAME}_executable_gui.png")
+        devtemplate_install_icon(INPUT_NAME "${DEV_ICON_SIZE}x${DEV_ICON_SIZE}.png"
+            OUTPUT_NAME "${DEV_FILE_NAME}_executable_gui.png"
+            DIRECTORY_NAME "${DEV_ICON_SIZE}x${DEV_ICON_SIZE}")
     endforeach()
-    devtemplate_install_icon("scalable.svg" "scalable" "${DEV_FILE_NAME}_executable_gui.svg")
+    devtemplate_install_icon(INPUT_NAME "scalable.svg"
+        OUTPUT_NAME "scalable"
+        DIRECTORY_NAME "${DEV_FILE_NAME}_executable_gui.svg")
 endif()

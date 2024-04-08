@@ -3,4 +3,4 @@
 ######################
 
 # Generate README.md ("readme" target)
-devtemplate_configure_file(readme TRUE "${PROJECT_SOURCE_DIR}/config/template/README.md" "${PROJECT_SOURCE_DIR}/README.md")
+devtemplate_configure_file(TARGET readme INPUT "${PROJECT_SOURCE_DIR}/config/template/README.md" OUTPUT "${PROJECT_SOURCE_DIR}/README.md" ALL)

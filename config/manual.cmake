@@ -4,7 +4,7 @@
 
 if (NOT WIN32)
     # Generate manual
-    devtemplate_configure_file(${DEV_CMAKE_NAME}_man_raw FALSE "${PROJECT_SOURCE_DIR}/config/template/man.1" "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.${DEV_CATEGORY}")
+    devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_man_raw INPUT "${PROJECT_SOURCE_DIR}/config/template/man.1" OUTPUT "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.${DEV_CATEGORY}")
 
     # Compress manual ("man" target)
     add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.${DEV_CATEGORY}.gz"
