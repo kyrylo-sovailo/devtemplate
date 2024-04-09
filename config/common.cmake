@@ -45,9 +45,15 @@ if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
     add_compile_options(/wd4668) #C4668: Macro is not defined as a preprocessor macro
     add_compile_options(/wd4710) #C4710: Function not inlined
     add_compile_options(/wd4711) #C4711: Selected for automatic inline expansion
+    add_compile_options(/wd4820) #C4820: N bytes padding added after data member
     add_compile_options(/wd5045) #C5045: Compiler will insert Spectre mitigation for memory
 elseif ("${DEV_COMPILER_STYLE}" STREQUAL "GNU")
     add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# Linker flags
+if ("${DEV_COMPILER}" STREQUAL "MSVC")
+    add_link_options(/MANIFEST:NO)
 endif()
 
 # Resource compilation
@@ -55,16 +61,16 @@ if (WIN32)
     if("${DEV_COMPILER}" STREQUAL "MSVC")
         set(DEV_RESOURCE_COMPILE "DEFAULT")
         #set(DEV_RESOURCE_COMPILE "rc")
-        #set(DEV_RESOURCE_ARGUMENT "/fo ")
+        #set(DEV_RESOURCE_OUTPUT "/fo ")
         #set(DEV_RESOURCE_EXTENSION "res")
     elseif("${DEV_COMPILER}" STREQUAL "GNU")
-        set(DEV_RESOURCE_COMPILE "windres")
-        set(DEV_RESOURCE_ARGUMENT "--output=")
+        set(DEV_RESOURCE_COMPILE "windres -O coff")
+        set(DEV_RESOURCE_OUTPUT "--output=")
         set(DEV_RESOURCE_EXTENSION "o")
     elseif("${DEV_COMPILER}" STREQUAL "Clang")
         set(DEV_RESOURCE_COMPILE "DEFAULT")
         #set(DEV_RESOURCE_COMPILE "llvm-rc")
-        #set(DEV_RESOURCE_ARGUMENT "/fo ")
+        #set(DEV_RESOURCE_OUTPUT "/fo ")
         #set(DEV_RESOURCE_EXTENSION "res")
     else()
         message(WARNING "The compiler (${DEV_COMPILER}) is not supported, cannot compile resource")
@@ -189,7 +195,7 @@ function(devtemplate_compile_resource)
     # Compiler cannot compile resources directly
     elseif (DEV_RESOURCE_COMPILE)
         add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}"
-        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_ARGUMENT}"${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_INPUT}"
+        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_OUTPUT}"${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_INPUT}"
         WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
         DEPENDS "${DEV_INPUT}"
         COMMENT "Compiling ${DEV_INPUT_NAME}")

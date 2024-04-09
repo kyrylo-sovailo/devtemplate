@@ -1,2 +1,4 @@
-1    RT_MANIFEST "installer.manifest"
-1000 ICON        "../icons/16-24-32-48-64-128-256.ico"
+#include <Windows.h>
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID  RT_MANIFEST     "windows/installer.exe.manifest"
+1000                                ICON            "../icons/16-24-32-48-64-128-256.ico"

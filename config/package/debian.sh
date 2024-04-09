@@ -40,15 +40,15 @@ else DEV_NEW=0
 fi
 
 if [ ${DEV_NEW} -gt 0 ]; then
-    cmake --build "${DEV_BINARY_DIR}" --target package_debian
-    if [ $? -ne 0 ]; then echo "debian.sh: building target package_debian failed"; exit 1; fi
+    cmake --build "${DEV_BINARY_DIR}" --target debian_package
+    if [ $? -ne 0 ]; then echo "debian.sh: building target debian_package failed"; exit 1; fi
     cmake --install "${DEV_BINARY_DIR}" --prefix "${DEV_INSTALL_ROOT}/usr"
     if [ $? -ne 0 ]; then echo "debian.sh: installation to local directory failed"; exit 1; fi
 else
     cmake -DCMAKE_INSTALL_PREFIX:PATH="${DEV_INSTALL_ROOT}/usr" "${DEV_SOURCE_DIR}"
     if [ $? -ne 0 ]; then echo "debian.sh: CMake configuration failed"; exit 1; fi
-    cmake --build "${DEV_BINARY_DIR}" --target package_debian
-    if [ $? -ne 0 ]; then echo "debian.sh: building target package_debian failed"; exit 1; fi
+    cmake --build "${DEV_BINARY_DIR}" --target debian_package
+    if [ $? -ne 0 ]; then echo "debian.sh: building target debian_package failed"; exit 1; fi
     cmake --build "${DEV_BINARY_DIR}" --target install
     if [ $? -ne 0 ]; then echo "debian.sh: installation to local directory failed"; exit 1; fi
 fi
