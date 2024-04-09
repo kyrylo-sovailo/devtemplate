@@ -70,7 +70,7 @@ int _main(HINSTANCE hinstance)
 
         //Create window
         HWND hwnd = CreateWindowEx(0, TEXT("devtemplate"), TEXT("Devtemplate"),
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 400, 200, NULL, NULL, hinstance, NULL);
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 600, 200, NULL, NULL, hinstance, NULL);
         if (hwnd == NULL) throw std::runtime_error("CreateWindowEx failed");
 
         //Loop
@@ -92,7 +92,7 @@ int _main(HINSTANCE hinstance)
 }
 
 #ifdef DEV_WIN32_EXECUTABLE
-	extern "C" int APIENTRY WinMain(HINSTANCE hinstance, HINSTANCE, PSTR, int)
+    int WINAPI WinMain(_In_ HINSTANCE hinstance, _In_opt_ HINSTANCE, _In_ PSTR, _In_ int)
 	{
 		return _main(hinstance);
 	}

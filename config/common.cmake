@@ -43,9 +43,13 @@ endif()
 if ("${DEV_COMPILER_STYLE}" STREQUAL "MSVC")
     add_compile_options(/Wall)
     add_compile_options(/wd4668) #C4668: Macro is not defined as a preprocessor macro
+    add_compile_options(/wd4625) #C4625: Copy constructor was implicitly defined as deleted
+    add_compile_options(/wd4626) #C4626: Assignment operator was implicitly defined as deleted
     add_compile_options(/wd4710) #C4710: Function not inlined
     add_compile_options(/wd4711) #C4711: Selected for automatic inline expansion
     add_compile_options(/wd4820) #C4820: N bytes padding added after data member
+    add_compile_options(/wd4868) #C4868: Compiler may not enforce left-to-right evaluation order in braced initializer list
+    add_compile_options(/wd5039) #C5039: Pointer or reference to potentially throwing function passed to 'extern "C"
     add_compile_options(/wd5045) #C5045: Compiler will insert Spectre mitigation for memory
 elseif ("${DEV_COMPILER_STYLE}" STREQUAL "GNU")
     add_compile_options(-Wall -Wextra -Wpedantic)
