@@ -6,6 +6,10 @@
 if (NOT TARGET ${DEV_CMAKE_NAME})
     message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}\" does not exist, cannot create graphical executable")
 endif()
+if (NOT WIN32)
+    find_package(X11 REQUIRED)
+    find_package(PNG REQUIRED)
+endif()
 
 # Define executable
 add_executable(${DEV_CMAKE_NAME}_executable_gui)
@@ -20,8 +24,6 @@ endif()
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE ${DEV_CMAKE_NAME})
 if (NOT WIN32)
-    find_package(X11 REQUIRED)
-    find_package(PNG REQUIRED)
     if (${DEV_CMAKE_MAJOR} GREATER 3 OR (${DEV_CMAKE_MAJOR} EQUAL 3 AND ${DEV_CMAKE_MINOR} GREATER_EQUAL 14))
         target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE X11::X11 PNG::PNG)
     else()
@@ -33,17 +35,15 @@ endif()
 
 # Link resources
 if (WIN32)
-    devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_executable_gui_manifest
-        INPUT "${PROJECT_SOURCE_DIR}/config/template/executable.exe.manifest"
-        OUTPUT "${PROJECT_BINARY_DIR}/executable.exe.manifest")
-    devtemplate_compile_resource(TARGET ${DEV_CMAKE_NAME}_executable_gui
-        RESOURCE_TARGET ${DEV_CMAKE_NAME}_executable_gui_resource
+    devtemplate_configure_file(OUTPUT "${PROJECT_BINARY_DIR}/executable.exe.manifest"
+        INPUT "${PROJECT_SOURCE_DIR}/config/template/executable.exe.manifest")
+    devtemplate_target_resource(TARGET ${DEV_CMAKE_NAME}_executable_gui
         INPUT "executable/executable-win32.rc"
-        DEPENDS ${DEV_CMAKE_NAME}_executable_gui_manifest)
+        DEPENDS "${PROJECT_BINARY_DIR}/executable.exe.manifest" "icons/16-24-32-48-64-128-256.ico")
 endif()
 
 # Define sources
 target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
 
-# Define "run_gui" command
+# Define GUI executable ("run_gui" target)
 add_custom_target(run_gui COMMAND ${DEV_CMAKE_NAME}_executable_gui)

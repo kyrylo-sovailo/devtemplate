@@ -1,6 +1,6 @@
 PROJECT_NAME        = "${DEV_NAME}"
 PROJECT_BRIEF       = "${DEV_DESCRIPTION}"
-INPUT               = ${PROJECT_BINARY_DIR}/documentation.h ${DEV_INTERFACE_SOURCES}
+INPUT               = ${PROJECT_BINARY_DIR}/mainpage.h ${DEV_INTERFACE_SOURCES}
 OUTPUT_DIRECTORY    = ${DEV_FILE_NAME}-${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH}
 RECURSIVE           = NO
 QUIET               = YES

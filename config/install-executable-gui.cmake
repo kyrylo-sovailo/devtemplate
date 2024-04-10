@@ -9,8 +9,8 @@ if (NOT WIN32)
     endif()
     
     # Generate gui.desktop
-    devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_gui_desktop INPUT "${PROJECT_SOURCE_DIR}/config/template/gui.desktop" OUTPUT "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop" ALL)
-    list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_gui_desktop)
+    devtemplate_configure_file(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop" INPUT "${PROJECT_SOURCE_DIR}/config/template/gui.desktop")
+    list(APPEND DEV_PACKAGE_TARGETS "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop")
 
     # Install gui.desktop
     install(FILES "${PROJECT_BINARY_DIR}/${DEV_FILE_NAME}.desktop"

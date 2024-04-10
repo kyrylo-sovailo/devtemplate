@@ -138,8 +138,8 @@ endfunction()
 # Checks the environment and configures file if needed
 function(devtemplate_configure_file)
     # Parse arguments
-    cmake_parse_arguments(DEV "ALL" "TARGET;INPUT;OUTPUT" "" ${ARGN})
-    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_TARGET OR NOT DEV_INPUT OR NOT DEV_OUTPUT)
+    cmake_parse_arguments(DEV "" "INPUT;OUTPUT" "" ${ARGN})
+    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_INPUT OR NOT DEV_OUTPUT)
         message(FATAL_ERROR "devtemplate_configure_file called with incorrect arguments")
     endif()
     devtemplate_check_file(DEV_INPUT "${DEV_INPUT}")
@@ -167,49 +167,41 @@ function(devtemplate_configure_file)
     elseif(NOT EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
         file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
     endif()
-    # Execute configure.cmake
+    # Define rule
     add_custom_command(OUTPUT "${DEV_OUTPUT}"
         COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT}"
         DEPENDS "${DEV_INPUT}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake"
-        COMMENT "Generating ${DEV_OUTPUT_NAME}"
-        VERBATIM)
-    if (DEV_ALL)
-        set(DEV_ALL "ALL")
-    else()
-        set(DEV_ALL "")
-    endif()
-    add_custom_target(${DEV_TARGET} ${DEV_ALL} DEPENDS "${DEV_OUTPUT}")
+        COMMENT "Generating ${DEV_OUTPUT_NAME}")
 endfunction()
 
 # Compiles and links resource
-function(devtemplate_compile_resource)
+function(devtemplate_target_resource)
     # Parse arguments
-    cmake_parse_arguments(DEV "" "TARGET;RESOURCE_TARGET;INPUT" "DEPENDS" ${ARGN})
-    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_TARGET OR NOT DEV_RESOURCE_TARGET OR NOT DEV_INPUT)
-        message(FATAL_ERROR "devtemplate_compile_resource called with incorrect arguments")
+    cmake_parse_arguments(DEV "" "TARGET;INPUT" "DEPENDS" ${ARGN})
+    if (DEV_UNPARSED_ARGUMENTS OR NOT DEV_TARGET OR NOT DEV_INPUT)
+        message(FATAL_ERROR "devtemplate_target_resource called with incorrect arguments")
     endif()
     devtemplate_check_file(DEV_INPUT "${DEV_INPUT}")
     get_filename_component(DEV_INPUT_NAME "${DEV_INPUT}" NAME)
+    foreach(DEV_DEPEND ${DEV_DEPENDS})
+        if (NOT IS_ABSOLUTE "${DEV_DEPEND}")
+            get_filename_component(DEV_DEPEND "${DEV_DEPEND}" ABSOLUTE BASE_DIR "${PROJECT_SOURCE_DIR}")
+        endif()
+        list(APPEND DEV_DEPENDS_ABSOLUTE "${DEV_DEPEND}")
+    endforeach()
     # Compiler can compile resources directly
     if (DEV_RESOURCE_COMPILE AND "${DEV_RESOURCE_COMPILE}" STREQUAL "DEFAULT")
         target_sources(${DEV_TARGET} PRIVATE "${DEV_INPUT}")
-        if (DEV_DEPENDS)
-            add_dependencies(${DEV_TARGET} ${DEV_DEPENDS})
-        endif()
+        add_custom_target(${DEV_TARGET}_resources DEPENDS "${DEV_DEPENDS_ABSOLUTE}")
+        add_dependencies(${DEV_TARGET} ${DEV_TARGET}_resources)
     # Compiler cannot compile resources directly
     elseif (DEV_RESOURCE_COMPILE)
         add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}"
-        COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_OUTPUT}"${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_INPUT}"
-        WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-        DEPENDS "${DEV_INPUT}"
-        COMMENT "Compiling ${DEV_INPUT_NAME}")
-        add_custom_target(${DEV_RESOURCE_TARGET} DEPENDS "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}")
-        add_dependencies(${DEV_RESOURCE_TARGET} ${DEV_DEPENDS})
-        
+            COMMAND ${DEV_RESOURCE_COMPILE} ${DEV_RESOURCE_OUTPUT}"${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}" "${DEV_INPUT}"
+            WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+            DEPENDS "${DEV_INPUT}" "${DEV_DEPENDS_ABSOLUTE}"
+            COMMENT "Compiling ${DEV_INPUT_NAME}")
         target_link_libraries(${DEV_TARGET} PRIVATE "${PROJECT_BINARY_DIR}/${DEV_INPUT_NAME}.${DEV_RESOURCE_EXTENSION}")
-        if (DEV_DEPENDS)
-            add_dependencies(${DEV_TARGET} ${DEV_RESOURCE_TARGET})
-        endif()
     endif()
 endfunction()
 

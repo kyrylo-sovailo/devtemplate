@@ -5,6 +5,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#define DEV_STRING2(s) #s
+#define DEV_STRING(s) DEV_STRING2(s)
+#define DEV_NAME_VERSION DEV_STRING(DEVTEMPLATE_NAME) " " DEV_STRING(DEVTEMPLATE_MAJOR) "." DEV_STRING(DEVTEMPLATE_MINOR) "." DEV_STRING(DEVTEMPLATE_PATCH)
+
 #pragma region Framework definitions
 class Control
 {
@@ -84,7 +88,7 @@ public:
 class Panel : public Parent
 {
 public:
-    Panel(const Parent *parent, bool white, int left, int top, int width, int height);
+    Panel(const Parent *parent, int left, int top, int width, int height);
 };
 
 class Groupbox : public Parent
@@ -239,8 +243,8 @@ Richedit::Richedit(const Parent *parent, const Font *font, const TCHAR *text, in
 
 Edit::Edit(const Parent *parent, const Font *font, const TCHAR *text, int left, int top, int width, int height)
 {
-    _handle = CreateWindowEx(0, TEXT("EDIT"), text, WS_VISIBLE | WS_CHILD |
-        SS_LEFT, left, top, width, height, parent->handle(), NULL, NULL, NULL);
+    const DWORD style = static_cast<DWORD>(WS_VISIBLE | WS_CHILD | SS_LEFT);
+    _handle = CreateWindowEx(0, TEXT("EDIT"), text, style, left, top, width, height, parent->handle(), NULL, NULL, NULL);
     if (_handle == NULL) throw std::runtime_error("CreateWindowEx() failed");
     SendMessage(_handle, WM_SETFONT, (WPARAM)font->handle(), FALSE);
 }
@@ -297,7 +301,7 @@ void Progress::step()
     SendMessage(_handle, PBM_STEPIT, 0, 0);
 }
 
-Panel::Panel(const Parent *parent, bool white, int left, int top, int width, int height)
+Panel::Panel(const Parent *parent, int left, int top, int width, int height)
 {
     _handle = CreateWindowEx(0, TEXT("STATIC"), TEXT(""),
         WS_VISIBLE | WS_CHILD | SS_GRAYFRAME, left, top, width, height, parent->handle(), NULL, NULL, NULL);
@@ -404,7 +408,7 @@ void Window::_initialize(HWND handle)
     _big_font = std::unique_ptr<Font>(new Font(20, true, false));
 
     //Create common controls
-    _panel = std::unique_ptr<Panel>(new Panel(this, true, -OFFSET, -OFFSET, width + 2 * OFFSET, height - 60 + OFFSET));
+    _panel = std::unique_ptr<Panel>(new Panel(this, -OFFSET, -OFFSET, width + 2 * OFFSET, height - 60 + OFFSET));
     _label_title = std::unique_ptr<Label>(new Label(_panel.get(), _big_font.get(), TEXT(""), 30 + OFFSET, 30 + OFFSET, width - 60, 30));
     _label_subtitle = std::unique_ptr<Label>(new Label(_panel.get(), _common_font.get(), TEXT(""), 30 + OFFSET, 60 + OFFSET, width - 60, 30));
     _button_previous = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Previous"), false, width - 305 + OFFSET, height - 45 + OFFSET, 90, 30));
@@ -429,34 +433,34 @@ void Window::_refresh()
     switch (_state)
     {
     case State::welcome:
-        _label_title->set_text(L"Welcome to Devtemplate v0.0.0 Setup");
-        _label_subtitle->set_text(L"Setup will guide you through the installation of Devtemplate v0.0.0.");
+        _label_title->set_text(L"Welcome to " DEV_NAME_VERSION " Setup");
+        _label_subtitle->set_text(L"Setup will guide you through the installation of " DEV_NAME_VERSION ".");
         _button_previous->set_active(false);
         _button_next->set_text(L"Next >");
         break;
     case State::license:
         _label_title->set_text(L"License Agreement");
-        _label_subtitle->set_text(L"Please review the license terms before installing Devtemplate v0.0.0.");
+        _label_subtitle->set_text(L"Please review the license terms before installing " DEV_NAME_VERSION ".");
         _button_next->set_text(L"I Agree");
         break;
     case State::location:
         _label_title->set_text(L"Chose Install Location");
-        _label_subtitle->set_text(L"Chose the folder in which to install Devtemplate v0.0.0.");
+        _label_subtitle->set_text(L"Chose the folder in which to install " DEV_NAME_VERSION ".");
         _button_next->set_text(L"Next >");
         break;
     case State::components:
         _label_title->set_text(L"Chose Components");
-        _label_subtitle->set_text(L"Chose which features of Devtemplate v0.0.0 you want to install.");
+        _label_subtitle->set_text(L"Chose which features of " DEV_NAME_VERSION " you want to install.");
         _button_next->set_text(L"Next >");
         break;
     case State::install:
         _label_title->set_text(L"Installing");
-        _label_subtitle->set_text(L"Please wait while Devtemplate v0.0.0 is being installed.");
+        _label_subtitle->set_text(L"Please wait while " DEV_NAME_VERSION " is being installed.");
         _button_next->set_text(L"Next >");
         break;
-    default:
-        _label_title->set_text(L"Completing Devtemplate v0.0.0 Setup");
-        _label_subtitle->set_text(L"Devtemplate v0.0.0 has been installed on your computer.");
+    case State::finish:
+        _label_title->set_text(L"Completing " DEV_NAME_VERSION " Setup");
+        _label_subtitle->set_text(L"" DEV_NAME_VERSION " has been installed on your computer.");
         _button_next->set_text(L"Finish");
         break;
     }

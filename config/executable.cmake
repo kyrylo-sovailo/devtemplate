@@ -19,5 +19,5 @@ target_link_libraries(${DEV_CMAKE_NAME}_executable PRIVATE ${DEV_CMAKE_NAME})
 # Define sources
 target_sources(${DEV_CMAKE_NAME}_executable PRIVATE "executable/executable.cpp")
 
-# Define "run" command
+# Define executable ("run" target)
 add_custom_target(run COMMAND ${DEV_CMAKE_NAME}_executable)

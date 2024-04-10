@@ -32,11 +32,10 @@ set(DEV_TASKS_CONFIGURE_DIRECTORY "${DEV_VSCODE_BINARY_DIR}")
 set(DEV_TASKS_BUILD_DIRECTORY "${DEV_VSCODE_BINARY_DIR}")
 
 # Generate tasks.json
-devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_tasks INPUT "${PROJECT_SOURCE_DIR}/config/template/tasks.json" OUTPUT "${PROJECT_SOURCE_DIR}/.vscode/tasks.json")
+devtemplate_configure_file(OUTPUT "${PROJECT_SOURCE_DIR}/.vscode/tasks.json" INPUT "${PROJECT_SOURCE_DIR}/config/template/tasks.json")
 
 # Generate launch.json
-devtemplate_configure_file(TARGET ${DEV_CMAKE_NAME}_launch INPUT "${PROJECT_SOURCE_DIR}/config/template/launch.json" OUTPUT "${PROJECT_SOURCE_DIR}/.vscode/launch.json")
+devtemplate_configure_file(OUTPUT "${PROJECT_SOURCE_DIR}/.vscode/launch.json" INPUT "${PROJECT_SOURCE_DIR}/config/template/launch.json")
 
-# Define "vscode" target
-add_custom_target(vscode)
-add_dependencies(vscode ${DEV_CMAKE_NAME}_tasks ${DEV_CMAKE_NAME}_launch)
+# Generate VS Code project ("vscode" target)
+add_custom_target(vscode DEPENDS "${PROJECT_SOURCE_DIR}/.vscode/tasks.json" "${PROJECT_SOURCE_DIR}/.vscode/launch.json")

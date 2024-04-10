@@ -3,4 +3,5 @@
 #######################
 
 # Generate LICENSE.md ("license" target)
-devtemplate_configure_file(TARGET license INPUT "${PROJECT_SOURCE_DIR}/config/template/LICENSE.md" OUTPUT "${PROJECT_SOURCE_DIR}/LICENSE.md" ALL)
+devtemplate_configure_file(OUTPUT "${PROJECT_SOURCE_DIR}/LICENSE.md" INPUT "${PROJECT_SOURCE_DIR}/config/template/LICENSE.md")
+add_custom_target(license ALL DEPENDS "${PROJECT_SOURCE_DIR}/LICENSE.md")

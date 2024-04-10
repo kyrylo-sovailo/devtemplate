@@ -6,6 +6,12 @@
 if (NOT TARGET ${DEV_CMAKE_NAME})
     message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}\" does not exist, cannot create Python wrapper")
 endif()
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+if (NOT WIN32)
+    find_package(pybind11 CONFIG REQUIRED)
+else()
+    find_package(pybind11 CONFIG REQUIRED HINTS "${Python_SITELIB}/pybind11/share/cmake/pybind11")
+endif()
 
 # Define library
 add_library(${DEV_CMAKE_NAME}_python SHARED)
@@ -15,12 +21,6 @@ set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES PREFIX "")
 
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE ${DEV_CMAKE_NAME})
-find_package(Python COMPONENTS Interpreter Development REQUIRED)
-if (NOT WIN32)
-    find_package(pybind11 CONFIG REQUIRED)
-else()
-    find_package(pybind11 CONFIG REQUIRED HINTS "${Python_SITELIB}/pybind11/share/cmake/pybind11")
-endif()
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE pybind11::module)
 
 # Define executable sources
