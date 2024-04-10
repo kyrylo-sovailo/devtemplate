@@ -1,178 +1,178 @@
-<mxfile host="app.diagrams.net" modified="2024-04-09T18:11:26.352Z" agent="Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0" etag="7kF1uA8HgrLSGAkyY1TW" version="24.2.3" type="device">
+<mxfile host="app.diagrams.net" modified="2024-04-10T17:53:10.289Z" agent="Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0" etag="40ZD5XyHpDWojWRulhBM" version="24.2.3" type="device">
   <diagram name="Page-1" id="ROTYHTmHjRqj0AOpmdX1">
-    <mxGraphModel dx="1400" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1050" dy="701" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-11" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-11" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
           <mxGeometry width="600" height="490" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-12" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-12" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry x="390" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-14" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-14" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry x="495" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-15" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-15" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry width="600" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-16" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Welcome to Devtemplate v0.0.0 Setup&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-16" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Welcome to Devtemplate v0.0.0 Setup&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry x="30" y="30" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-17" value="&lt;div style=&quot;font-size: 14px;&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;It is recommended that you close all other applications before staring Setup. This will make it possible to update relevant system files without having to reboot your computer.&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Click Next to continue.&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-17" value="&lt;div style=&quot;font-size: 14px;&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;It is recommended that you close all other applications before staring Setup. This will make it possible to update relevant system files without having to reboot your computer.&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;font-size: 14px;&quot; align=&quot;left&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Click Next to continue.&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry x="30" y="120" width="540" height="280" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-32" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Setup will guide you through the installation of Devtemplate v0.0.0.&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-32" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Setup will guide you through the installation of Devtemplate v0.0.0.&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry x="30" y="60" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-80" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-11">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-80" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-11" vertex="1">
           <mxGeometry x="295" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-25" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-25" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
           <mxGeometry x="640" width="600" height="490" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-26" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;I Agree&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-26" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;I Agree&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="390" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-27" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-27" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="295" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-28" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-28" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="495" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-29" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-29" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry width="600" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-30" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;License Agreement&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-30" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;License Agreement&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="30" y="30" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-31" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Please review the license terms before installing Devtemplate v0.0.0.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-31" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Please review the license terms before installing Devtemplate v0.0.0.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="30" y="60" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-33" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Press Page Down to see the rest of the agreement.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-33" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Press Page Down to see the rest of the agreement.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="30" y="120" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-35" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-35" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="30" y="150" width="540" height="190" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-36" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;If you accept the agreement, click I Accept to continue. You must accept the agreement to install Devtemplate v0.0.0.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-25">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-36" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;If you accept the agreement, click I Accept to continue. You must accept the agreement to install Devtemplate v0.0.0.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-25" vertex="1">
           <mxGeometry x="30" y="340" width="540" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-37" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-37" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
           <mxGeometry y="560" width="600" height="490" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-38" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-38" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;br&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="390" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-39" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-39" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="295" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-40" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-40" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="495" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-41" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-41" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry width="600" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-42" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Chose Install Location&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-42" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Chose Install Location&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="30" y="30" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-43" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Chose the folder in which to install Devtemplate v0.0.0.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-43" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Chose the folder in which to install Devtemplate v0.0.0.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="30" y="60" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-44" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Setup will install Devtemplate v0.0.0 in the following folder. To install in a different folder, clock browse and select another folder.Clock Next to continue.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-44" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Setup will install Devtemplate v0.0.0 in the following folder. To install in a different folder, clock browse and select another folder.Clock Next to continue.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="30" y="120" width="540" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-45" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
-          <mxGeometry x="30" y="280" width="540" height="60" as="geometry" />
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-45" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
+          <mxGeometry x="30" y="200" width="540" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-46" value="&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Space required: 10.0 Mb&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Space available: 10.0 Gb&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-46" value="&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Space required: 10.0 Mb&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Space available: 10.0 Gb&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
           <mxGeometry x="30" y="340" width="540" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-81" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
-          <mxGeometry x="45" y="295" width="410" height="30" as="geometry" />
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-81" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
+          <mxGeometry x="45" y="215" width="410" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-83" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Browse&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-37">
-          <mxGeometry x="465" y="295" width="90" height="30" as="geometry" />
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-83" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Browse&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-37" vertex="1">
+          <mxGeometry x="465" y="215" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-47" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-47" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
           <mxGeometry x="641" y="560" width="600" height="490" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-48" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-48" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="390" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-49" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-49" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="295" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-50" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-50" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="495" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-51" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-51" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry width="600" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-52" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Chose Components&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-52" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Chose Components&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="30" y="30" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-53" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Chose which features of Devtemplate v0.0.0 you want to install.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-53" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Chose which features of Devtemplate v0.0.0 you want to install.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="30" y="60" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-54" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;# Create Shortcut on Desktop&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-54" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;# Create Shortcut on Desktop&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="30" y="120" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-57" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;# Create Entry in Start Menu&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-47">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-57" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;# Create Entry in Start Menu&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-47" vertex="1">
           <mxGeometry x="30" y="180" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-58" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-58" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
           <mxGeometry y="1120" width="600" height="490" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-59" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-59" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Next &amp;gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="390" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-60" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-60" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="295" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-61" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-61" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="495" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-62" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-62" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry width="600" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-63" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Installing&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-63" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Installing&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="30" y="30" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-64" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Please wait while Devtemplate v0.0.0 is being installed.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-64" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Please wait while Devtemplate v0.0.0 is being installed.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="30" y="60" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-65" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Extract: devtemplate.dll&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-65" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Extract: devtemplate.dll&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="30" y="120" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-67" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-58">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-67" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-58" vertex="1">
           <mxGeometry x="30" y="150" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-68" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-68" value="" style="swimlane;startSize=0;" parent="1" vertex="1">
           <mxGeometry x="641" y="1120" width="600" height="490" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-69" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Finish&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-69" value="&lt;div style=&quot;font-size: 13px;&quot;&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Finish&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="390" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-70" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-70" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&amp;lt; Previous&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="295" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-71" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-71" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Cancel&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="495" y="445" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-72" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-72" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry width="600" height="430" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-73" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Completing Devtemplate v0.0.0 Setup&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-73" value="&lt;div align=&quot;left&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Completing Devtemplate v0.0.0 Setup&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="30" y="30" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-74" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Devtemplate v0.0.0 has been installed on your computer.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-74" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Devtemplate v0.0.0 has been installed on your computer.&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="30" y="60" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-75" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Click Finish to close Setup.&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-75" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Click Finish to close Setup.&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="30" y="120" width="540" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="6M8vazcqPXDU1AmO_f7S-77" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;# Run Devtemplate 0.0.0 GUI&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="6M8vazcqPXDU1AmO_f7S-68">
+        <mxCell id="6M8vazcqPXDU1AmO_f7S-77" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;# Run Devtemplate 0.0.0 GUI&lt;br&gt;&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="6M8vazcqPXDU1AmO_f7S-68" vertex="1">
           <mxGeometry x="30" y="180" width="540" height="30" as="geometry" />
         </mxCell>
       </root>

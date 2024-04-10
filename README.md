@@ -44,4 +44,4 @@ Under Windows the icons are compiled into executables, but this compilation is c
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-### Generated on Wed, 10 Apr 2024 14:48:25 UTC
+### Generated on Wed, 10 Apr 2024 16:02:10 UTC
