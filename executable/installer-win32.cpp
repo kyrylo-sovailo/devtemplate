@@ -118,27 +118,27 @@ private:
     bool _start_menu = true;
     bool _run = true;
 
-    //Common controls
+    //Unique controls
     std::unique_ptr<Font> _common_font;
     std::unique_ptr<Font> _license_font;
     std::unique_ptr<Font> _big_font;
     std::unique_ptr<Panel> _panel;
     std::unique_ptr<Label> _label_title;
     std::unique_ptr<Label> _label_subtitle;
-
-    //Control pool
-    std::unique_ptr<Label> _label_text_1;
-    std::unique_ptr<Label> _label_text_2;
-    std::unique_ptr<Richedit> _richedit_1;
-    std::unique_ptr<Groupbox> _groupbox_1;
-    std::unique_ptr<Edit> _edit_1;
-    std::unique_ptr<Button> _button_1;
-    std::unique_ptr<Checkbox> _checkbox_1;
-    std::unique_ptr<Checkbox> _checkbox_2;
-    std::unique_ptr<Progress> _progress_1;
+    std::unique_ptr<Richedit> _license_richedit;
+    std::unique_ptr<Groupbox> _groupbox_location;
+    std::unique_ptr<Edit> _edit_location;
+    std::unique_ptr<Button> _button_browse;
+    std::unique_ptr<Progress> _progress;
     std::unique_ptr<Button> _button_previous;
     std::unique_ptr<Button> _button_next;
     std::unique_ptr<Button> _button_cancel;
+
+    //Control pool
+    std::unique_ptr<Label> _label_1;
+    std::unique_ptr<Label> _label_2;
+    std::unique_ptr<Checkbox> _checkbox_1;
+    std::unique_ptr<Checkbox> _checkbox_2;
 
     //Technical
     WNDCLASSEX _window_class;
@@ -345,7 +345,6 @@ LRESULT CALLBACK Window::_handler(HWND handle, UINT message, WPARAM wparam, LPAR
         case WM_CREATE:
         {
             _window = static_cast<Window*>((reinterpret_cast<CREATESTRUCT*>(lparam))->lpCreateParams);
-            _window->_background_brush = CreateSolidBrush(RGB(240, 240, 240));
             _window->_initialize(handle);
             return 0;
         }
@@ -437,6 +436,8 @@ Window::Window(HINSTANCE hinstance)
 void Window::_initialize(HWND handle)
 {
     _handle = handle;
+    _window->_background_brush = CreateSolidBrush(RGB(240, 240, 240));
+
     RECT rect;
     GetClientRect(_handle, &rect);
     const int width = rect.right - rect.left;
@@ -456,27 +457,27 @@ void Window::_initialize(HWND handle)
 
     //Create fonts
     _common_font = std::unique_ptr<Font>(new Font(14, false, false));
-    _license_font = std::unique_ptr<Font>(new Font(12, false, false));
+    _license_font = std::unique_ptr<Font>(new Font(11, false, false));
     _big_font = std::unique_ptr<Font>(new Font(22, true, false));
 
-    //Create common controls
+    //Unique controls
     _panel = std::unique_ptr<Panel>(new Panel(this, -OFFSET, -OFFSET, width + 2 * OFFSET, height - 60 + OFFSET));
     _label_title = std::unique_ptr<Label>(new Label(this, _big_font.get(), TEXT(""), 30, 30, width - 60, 30));
     _label_subtitle = std::unique_ptr<Label>(new Label(this, _common_font.get(), TEXT(""), 30, 60, width - 60, 30));
+    _license_richedit = std::unique_ptr<Richedit>(new Richedit(this, _license_font.get(), wlicense.c_str(), 30, 150, width - 60, height - 300));
+    _groupbox_location = std::unique_ptr<Groupbox>(new Groupbox(this, _license_font.get(), TEXT("Location"), 30, 200, width - 60, 60));
+    _edit_location = std::unique_ptr<Edit>(new Edit(this, _common_font.get(), TEXT("C:\\Program Files\\"), 45, 215 + 4, width - 190, 30));
+    _button_browse = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Browse"), false, width - 135, 215 + 4, 90, 30));
+    _progress = std::unique_ptr<Progress>(new Progress(this, 100, 30, 150, width - 60, 30));
     _button_previous = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Previous"), false, width - 305, height - 45, 90, 30));
     _button_next = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT(""), true, width - 210, height - 45, 90, 30));
     _button_cancel = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Cancel"), false, width - 105, height - 45, 90, 30));
 
-    //Create control pool
-    _label_text_1 = std::unique_ptr<Label>(new Label(this, _common_font.get(), TEXT(""), 0, 0,0, 0));
-    _label_text_2 = std::unique_ptr<Label>(new Label(this, _common_font.get(), TEXT(""), 0, 0, 0, 0));
-    _richedit_1 = std::unique_ptr<Richedit>(new Richedit(this, _license_font.get(), wlicense.c_str(), 30, 150, width - 60, height - 300));
-    _groupbox_1 = std::unique_ptr<Groupbox>(new Groupbox(this, _common_font.get(), TEXT("Location"), 30, 200, width - 60, 60));
-    _edit_1 = std::unique_ptr<Edit>(new Edit(this, _common_font.get(), TEXT("C:\\Program Files\\"), 45, 215 + 4, width - 190, 30));
-    _button_1 = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Browse"), false, width - 135, 215 + 4, 90, 30));
+    //Shared controls
+    _label_1 = std::unique_ptr<Label>(new Label(this, _common_font.get(), TEXT(""), 0, 0, 0, 0));
+    _label_2 = std::unique_ptr<Label>(new Label(this, _common_font.get(), TEXT(""), 0, 0, 0, 0));
     _checkbox_1 = std::unique_ptr<Checkbox>(new Checkbox(this, _common_font.get(), TEXT(""), 0, 0, 0, 0));
     _checkbox_2 = std::unique_ptr<Checkbox>(new Checkbox(this, _common_font.get(), TEXT(""), 0, 0, 0, 0));
-    _progress_1 = std::unique_ptr<Progress>(new Progress(this, 100, 30, 150, width - 60, 30));
 
     //Arrange
     _state = State::welcome;
@@ -485,7 +486,7 @@ void Window::_initialize(HWND handle)
 
 bool Window::_close()
 {
-    int reply = MessageBox(NULL,
+    const int reply = MessageBox(NULL,
         L"Are you sure you want to quit " DEV_NAME_VERSION " Setup",
         L"" DEV_NAME_VERSION " Setup",
         MB_ICONEXCLAMATION | MB_YESNO);
@@ -501,15 +502,18 @@ void Window::_refresh()
 
     InvalidateRect(_handle, &rect, true);
 
-    _label_text_1->set_visible(false);
-    _label_text_2->set_visible(false);
-    _richedit_1->set_visible(_state == State::license);
-    _groupbox_1->set_visible(false);
-    _edit_1->set_visible(false);
-    _button_1->set_visible(false);
+    //Unique controls
+    _license_richedit->set_visible(false);
+    _groupbox_location->set_visible(false);
+    _edit_location->set_visible(false);
+    _button_browse->set_visible(false);
+    _progress->set_visible(false);
+
+    //Shared controls
+    _label_1->set_visible(false);
+    _label_2->set_visible(false);
     _checkbox_1->set_visible(false);
     _checkbox_2->set_visible(false);
-    _progress_1->set_visible(false);
 
     switch (_state)
     {
@@ -521,12 +525,12 @@ void Window::_refresh()
         _button_next->set_text(L"Next >");
         _button_cancel->set_active(true);
 
-        _label_text_1->set_position(30, 120, width - 60, height - 210);
-        _label_text_1->set_text(L"It is recommended that you close all other applications before staring Setup. "
+        _label_1->set_position(30, 120, width - 60, height - 210);
+        _label_1->set_text(L"It is recommended that you close all other applications before staring Setup. "
             "This will make it possible to update relevant system files without having to reboot your computer.\r\n"
             "\r\n"
             "Click Next to continue.");
-        _label_text_1->set_visible(true);
+        _label_1->set_visible(true);
         break;
     case State::license:
         _label_title->set_text(L"License Agreement");
@@ -536,13 +540,13 @@ void Window::_refresh()
         _button_next->set_text(L"I Agree");
         _button_cancel->set_active(true);
 
-        _label_text_1->set_position(30, 120, width - 60, 30);
-        _label_text_1->set_text(L"Press Page Down to see the rest of the agreement.");
-        _label_text_1->set_visible(true);
-        _richedit_1->set_visible(true);
-        _label_text_2->set_position(30, height - 150, width - 60, 60);
-        _label_text_2->set_text(L"If you accept the agreement, click I Accept to continue. You must accept the agreement to install " DEV_NAME_VERSION ".");
-        _label_text_2->set_visible(true);
+        _label_1->set_position(30, 120, width - 60, 30);
+        _label_1->set_text(L"Press Page Down to see the rest of the agreement.");
+        _label_1->set_visible(true);
+        _license_richedit->set_visible(true);
+        _label_2->set_position(30, height - 150, width - 60, 60);
+        _label_2->set_text(L"If you accept the agreement, click I Accept to continue. You must accept the agreement to install " DEV_NAME_VERSION ".");
+        _label_2->set_visible(true);
         break;
     case State::location:
         _label_title->set_text(L"Chose Install Location");
@@ -552,18 +556,18 @@ void Window::_refresh()
         _button_next->set_text(L"Next >");
         _button_cancel->set_active(true);
 
-        _label_text_1->set_position(30, 120, width - 60, 60);
-        _label_text_1->set_text(L"Setup will install " DEV_NAME_VERSION " in the following folder. "
+        _label_1->set_position(30, 120, width - 60, 60);
+        _label_1->set_text(L"Setup will install " DEV_NAME_VERSION " in the following folder. "
             "To install in a different folder, clock browse and select another folder.\r\n"
             "Click Next to continue.");
-        _label_text_1->set_visible(true);
-        _groupbox_1->set_visible(true);
-        _edit_1->set_visible(true);
-        _button_1->set_visible(true);
-        _label_text_2->set_position(30, height - 150, width - 60, 60);
-        _label_text_2->set_text(L"Space required: 10.0 Mb\r\n"
+        _label_1->set_visible(true);
+        _groupbox_location->set_visible(true);
+        _edit_location->set_visible(true);
+        _button_browse->set_visible(true);
+        _label_2->set_position(30, height - 150, width - 60, 60);
+        _label_2->set_text(L"Space required: 10.0 Mb\r\n"
             "Space available : 10.0 Gb");
-        _label_text_2->set_visible(true);
+        _label_2->set_visible(true);
         break;
     case State::components:
         _label_title->set_text(L"Chose Components");
@@ -583,23 +587,23 @@ void Window::_refresh()
     case State::install:
         _label_title->set_text(L"Installing");
         _label_subtitle->set_text(L"Please wait while " DEV_NAME_VERSION " is being installed.");
-        _button_previous->set_active(true);
+        _button_previous->set_active(false);
         _button_next->set_active(true);
         _button_next->set_text(L"Next >");
-        _button_cancel->set_active(true);
+        _button_cancel->set_active(false);
 
-        _label_text_1->set_position(30, 120, width - 60, 30);
-        _label_text_1->set_text(L"Extract: filename.dll");
-        _label_text_1->set_visible(true);
-        _progress_1->set_visible(true);
+        _label_1->set_position(30, 120, width - 60, 30);
+        _label_1->set_text(L"Extract: filename.dll");
+        _label_1->set_visible(true);
+        _progress->set_visible(true);
         break;
     case State::finish:
         _label_title->set_text(L"Completing " DEV_NAME_VERSION " Setup");
         _label_subtitle->set_text(L"" DEV_NAME_VERSION " has been installed on your computer.");
         _button_previous->set_active(true);
-        _button_next->set_active(false);
+        _button_next->set_active(true);
         _button_next->set_text(L"Finish");
-        _button_cancel->set_active(true);
+        _button_cancel->set_active(false);
 
         _checkbox_1->set_position(30, 120, width - 60, 30);
         _checkbox_1->set_text(L"Create Shortcut on Desktop");

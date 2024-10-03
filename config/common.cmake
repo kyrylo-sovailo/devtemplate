@@ -81,7 +81,7 @@ if (WIN32)
     endif()
 endif()
 
-# CRT forcing (This section is sponsored by some smarty pants from Google)
+# CRT forcing (this section is sponsored by some smarty pants from Google that decided that static CRT is a good idea)
 if (WIN32 AND DEV_FORCE_CRT)
     if (DEV_FORCE_CRT STREQUAL "static_release")
         add_compile_definitions(_ITERATOR_DEBUG_LEVEL=0)
