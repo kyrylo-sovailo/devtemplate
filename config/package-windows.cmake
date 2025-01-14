@@ -20,10 +20,19 @@ target_sources(windows_installer PRIVATE "executable/installer-win32.cpp")
 target_compile_definitions(windows_installer PRIVATE UNICODE)
 target_compile_definitions(windows_installer PRIVATE
     ${DEV_MACRO_NAME}_NAME=${DEV_NAME}
+    ${DEV_MACRO_NAME}_CMAKE_NAME=${DEV_CMAKE_NAME}
     ${DEV_MACRO_NAME}_FILE_NAME=${DEV_FILE_NAME}
+    ${DEV_MACRO_NAME}_MACRO_NAME=${DEV_MACRO_NAME}
     ${DEV_MACRO_NAME}_MAJOR=${DEV_MAJOR}
     ${DEV_MACRO_NAME}_MINOR=${DEV_MINOR}
-    ${DEV_MACRO_NAME}_PATCH=${DEV_PATCH})
+    ${DEV_MACRO_NAME}_PATCH=${DEV_PATCH}
+    ${DEV_MACRO_NAME}_TYPE=${DEV_TYPE}
+    ${DEV_MACRO_NAME}_${DEV_TYPE}
+    ${DEV_MACRO_NAME}_DESCRIPTION=${DEV_DESCRIPTION}
+    ${DEV_MACRO_NAME}_CATEGORY=${DEV_CATEGORY}
+    ${DEV_MACRO_NAME}_HOMEPAGE=${DEV_HOMEPAGE}
+    ${DEV_MACRO_NAME}_EMAIL=${DEV_EMAIL}
+    ${DEV_MACRO_NAME}_AUTHOR=${DEV_AUTHOR})
 
 # Define pre-packaging target
 add_custom_target(windows_package DEPENDS ${DEV_PACKAGE_TARGETS} windows_installer)
