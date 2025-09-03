@@ -3,7 +3,7 @@ set(DEV_INSTALL_ROOT "${CMAKE_ARGV5}")
 set(DEV_PACKAGE_FILE "${CMAKE_ARGV6}")
 set(DEV_PRETEND False)
 
-set(DEV_PROTECTED "DEBIAN(/control)?$")
+set(DEV_PROTECTED "DEBIAN$|DEBIAN/control$|installer.exe$")
 
 # Get list of installed files and directories
 file(STRINGS "${PROJECT_BINARY_DIR}/install_manifest.txt" DEV_FILEPATHS)

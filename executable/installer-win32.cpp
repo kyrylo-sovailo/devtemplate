@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <functional>
+#include <thread>
 
 #define DEV_STRING2(s) #s
 #define DEV_STRING(s) DEV_STRING2(s)
@@ -88,7 +89,8 @@ public:
 class Progress : public Control
 {
 public:
-    Progress(const Parent *parent, unsigned int range, int left, int top, int width, int height);
+    Progress(const Parent *parent, int left, int top, int width, int height);
+    void set_range(unsigned int range);
     void step();
 };
 
@@ -107,53 +109,94 @@ public:
 class Util
 {
 public:
-    //Guards
-    struct ObjectGuard { IUnknown* r; ObjectGuard(IUnknown* r) : r(r) {} ~ObjectGuard() { r->Release(); } };
+    template <class T> struct ObjectGuard { T* r; ObjectGuard() : r(nullptr) {} ~ObjectGuard() { if (r != nullptr) r->Release(); } };
     struct FileGuard { HANDLE r; FileGuard(HANDLE r) : r(r) {} ~FileGuard() { CloseHandle(r); } };
     struct RegistryGuard { HKEY r; RegistryGuard(HKEY r) : r(r) {} ~RegistryGuard() { RegCloseKey(r); } };
     struct FindGuard { HANDLE r; FindGuard(HANDLE r) : r(r) {} ~FindGuard() { FindClose(r); } };
     struct MemoryGuard { HLOCAL r; MemoryGuard(HLOCAL r) : r(r) {} ~MemoryGuard() { LocalFree(r); } };
-
-    //Lowest level
-    static const unsigned char right_signature[8];
-    struct FileHeader
-    {
-        uint32_t files_count;
-        uint32_t payload_begin;
-        unsigned char signature[8];
-    };
-    static HANDLE open_self(uint32_t* file_size, uint32_t *files_count, uint32_t *payload_begin);
-
-    //Low level
+    
+    static void sanitize(tstring* directory);
+    static void pop_slash(tstring *directory);
+    static void push_slash(tstring* directory);
     static void create_shortcut(const tstring& target_path, const tstring& shortcut_path, const tstring& description);
-    static bool dialog_directory(tstring *directory, const tstring& description);
+    static bool dialog_directory(tstring* directory, const tstring& description);
     static bool dialog_close();
+    static void dialog_error(const char *error);
     static tstring get_executable_path();
     static tstring get_executable_directory();
     static tstring get_default_directory(HINSTANCE hinstance);
     static std::wstring string_to_wstring(const std::string& string);
     static std::string wstring_to_string(const std::wstring& string);
     static uint64_t get_available_space();
-    static uint64_t get_required_space();
-    static tstring get_space_string(uint64_t space);
+    static tstring get_space_string(uint64_t space, bool base1024);
     static tstring get_license();
+    static void copy(HANDLE handle, HANDLE whandle, uint64_t size);
+    static void create(const tstring& path, bool last_is_directory);
+};
+
+class Installer
+{
+public:
+    //Structures
+    struct FileHeader
+    {
+        uint64_t relative_path_size;
+        uint64_t file_size;
+    };
+    struct BackHeader
+    {
+        uint64_t payload_begin;
+        uint64_t payload_size;
+        uint32_t files_count;
+        uint32_t flags;
+        unsigned char signature[8];
+
+        static const uint32_t flag_uninstaller = 1;
+        static const uint32_t flag_desktop_shortcut = 2;
+        static const uint32_t flag_menu_shortcut = 4;
+        static const uint32_t flag_add_to_path = 8;
+        static const uint32_t flag_install_for_all = 16;
+        static const unsigned char right_signature[8];
+    };
+    #ifdef _DEBUG
+    static_assert(sizeof(FileHeader) == 16, "sizeof(FileHeader) != 16");
+    static_assert(sizeof(BackHeader) == 32, "sizeof(BackHeader) != 32");
+    volatile static const unsigned char debug_data[];
+    #endif
+
+    //Options
+    tstring directory;
+    bool desktop_shortcut = true;
+    bool menu_shortcut = true;
+    bool add_to_path = true;
+    bool install_for_all = true;
+
+    //Technical
+    HANDLE handle = INVALID_HANDLE_VALUE;
+    uint64_t payload_begin;
+    uint64_t payload_size;
+    uint32_t files_count;
+    bool is_uninstaller;
+
+    Installer(HINSTANCE hinstance);
+    ~Installer();
 
     //Install
-    static void install_files(const tstring& directory, std::function<void(unsigned int, unsigned int)> callback);
-    static void install_self(const tstring& directory);
-    static void install_registry(const tstring& directory, bool for_all);
-    static void install_desktop_shortcut(const tstring& directory, bool for_all);
-    static void install_menu_icon(const tstring& directory, bool for_all);
-    static void install_path(const tstring& directory, bool for_all);
-    static void run_application(const tstring& directory);
+    void install_files(std::function<void(const tstring&)> callback) const;
+    void install_self() const;
+    void install_registry() const;
+    void install_desktop_shortcut() const;
+    void install_menu_icon() const;
+    void install_path() const;
+    void run_application() const;
 
     //Uninstall
-    static void uninstall_files(std::function<void(unsigned int, unsigned int)> callback);
+    void uninstall_files(std::function<void(const tstring&)> callback) const;
     static void uninstall_self();
-    static void uninstall_registry();
-    static void uninstall_desktop_shortcut();
-    static void uninstall_menu_icon();
-    static void uninstall_path();
+    void uninstall_registry() const;
+    void uninstall_desktop_shortcut() const;
+    void uninstall_menu_icon() const;
+    void uninstall_path() const;
 };
 #pragma endregion
 
@@ -176,11 +219,6 @@ private:
         uninstall_finish
     };
     State _state;
-    tstring _directory;
-    bool _desktop_shortcut = true;
-    bool _menu_shortcut = true;
-    bool _add_to_path = true;
-    bool _install_for_all = true;
     bool _run_application = true;
 
     //Unique controls
@@ -208,9 +246,12 @@ private:
     std::unique_ptr<Checkbox> _checkbox_4;
 
     //Technical
+    Installer *_installer;
+    std::thread _thread;
     WNDCLASSEX _window_class;
     HBRUSH _background_brush;
     static const int OFFSET = 5;
+
     static LRESULT CALLBACK _handler(HWND handle, UINT message, WPARAM wparam, LPARAM lparam);
     void _initialize(HWND handle);
     void _refresh();
@@ -226,7 +267,9 @@ private:
     void _close_handler();
 
 public:
-    Window(HINSTANCE hinstance, bool uninstall);
+    static Window* static_window;
+    static bool static_block_commands;
+    Window(HINSTANCE hinstance, Installer *installer);
     int run();
     ~Window();
 };
@@ -251,8 +294,10 @@ void Control::set_position(int left, int top, int width, int height)
 
 void Control::set_text(const tstring &text)
 {
-    if (!SendMessage(_handle, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(text.c_str())))
-        throw std::runtime_error("SendMessage(WM_SETTEXT) failed");
+    Window::static_block_commands = true;
+    LRESULT result = SendMessage(_handle, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(text.c_str()));
+    Window::static_block_commands = false;
+    if (!result) throw std::runtime_error("SendMessage(WM_SETTEXT) failed");
 }
 
 std::wstring Control::get_text()
@@ -263,7 +308,7 @@ std::wstring Control::get_text()
         const int len = GetWindowText(_handle, &text[0], static_cast<int>(text.size()));
         if (len < 0) throw std::runtime_error("GetWindowText() failed");
         else if (static_cast<size_t>(len) == text.size() - 1) text.resize(2 * text.size());
-        else break;
+        else { text.resize(static_cast<size_t>(len)); break; };
     }
     return text;
 }
@@ -335,6 +380,7 @@ Edit::Edit(const Parent *parent, const Font *font, const TCHAR *text, int left, 
     _handle = CreateWindowEx(0, clas, text, style, left, top, width, height, parent->handle(), NULL, NULL, NULL);
     if (_handle == NULL) throw std::runtime_error("CreateWindowEx() failed");
     SendMessage(_handle, WM_SETFONT, (WPARAM)font->handle(), FALSE);
+    SendMessage(_handle, EM_SETEVENTMASK, 0, ENM_CHANGE);
 }
 
 WORD Button::_identifier_generator = 0;
@@ -377,13 +423,17 @@ bool Checkbox::get_check() const
     return SendMessage(_handle, BM_GETCHECK, 0, 0) == BST_CHECKED;
 }
 
-Progress::Progress(const Parent *parent, unsigned int range, int left, int top, int width, int height)
+Progress::Progress(const Parent *parent, int left, int top, int width, int height)
 {
     const DWORD style = static_cast<DWORD>(WS_VISIBLE | WS_CHILD | BS_CENTER | BS_TEXT | BS_VCENTER);
     _handle = CreateWindowEx(0, PROGRESS_CLASS, TEXT("progress"), style, left, top, width, height, parent->handle(), NULL, NULL, NULL);
     if (_handle == NULL) throw std::runtime_error("CreateWindowEx() failed");
-    SendMessage(_handle, PBM_SETRANGE, 0, MAKELPARAM(0, range));
     SendMessage(_handle, PBM_SETSTEP, (WPARAM)1, 0);
+}
+
+void Progress::set_range(unsigned int range)
+{
+    SendMessage(_handle, PBM_SETRANGE, 0, MAKELPARAM(0, range));
 }
 
 void Progress::step()
@@ -406,85 +456,93 @@ Groupbox::Groupbox(const Parent *parent, const Font *font, const TCHAR *text, in
     SendMessage(_handle, WM_SETFONT, (WPARAM)font->handle(), FALSE);
 }
 
-const unsigned char Util::right_signature[8] = { 137, 20, 14, 78, 66, 7, 48, 183 };
-
-HANDLE Util::open_self(uint32_t* file_size, uint32_t* files_count, uint32_t* payload_begin)
+void Util::sanitize(tstring* directory)
 {
-    tstring executable_path = get_executable_path();
-    HANDLE handle = CreateFile(executable_path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (handle == INVALID_HANDLE_VALUE) throw std::runtime_error("CreateFile() failed");
-    DWORD _file_size = GetFileSize(handle, nullptr);
-    DWORD bytes;
-    FileHeader header;
-    SetFilePointer(handle, static_cast<LONG>(_file_size - sizeof(header)), nullptr, FILE_BEGIN);
-    if (!ReadFile(handle, &header, sizeof(header), &bytes, nullptr) || bytes != sizeof(header))
-        { CloseHandle(handle); throw std::runtime_error("ReadFile() failed"); }
-    if (memcmp(header.signature, right_signature, sizeof(right_signature)) != 0)
-        { CloseHandle(handle); throw std::runtime_error("Invalid signature"); }
-    if (file_size != nullptr) *file_size = _file_size;
-    if (files_count != nullptr) *files_count = header.files_count;
-    if (payload_begin != nullptr) *payload_begin = header.payload_begin;
-    SetFilePointer(handle, static_cast<LONG>(header.payload_begin), nullptr, FILE_BEGIN);
-    return handle;
+    size_t i;
+    for (i = 0;
+        i < directory->size() && ((*directory)[i] == ' ' || (*directory)[i] == '\t' || (*directory)[i] == '\r' || (*directory)[i] == '\n');
+        i++) {}
+    directory->erase(directory->begin(), directory->begin() + static_cast<int64_t>(i));
+    for (;
+        !directory->empty() && (directory->back() == ' ' || directory->back() == '\t' || directory->back() == '\r' || directory->back() == '\n');
+        directory->pop_back()) {}
+    for (i = 0; i < directory->size(); i++) { if ((*directory)[i] == '/') (*directory)[i] = '\\'; }
+    for (i = 0; i+1 < directory->size();) { if ((*directory)[i] == '\\' && (*directory)[i+1] == '\\') directory->erase(i); else i++; }
+}
+
+void Util::pop_slash(tstring* directory)
+{
+    if (directory->empty()) throw std::runtime_error("Cannot find parent directory");
+    if (directory->back() == '/' || directory->back() == '\\') directory->pop_back();
+    size_t slash = directory->rfind('/');
+    size_t backslash = directory->rfind('\\');
+    size_t separator;
+    if (slash == tstring::npos && backslash == tstring::npos) throw std::runtime_error("Cannot find parent directory");
+    else if (slash == tstring::npos && backslash != tstring::npos) separator = backslash;
+    else if (slash != tstring::npos && backslash == tstring::npos) separator = slash;
+    else separator = (slash > backslash) ? slash : backslash;
+    directory->resize(separator + 1);
+}
+
+void Util::push_slash(tstring* directory)
+{
+    if (directory->empty() || (directory->back() != '/' && directory->back() != '\\')) directory->push_back('\\');
 }
 
 void Util::create_shortcut(const tstring& target_path, const tstring& link_path, const tstring& description)
 {
-    IShellLink* shell;
-    if (!SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shell))))
+    ObjectGuard<IShellLink> shell;
+    if (!SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shell.r))))
         throw std::runtime_error("CoCreateInstance() failed");
-    ObjectGuard guard1(shell);
 
-    if (!SUCCEEDED(shell->SetPath(target_path.c_str())))
+    if (!SUCCEEDED(shell.r->SetPath(target_path.c_str())))
         throw std::runtime_error("IShellLink::SetPath() failed");
 
-    if (!SUCCEEDED(shell->SetDescription(description.c_str())))
+    if (!SUCCEEDED(shell.r->SetDescription(description.c_str())))
         throw std::runtime_error("IShellLink::SetDescription() failed");
 
-    IPersistFile* file;
-    if (!SUCCEEDED(shell->QueryInterface(IID_PPV_ARGS(&file))))
+    ObjectGuard<IPersistFile> file;
+    if (!SUCCEEDED(shell.r->QueryInterface(IID_PPV_ARGS(&file.r))))
         throw std::runtime_error("IShellLink::QueryInterface() failed");
-    ObjectGuard guard2(file);
 
-    if (!SUCCEEDED(file->Save(link_path.c_str(), TRUE)))
+    if (!SUCCEEDED(file.r->Save(link_path.c_str(), TRUE)))
         throw std::runtime_error("IPersistFile::Save() failed");
 }
 
 bool Util::dialog_directory(tstring* directory, const tstring& description)
 {
-    IShellItem* shell = NULL;
-    if (!SUCCEEDED(SHCreateItemFromParsingName(directory->c_str(), NULL, IID_PPV_ARGS(&shell))))
+    ObjectGuard<IShellItem> shell;
+    if (!SUCCEEDED(SHCreateItemFromParsingName(directory->c_str(), NULL, IID_PPV_ARGS(&shell.r))))
         throw std::runtime_error("SHCreateItemFromParsingName() failed");
-    ObjectGuard guard1(shell);
 
-    IFileDialog* dialog;
-    if (!SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&dialog))))
+    ObjectGuard<IFileDialog> dialog;
+    if (!SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&dialog.r))))
         throw std::runtime_error("CoCreateInstance() failed");
-    ObjectGuard guard2(dialog);
 
     DWORD flags;
-    if (!SUCCEEDED(dialog->GetOptions(&flags)))
+    if (!SUCCEEDED(dialog.r->GetOptions(&flags)))
         throw std::runtime_error("IFileDialog::GetOptions() failed");
 
-    if (!SUCCEEDED(dialog->SetOptions(flags | FOS_PICKFOLDERS)))
+    if (!SUCCEEDED(dialog.r->SetOptions(flags | FOS_PICKFOLDERS)))
         throw std::runtime_error("IFileDialog::SetOptions() failed");
 
-    if (!SUCCEEDED(dialog->SetTitle(description.c_str())))
+    if (!SUCCEEDED(dialog.r->SetTitle(description.c_str())))
         throw std::runtime_error("IFileDialog::SetTitle() failed");
 
-    if (!SUCCEEDED(dialog->SetDefaultFolder(shell)) || !SUCCEEDED(dialog->SetFolder(shell)))
+    if (!SUCCEEDED(dialog.r->SetDefaultFolder(shell.r)) || !SUCCEEDED(dialog.r->SetFolder(shell.r)))
         throw std::runtime_error("IFileDialog::SetDefaultFolder() failed");
 
-    if (!SUCCEEDED(dialog->Show(NULL))) return false;
+    if (!SUCCEEDED(dialog.r->Show(NULL))) return false;
 
-    IShellItem* result;
-    if (!SUCCEEDED(dialog->GetResult(&result))) return false;
-    ObjectGuard guard3(result);
+    ObjectGuard<IShellItem> result;
+    if (!SUCCEEDED(dialog.r->GetResult(&result.r))) return false;
 
     PWSTR selected;
-    if (!SUCCEEDED(result->GetDisplayName(SIGDN_FILESYSPATH, &selected))) return false;
+    if (!SUCCEEDED(result.r->GetDisplayName(SIGDN_FILESYSPATH, &selected))) return false;
     *directory = selected;
     CoTaskMemFree(selected);
+
+    push_slash(directory);
     return true;
 }
 
@@ -495,6 +553,22 @@ bool Util::dialog_close()
         TEXT("" DEV_NAME_VERSION " Setup"),
         MB_ICONEXCLAMATION | MB_YESNO);
     return reply == IDYES;
+}
+
+void Util::dialog_error(const char* error)
+{
+    const TCHAR* text;
+    #if UNICODE
+        std::wstring wtext = Util::string_to_wstring(error);
+        text = wtext.c_str();
+    #else
+        text = error;
+    #endif
+    MessageBox(NULL,
+        text,
+        TEXT("Error"),
+        MB_ICONERROR | MB_OK);
+    std::cerr << error << std::endl;
 }
 
 tstring Util::get_executable_path()
@@ -513,7 +587,7 @@ tstring Util::get_executable_path()
 tstring Util::get_executable_directory()
 {
     tstring directory = get_executable_path();
-    directory.resize(directory.rfind('\\') + 1);
+    pop_slash(&directory);
     return directory;
 }
 
@@ -530,6 +604,7 @@ tstring Util::get_default_directory(HINSTANCE hinstance)
     if (SHGetFolderPath(NULL, default_directory_id, NULL, 0, default_directory_array) != S_OK)
         throw std::runtime_error("SHGetFolderPath() failed");
     tstring default_directory = default_directory_array;
+    if (!default_directory.empty() && default_directory.back()) default_directory.push_back('\\');
     default_directory += TEXT(DEV_NAME "\\");
     return default_directory;
 }
@@ -566,23 +641,26 @@ uint64_t Util::get_available_space()
     return static_cast<uint64_t>(sectors_per_cluser) * static_cast<uint64_t>(bytes_per_sector) * static_cast<uint64_t>(free_clusters);
 }
 
-uint64_t Util::get_required_space()
-{
-    uint32_t file_size, payload_begin;
-    HANDLE handle = open_self(&file_size, nullptr, &payload_begin);
-    FileGuard guard(handle);
-    return static_cast<uint64_t>(file_size) - static_cast<uint64_t>(payload_begin);
-}
-
-tstring Util::get_space_string(uint64_t space)
+tstring Util::get_space_string(uint64_t space, bool base1024)
 {
     uint64_t unit;
     const TCHAR* unit_name;
-    if (space < 1000) { unit = 1; unit_name = TEXT("B"); }
-    else if (space < 1000'000) { unit = 1000; unit_name = TEXT("KB"); }
-    else if (space < 1000'000'000) { unit = 1000'000; unit_name = TEXT("MB"); }
-    else if (space < 1000'000'000'000) { unit = 1000'000'000; unit_name = TEXT("GB"); }
-    else { unit = 1000'000'000'000; unit_name = TEXT("TB"); }
+    if (base1024)
+    {
+        if (space < 1024ull) { unit = 1; unit_name = TEXT("B"); }
+        else if (space < 1024ull*1024ull) { unit = 1024ull; unit_name = TEXT("KiB"); }
+        else if (space < 1024ull*1024ull*1024ull) { unit = 1024ull*1024ull; unit_name = TEXT("MiB"); }
+        else if (space < 1024ull*1024ull*1024ull*1024ull) { unit = 1024ull*1024ull*1024ull; unit_name = TEXT("GiB"); }
+        else { unit = 1024ull*1024ull*1024ull*1024ull; unit_name = TEXT("TiB"); }
+    }
+    else
+    {
+        if (space < 1000ull) { unit = 1; unit_name = TEXT("B"); }
+        else if (space < 1000ull*1000ull) { unit = 1000ull; unit_name = TEXT("KB"); }
+        else if (space < 1000ull*1000ull*1000ull) { unit = 1000ull*1000ull; unit_name = TEXT("MB"); }
+        else if (space < 1000ull*1000ull*1000ull*1000ull) { unit = 1000ull*1000ull*1000ull; unit_name = TEXT("GB"); }
+        else { unit = 1000ull*1000ull*1000ull*1000ull; unit_name = TEXT("TB"); }
+    }
     double number = static_cast<double>(space) / static_cast<double>(unit);
     std::basic_ostringstream<TCHAR> stream;
     stream << std::setprecision(2) << number << " " << unit_name;
@@ -605,78 +683,185 @@ tstring Util::get_license()
     #endif
 }
 
-void Util::install_files(const tstring& diretory, std::function<void(unsigned int, unsigned int)> callback)
+void Util::copy(HANDLE handle, HANDLE whandle, uint64_t size)
 {
-    uint32_t files_count;
-    HANDLE handle = open_self(nullptr, &files_count, nullptr);
-    FileGuard guard(handle);
+    while (size > 0)
+    {
+        DWORD read;
+        char buffer[4096];
+        DWORD to_read = static_cast<DWORD>((size > sizeof(buffer)) ? sizeof(buffer) : size);
+        if (!ReadFile(handle, buffer, to_read, &read, nullptr) || read != to_read) throw std::runtime_error("ReadFile() failed");
+        if (!WriteFile(whandle, buffer, to_read, &read, nullptr) || read != to_read) throw std::runtime_error("WriteFile() failed");
+        size -= to_read;
+    }
+}
+
+void Util::create(const tstring& path, bool last_is_directory)
+{
+    DWORD flags = GetFileAttributes(path.c_str());
+    bool exists = flags != INVALID_FILE_ATTRIBUTES;
+    bool is_directory = exists && (flags & FILE_ATTRIBUTE_DIRECTORY) != 0;
+    if (exists && (last_is_directory ^ is_directory)) throw std::runtime_error("Unable to create directory");
+    if (exists) return;
+    tstring path_copy = path;
+    pop_slash(&path_copy);
+    create(path_copy, true);
+    if (last_is_directory && !CreateDirectory(path.c_str(), nullptr)) throw std::runtime_error("Unable to create directory");
+}
+
+const unsigned char Installer::BackHeader::right_signature[8] = { 137, 20, 14, 78, 66, 7, 48, 183 };
+
+#ifdef _DEBUG
+volatile const unsigned char Installer::debug_data[] = {
+    14, 0, 0, 0, 0, 0, 0, 0, //uint64_t name_size = 14
+    5, 0, 0, 0, 0, 0, 0, 0,//uint64_t file_size = 5
+    'd', 0, 'a', 0, 't', 0, 'a', 0, '/', 0, 'd', 0, 'e', 0, 'b', 0, 'u', 0, 'g', 0, '.', 0, 't', 0, 'x', 0, 't', 0, //data/debug.txt
+    'd', 'e', 'b', 'u', 'g', //debug
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, //uint64_t payload_begin = -1
+    5, 0, 0, 0, 0, 0, 0, 0, //uint64_t payload_size = 5
+    1, 0, 0, 0, //uint32_t files_count = 1
+    0xfe, 0xff, 0xff, 0xff, //uint32_t flags = -2
+    138, 20, 14, 78, 66, 7, 48, 183 //right_installer_signature + 1
+};
+#endif
+
+Installer::Installer(HINSTANCE hinstance)
+{
+    tstring executable_path = Util::get_executable_path();
+    Util::FileGuard ghandle(CreateFile(executable_path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+    if (ghandle.r == INVALID_HANDLE_VALUE) throw std::runtime_error("CreateFile() failed");
+    DWORD self_size = GetFileSize(ghandle.r, nullptr);
+    BackHeader header;
+    DWORD read;
+
+    #ifdef _DEBUG
     
+    unsigned char right_signature[sizeof(BackHeader::right_signature)];
+    memcpy(right_signature, BackHeader::right_signature, sizeof(right_signature));
+    right_signature[0]++;
+    unsigned int match = 0;
+    for (payload_begin = 0; payload_begin < self_size && match != sizeof(right_signature); payload_begin++)
+    {
+        unsigned char c;
+        if (!ReadFile(ghandle.r, &c, 1, &read, nullptr) || read != 1) throw std::runtime_error("ReadFile() failed");
+        if (c == right_signature[match]) match++; else match = 0;
+    }
+    if (match != sizeof(right_signature)) throw std::runtime_error("Debug signature not found");
+    payload_begin -= sizeof(BackHeader);
+    SetFilePointer(ghandle.r, static_cast<LONG>(payload_begin), nullptr, FILE_BEGIN);
+    if (!ReadFile(ghandle.r, &header, sizeof(header), &read, nullptr) || read != sizeof(header)) throw std::runtime_error("ReadFile() failed");
+    payload_begin -= (sizeof(debug_data) - sizeof(BackHeader));
+    
+    #else
+    
+    SetFilePointer(ghandle.r, static_cast<LONG>(self_size - sizeof(header)), nullptr, FILE_BEGIN);
+    if (!ReadFile(ghandle.r, &header, sizeof(header), &read, nullptr) || read != sizeof(header)) throw std::runtime_error("ReadFile() failed");
+    if (memcmp(header.signature, BackHeader::right_signature, sizeof(header.signature)) != 0)
+        throw std::runtime_error("Invalid signature");
+    payload_begin = header.payload_begin;
+    
+    #endif
+
+    payload_size = header.payload_size;
+    files_count = header.files_count;
+    is_uninstaller = (header.flags & BackHeader::flag_uninstaller) != 0;
+    if (is_uninstaller)
+    {
+        directory = Util::get_executable_directory();
+        desktop_shortcut = (header.flags & BackHeader::flag_desktop_shortcut) != 0;
+        menu_shortcut = (header.flags & BackHeader::flag_menu_shortcut) != 0;
+        add_to_path = (header.flags & BackHeader::flag_add_to_path) != 0;
+        install_for_all = (header.flags & BackHeader::flag_install_for_all) != 0;
+    }
+    else
+    {
+        directory = Util::get_default_directory(hinstance);
+    }
+    handle = ghandle.r;
+    ghandle.r = INVALID_HANDLE_VALUE;
+}
+
+Installer::~Installer()
+{
+    if (handle != INVALID_HANDLE_VALUE) CloseHandle(handle);
+}
+
+void Installer::install_files(std::function<void(const tstring&)> callback) const
+{
+    SetFilePointer(handle, static_cast<LONG>(payload_begin), nullptr, FILE_BEGIN);
+
     //Process
     for (uint32_t i = 0; i < files_count; i++)
     {
-        //Read path
-        DWORD bytes;
-        uint32_t relative_path_size;
-        if (!ReadFile(handle, &relative_path_size, sizeof(relative_path_size), &bytes, nullptr) || bytes != sizeof(relative_path_size))
-            throw std::runtime_error("ReadFile() failed");
-        std::wstring relative_path(relative_path_size, '\0');
-        if (!ReadFile(handle, &relative_path_size, relative_path_size * sizeof(wchar_t), &bytes, nullptr) || bytes != relative_path_size * sizeof(wchar_t))
+        //Read header
+        FileHeader file_header;
+        DWORD read;
+        if (!ReadFile(handle, &file_header, sizeof(file_header), &read, nullptr) || read != sizeof(file_header))
             throw std::runtime_error("ReadFile() failed");
 
-        //Read size
-        uint32_t wfile_size;
-        if (!ReadFile(handle, &wfile_size, sizeof(wfile_size), &bytes, nullptr) || bytes != sizeof(wfile_size))
-            throw std::runtime_error("ReadFile() failed");
+        //Read name
+        std::wstring relative_path(file_header.relative_path_size, '\0');
+        if (!ReadFile(handle, &relative_path[0], static_cast<DWORD>(relative_path.size() * sizeof(wchar_t)), &read, nullptr)
+        || read != relative_path.size() * sizeof(wchar_t)) throw std::runtime_error("ReadFile() failed");
+        
+        #ifdef UNICODE
+        callback(L"Copying " + relative_path);
+        #else
+        callback("Copying " + Installer::wstring_to_string(relative_path));
+        #endif
 
-        //Write file
-        std::wstring absolute_path = diretory + relative_path;
-        HANDLE whandle = CreateFile(absolute_path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (whandle == INVALID_HANDLE_VALUE) throw std::runtime_error("CreateFile() failed");
-        FileGuard guard2(whandle);
-        while (wfile_size > 0)
-        {
-            char buffer[4096];
-            DWORD to_read = (wfile_size > sizeof(buffer)) ? sizeof(buffer) : wfile_size;
-            if (!ReadFile(handle, buffer, to_read, &bytes, nullptr) || bytes != to_read) throw std::runtime_error("ReadFile() failed");
-            if (!WriteFile(whandle, buffer, to_read, &bytes, nullptr) || bytes != to_read) throw std::runtime_error("WriteFile() failed");
-            wfile_size -= to_read;
-        }
+        //Copy file
+        std::wstring absolute_path = directory + relative_path;
+        Util::create(absolute_path, false);
+        Util::FileGuard whandle(CreateFile(absolute_path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
+        if (whandle.r == INVALID_HANDLE_VALUE) throw std::runtime_error("CreateFile() failed");
+        Util::copy(handle, whandle.r, file_header.file_size);
     }
 }
 
-void Util::install_self(const tstring& directory)
+void Installer::install_self() const
 {
-    uint32_t files_count, payload_begin;
-    HANDLE handle = open_self(nullptr, &files_count, &payload_begin);
-    FileGuard guard(handle);
     SetFilePointer(handle, 0, nullptr, FILE_BEGIN);
 
-    //Write file
-    DWORD bytes;
+    //Copy original file
     tstring absolute_path = directory + TEXT("uninstall.exe");
-    HANDLE whandle = CreateFile(absolute_path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (whandle == INVALID_HANDLE_VALUE) throw std::runtime_error("CreateFile() failed");
-    FileGuard guard2(whandle);
-    for (DWORD wfile_size = payload_begin; wfile_size > 0;)
+    Util::FileGuard whandle(CreateFile(absolute_path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
+    if (whandle.r == INVALID_HANDLE_VALUE) throw std::runtime_error("CreateFile() failed");
+    Util::copy(handle, whandle.r, payload_begin);
+
+    //Copy file headers
+    for (uint32_t i = 0; i < files_count; i++)
     {
-        char buffer[4096];
-        DWORD to_read = (wfile_size > sizeof(buffer)) ? sizeof(buffer) : wfile_size;
-        if (!ReadFile(handle, buffer, to_read, &bytes, nullptr) || bytes != to_read) throw std::runtime_error("ReadFile() failed");
-        if (!WriteFile(whandle, buffer, to_read, &bytes, nullptr) || bytes != to_read) throw std::runtime_error("WriteFile() failed");
-        wfile_size -= to_read;
+        //Copy header
+        FileHeader file_header;
+        DWORD read;
+        if (!ReadFile(handle, &file_header, sizeof(file_header), &read, nullptr) || read != sizeof(file_header))
+            throw std::runtime_error("ReadFile() failed");
+        if (!WriteFile(whandle.r, &file_header, sizeof(file_header), &read, nullptr) || read != sizeof(file_header))
+            throw std::runtime_error("WriteFile() failed");
+
+        //Copy name
+        Util::copy(handle, whandle.r, file_header.relative_path_size * sizeof(wchar_t));
     }
 
-    //Write header
-    FileHeader header;
-    header.files_count = files_count;
+    //Copy signature
+    BackHeader header;
     header.payload_begin = payload_begin;
-    memcpy(header.signature, right_signature, sizeof(right_signature));
-    if (!WriteFile(whandle, &header, sizeof(header), &bytes, nullptr) || bytes != sizeof(header)) throw std::runtime_error("WriteFile() failed");
+    header.payload_size = payload_size;
+    header.files_count = files_count;
+    header.flags = BackHeader::flag_uninstaller;
+    if (desktop_shortcut) header.flags |= BackHeader::flag_desktop_shortcut;
+    if (menu_shortcut) header.flags |= BackHeader::flag_menu_shortcut;
+    if (add_to_path) header.flags |= BackHeader::flag_add_to_path;
+    if (install_for_all) header.flags |= BackHeader::flag_install_for_all;
+    DWORD written;
+    if (!WriteFile(whandle.r, &header, sizeof(header), &written, nullptr) || written != sizeof(header))
+        throw std::runtime_error("WriteFile() failed");
 }
 
-void Util::install_registry(const tstring& directory, bool for_all)
+void Installer::install_registry() const
 {
-    HKEY key = for_all ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+    HKEY key = install_for_all ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
     const TCHAR* subkey = TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" DEV_NAME);
     std::runtime_error e("RegSetKeyValue() failed");
     tstring s;
@@ -701,7 +886,7 @@ void Util::install_registry(const tstring& directory, bool for_all)
     if (RegSetKeyValue(key, subkey, TEXT("QuietUninstallString"), REG_SZ, s.c_str(), static_cast<DWORD>(s.size() * sizeof(TCHAR))) != ERROR_SUCCESS) throw e;
     
     //Numbers
-    d = static_cast<DWORD>(get_required_space() / static_cast<uint64_t>(1000)); //Assuming kilobytes
+    d = static_cast<DWORD>(payload_size / static_cast<uint64_t>(1000)); //Assuming kilobytes
     if (RegSetKeyValue(key, subkey, TEXT("EstimatedSize"), REG_DWORD, reinterpret_cast<const TCHAR*>(&d), sizeof(d)) != ERROR_SUCCESS) throw e;
     d = 1;
     if (RegSetKeyValue(key, subkey, TEXT("NoModify"), REG_DWORD, reinterpret_cast<const TCHAR*>(&d), sizeof(d)) != ERROR_SUCCESS) throw e;
@@ -713,30 +898,32 @@ void Util::install_registry(const tstring& directory, bool for_all)
     if (RegSetKeyValue(key, subkey, TEXT("VersionMinor"), REG_DWORD, reinterpret_cast<const TCHAR*>(&d), sizeof(d)) != ERROR_SUCCESS) throw e;
 }
 
-void Util::install_desktop_shortcut(const tstring& directory, bool for_all)
+void Installer::install_desktop_shortcut() const
 {
     TCHAR desktop_directory_array[MAX_PATH];
-    if (SHGetFolderPath(NULL, for_all ? CSIDL_COMMON_DESKTOPDIRECTORY : CSIDL_DESKTOPDIRECTORY, NULL, 0, desktop_directory_array) != S_OK)
+    if (SHGetFolderPath(NULL, install_for_all ? CSIDL_COMMON_DESKTOPDIRECTORY : CSIDL_DESKTOPDIRECTORY, NULL, 0, desktop_directory_array) != S_OK)
         throw std::runtime_error("SHGetFolderPath() failed");
     tstring desktop_directory = desktop_directory_array;
-    create_shortcut(directory + TEXT(DEV_NAME ".exe"), desktop_directory + TEXT(DEV_NAME ".lnk"), TEXT("TODO: Write description"));
+    Util::push_slash(&desktop_directory);
+    Util::create_shortcut(directory + TEXT(DEV_NAME ".exe"), desktop_directory + TEXT(DEV_NAME ".lnk"), TEXT(DEV_STRING(DEVTEMPLATE_DESCRIPTION)));
 }
 
-void Util::install_menu_icon(const tstring& directory, bool for_all)
+void Installer::install_menu_icon() const
 {
-    //TODO: refactor
-    TCHAR desktop_directory_array[MAX_PATH];
-    if (SHGetFolderPath(NULL, for_all ? CSIDL_COMMON_PROGRAMS : CSIDL_PROGRAMS, NULL, 0, desktop_directory_array) != S_OK)
+    //TODO: refactor and merge with install_desktop_shortcut
+    TCHAR menu_directory_array[MAX_PATH];
+    if (SHGetFolderPath(NULL, install_for_all ? CSIDL_COMMON_PROGRAMS : CSIDL_PROGRAMS, NULL, 0, menu_directory_array) != S_OK)
         throw std::runtime_error("SHGetFolderPath() failed");
-    tstring desktop_directory = desktop_directory_array;
-    create_shortcut(directory + TEXT(DEV_NAME ".exe"), desktop_directory + TEXT(DEV_NAME ".lnk"), TEXT("TODO: Write description"));
+    tstring menu_directory = menu_directory_array;
+    Util::push_slash(&menu_directory);
+    Util::create_shortcut(directory + TEXT(DEV_NAME ".exe"), menu_directory + TEXT(DEV_NAME ".lnk"), TEXT(DEV_STRING(DEVTEMPLATE_DESCRIPTION)));
 }
 
-void Util::install_path(const tstring& location, bool for_all)
+void Installer::install_path() const
 {
     //Get path
-    HKEY key = for_all ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-    const TCHAR* subkey = for_all ? TEXT("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\\") : TEXT("Environment\\");
+    HKEY key = install_for_all ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+    const TCHAR* subkey = install_for_all ? TEXT("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\\") : TEXT("Environment\\");
     tstring path;
     DWORD path_size = 0;
     if (RegGetValue(key, subkey, TEXT("PATH"), RRF_RT_REG_SZ, NULL, NULL, &path_size) == ERROR_SUCCESS)
@@ -747,15 +934,16 @@ void Util::install_path(const tstring& location, bool for_all)
     }
 
     //Process path
-    if (path.empty() || path.back() != ';') path += ';';
-    path += location;
+    if (path.find(directory) != tstring::npos) return;
+    else if (path.empty()) path = directory;
+    else { if (path.back() != ';') path.push_back(';'); path += directory; }
 
     //Set path
     if (RegSetKeyValue(key, subkey, TEXT("PATH"), REG_SZ, path.c_str(), static_cast<DWORD>(path.size() * sizeof(TCHAR))) != ERROR_SUCCESS)
         throw std::runtime_error("RegSetKeyValue() failed");
 }
 
-void Util::run_application(const tstring& directory)
+void Installer::run_application() const
 {
     STARTUPINFO startup_info = { 0 };
     startup_info.cb = sizeof(startup_info);
@@ -766,17 +954,16 @@ void Util::run_application(const tstring& directory)
     CloseHandle(process_info.hThread);
 }
 
-void Util::uninstall_files(std::function<void(unsigned int, unsigned int)> callback)
+void Installer::uninstall_files(std::function<void(const tstring&)> callback) const
 {
     struct Remove
     {
-        static void remove(unsigned int depth, unsigned int * progress, unsigned int total, std::function<void(unsigned int, unsigned int)> callback, const tstring &directory)
+        static void remove(unsigned int depth, std::function<void(const tstring&)> callback, const tstring &directory, size_t absolute_size)
         {
             tstring pattern = directory + TEXT("*");
             WIN32_FIND_DATA find;
-            HANDLE handle = FindFirstFile(pattern.c_str(), &find);
-            if (handle == INVALID_HANDLE_VALUE) return;
-            FindGuard guard(handle);
+            Util::FindGuard handle(FindFirstFile(pattern.c_str(), &find));
+            if (handle.r == INVALID_HANDLE_VALUE) return;
 
             while (true)
             {
@@ -794,30 +981,24 @@ void Util::uninstall_files(std::function<void(unsigned int, unsigned int)> callb
                 else if ((find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
                 {
                     tstring path = directory + TEXT("\\") + find.cFileName + TEXT("\\");
-                    remove(depth + 1, progress, total, callback, path);
+                    remove(depth + 1, callback, path, absolute_size);
                     if (!RemoveDirectory(path.c_str())) throw std::runtime_error("RemoveDirectory() failed");
                 }
                 else
                 {
                     tstring path = directory + TEXT("\\") + find.cFileName;
                     if (!DeleteFile(path.c_str())) throw std::runtime_error("DeleteFile() failed");
-                    (*progress)++;
-                    callback(*progress, total);
+                    tstring message = TEXT("Removing ") + path.substr(absolute_size);
+                    callback(message);
                 }
-                if (!FindNextFile(handle, &find)) break;
+                if (!FindNextFile(handle.r, &find)) break;
             }
         }
     };
-
-    uint32_t files_count;
-    HANDLE handle = open_self(nullptr, &files_count, nullptr);
-    CloseHandle(handle);
-
-    unsigned int progress = 0;
-    Remove::remove(0, &progress, files_count, callback, get_executable_directory());
+    Remove::remove(0, callback, directory, directory.size());
 }
 
-void Util::uninstall_self()
+void Installer::uninstall_self()
 {
     //Get temp folder
     tstring temp(256, '\0');
@@ -832,7 +1013,7 @@ void Util::uninstall_self()
     temp += TEXT("uninstall.exe");
 
     //Make copy of ourselves
-    tstring self = get_executable_path();
+    tstring self = Util::get_executable_path();
     if (!CopyFile(self.c_str(), temp.c_str(), false)) throw std::runtime_error("CopyFile() failed");
 
     //Delete the copy when we die
@@ -852,51 +1033,88 @@ void Util::uninstall_self()
     CloseHandle(process_info.hThread);
 }
 
-void Util::uninstall_registry()
-{}
+void Installer::uninstall_registry() const
+{
+    HKEY key = install_for_all ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+    const TCHAR* subkey = TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" DEV_NAME);
+    RegDeleteKey(key, subkey);
+    RegDeleteKey(key, subkey);
+}
 
-void Util::uninstall_desktop_shortcut()
-{}
+void Installer::uninstall_desktop_shortcut() const
+{
+    TCHAR desktop_directory_array[MAX_PATH];
+    if (SHGetFolderPath(NULL, install_for_all ? CSIDL_COMMON_DESKTOPDIRECTORY : CSIDL_DESKTOPDIRECTORY, NULL, 0, desktop_directory_array) != S_OK)
+        throw std::runtime_error("SHGetFolderPath() failed");
+    tstring desktop_directory = desktop_directory_array;
+    Util::push_slash(&desktop_directory);
+    desktop_directory += TEXT(DEV_NAME ".lnk");
+    DeleteFile(desktop_directory.c_str());
+}
 
-void Util::uninstall_menu_icon()
-{}
+void Installer::uninstall_menu_icon() const
+{
+    TCHAR menu_directory_array[MAX_PATH];
+    if (SHGetFolderPath(NULL, install_for_all ? CSIDL_COMMON_PROGRAMS : CSIDL_PROGRAMS, NULL, 0, menu_directory_array) != S_OK)
+        throw std::runtime_error("SHGetFolderPath() failed");
+    tstring menu_directory = menu_directory_array;
+    Util::push_slash(&menu_directory);
+    menu_directory += TEXT(DEV_NAME ".lnk");
+    DeleteFile(menu_directory.c_str());
+}
 
-void Util::uninstall_path()
-{}
+void Installer::uninstall_path() const
+{
+    HKEY key = install_for_all ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+    const TCHAR* subkey = install_for_all ? TEXT("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\\") : TEXT("Environment\\");
+    tstring path;
+    DWORD path_size = 0;
+    if (RegGetValue(key, subkey, TEXT("PATH"), RRF_RT_REG_SZ, NULL, NULL, &path_size) != ERROR_SUCCESS) return;
+    path.resize(path_size / sizeof(TCHAR), '\0');
+    if (RegGetValue(key, subkey, TEXT("PATH"), RRF_RT_REG_SZ, NULL, &path[0], &path_size) != ERROR_SUCCESS) return;
+    size_t entry = path.find(directory);
+    if (entry == tstring::npos) return;
+    path.erase(path.begin(), path.begin() + static_cast<int64_t>(directory.size()));
+    RegSetKeyValue(key, subkey, TEXT("PATH"), REG_SZ, path.c_str(), static_cast<DWORD>(path.size() * sizeof(TCHAR)));
+}
 #pragma endregion
 
 #pragma region Window implementation
 LRESULT CALLBACK Window::_handler(HWND handle, UINT message, WPARAM wparam, LPARAM lparam)
 {
-    static Window* window = nullptr;
-
     try
     {
         switch (message)
         {
         case WM_CREATE:
         {
-            window = static_cast<Window*>((reinterpret_cast<CREATESTRUCT*>(lparam))->lpCreateParams);
-            window->_initialize(handle);
+            static_window = static_cast<Window*>((reinterpret_cast<CREATESTRUCT*>(lparam))->lpCreateParams);
+            static_window->_initialize(handle);
             return 0;
         }
         case WM_COMMAND:
         {
-            if (HIWORD(wparam) == BN_CLICKED && window->_button_browse->identify(wparam)) window->_button_browse_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_button_previous->identify(wparam)) window->_button_previous_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_button_next->identify(wparam)) window->_button_next_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_button_cancel->identify(wparam)) window->_button_cancel_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_checkbox_1->identify(wparam)) window->_checkbox_1_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_checkbox_2->identify(wparam)) window->_checkbox_2_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_checkbox_3->identify(wparam)) window->_checkbox_3_handler();
-            else if (HIWORD(wparam) == BN_CLICKED && window->_checkbox_4->identify(wparam)) window->_checkbox_4_handler();
+            if (static_block_commands) return 0;
+            if (HIWORD(wparam) == BN_CLICKED && static_window->_button_browse->identify(wparam)) static_window->_button_browse_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_button_previous->identify(wparam)) static_window->_button_previous_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_button_next->identify(wparam)) static_window->_button_next_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_button_cancel->identify(wparam)) static_window->_button_cancel_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_checkbox_1->identify(wparam)) static_window->_checkbox_1_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_checkbox_2->identify(wparam)) static_window->_checkbox_2_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_checkbox_3->identify(wparam)) static_window->_checkbox_3_handler();
+            else if (HIWORD(wparam) == BN_CLICKED && static_window->_checkbox_4->identify(wparam)) static_window->_checkbox_4_handler();
+            else if (HIWORD(wparam) == EN_CHANGE) //TODO: no identifications
+            {
+                static_window->_installer->directory = static_window->_edit_directory->get_text();
+                Util::sanitize(&static_window->_installer->directory);
+                Util::push_slash(&static_window->_installer->directory);
+            }
             else break;
             return 0;
         }
         case WM_CLOSE:
         {
-            window->_close_handler();
-            if (Util::dialog_close()) DestroyWindow(handle);
+            static_window->_close_handler();
             return 0;
         }
         case WM_ERASEBKGND:
@@ -904,7 +1122,7 @@ LRESULT CALLBACK Window::_handler(HWND handle, UINT message, WPARAM wparam, LPAR
             HDC hdc = (HDC)(wparam);
             RECT rect;
             GetClientRect(handle, &rect);
-            FillRect(hdc, &rect, window->_background_brush);
+            FillRect(hdc, &rect, static_window->_background_brush);
             return 0;
         }
         case WM_CTLCOLORBTN:
@@ -924,18 +1142,7 @@ LRESULT CALLBACK Window::_handler(HWND handle, UINT message, WPARAM wparam, LPAR
     }
     catch (const std::exception& e)
     {
-        const TCHAR* text;
-        #if UNICODE
-            std::wstring wtext = Util::string_to_wstring(e.what());
-            text = wtext.c_str();
-        #else
-            text = e.what();
-        #endif
-        MessageBox(NULL,
-            TEXT("Are you sure you want to quit " DEV_NAME_VERSION " Setup"),
-            TEXT("Error"),
-            MB_ICONERROR | MB_OK);
-        std::cerr << e.what() << std::endl;
+        Util::dialog_error(e.what());
         return -1;
     }
 }
@@ -944,7 +1151,6 @@ void Window::_initialize(HWND handle)
 {
     _handle = handle;
     _background_brush = CreateSolidBrush(RGB(240, 240, 240));
-    _directory = Util::get_default_directory(_window_class.hInstance);
     tstring license = Util::get_license();
 
     RECT rect;
@@ -963,9 +1169,9 @@ void Window::_initialize(HWND handle)
     _label_subtitle = std::unique_ptr<Label>(new Label(this, _common_font.get(), TEXT(""), 30, 60, width - 60, 30));
     _license_richedit = std::unique_ptr<Richedit>(new Richedit(this, _license_font.get(), license.c_str(), 30, 150, width - 60, height - 300));
     _groupbox_directory = std::unique_ptr<Groupbox>(new Groupbox(this, _license_font.get(), TEXT("Location"), 30, 200, width - 60, 60));
-    _edit_directory = std::unique_ptr<Edit>(new Edit(this, _common_font.get(), TEXT("C:\\Program Files\\"), 45, 215 + 4, width - 190, 30));
+    _edit_directory = std::unique_ptr<Edit>(new Edit(this, _common_font.get(), _installer->directory.c_str(), 45, 215 + 4, width - 190, 30));
     _button_browse = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Browse"), false, width - 135, 215 + 4, 90, 30));
-    _progress = std::unique_ptr<Progress>(new Progress(this, 100, 30, 150, width - 60, 30));
+    _progress = std::unique_ptr<Progress>(new Progress(this, 30, 150, width - 60, 30));
     _button_previous = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Previous"), false, width - 305, height - 45, 90, 30));
     _button_next = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT(""), true, width - 210, height - 45, 90, 30));
     _button_cancel = std::unique_ptr<Button>(new Button(this, _common_font.get(), TEXT("Cancel"), false, width - 105, height - 45, 90, 30));
@@ -1057,8 +1263,8 @@ void Window::_refresh()
         _edit_directory->set_visible(true);
         _button_browse->set_visible(true);
         _label_2->set_position(30, height - 150, width - 60, 60);
-        _label_2->set_text(TEXT("Space required: 10.0 Mb\r\n"
-            "Space available : 10.0 Gb"));
+        _label_2->set_text(TEXT("Space required: ") + Util::get_space_string(_installer->payload_size, false) + TEXT("\r\n")
+            TEXT("Space available: ") + Util::get_space_string(Util::get_available_space(), false));
         _label_2->set_visible(true);
         break;
     case State::components:
@@ -1072,36 +1278,92 @@ void Window::_refresh()
         _checkbox_1->set_position(30, 120, width - 60, 30);
         _checkbox_1->set_text(TEXT("Create Shortcut on Desktop"));
         _checkbox_1->set_visible(true);
-        _checkbox_1->set_check(_desktop_shortcut);
+        _checkbox_1->set_check(_installer->desktop_shortcut);
         _checkbox_2->set_position(30, 180, width - 60, 30);
         _checkbox_2->set_text(TEXT("Create Entry in Start Menu"));
         _checkbox_2->set_visible(true);
-        _checkbox_2->set_check(_menu_shortcut);
+        _checkbox_2->set_check(_installer->menu_shortcut);
         _checkbox_3->set_position(30, 240, width - 60, 30);
         _checkbox_3->set_text(TEXT("Add install directory to PATH"));
         _checkbox_3->set_visible(true);
-        _checkbox_3->set_check(_add_to_path);
-        _checkbox_3->set_position(30, 300, width - 60, 30);
-        _checkbox_3->set_text(TEXT("Install for all Users on the Machine"));
-        _checkbox_3->set_visible(true);
-        _checkbox_3->set_check(_install_for_all);
+        _checkbox_3->set_check(_installer->add_to_path);
+        _checkbox_4->set_position(30, 300, width - 60, 30);
+        _checkbox_4->set_text(TEXT("Install for all Users on the Machine"));
+        _checkbox_4->set_visible(true);
+        _checkbox_4->set_check(_installer->install_for_all);
         break;
     case State::install:
         _label_title->set_text(TEXT("Installing"));
         _label_subtitle->set_text(TEXT("Please wait while " DEV_NAME_VERSION " is being installed."));
         _button_previous->set_active(false);
-        _button_next->set_active(true);
+        _button_next->set_active(false);
         _button_next->set_text(TEXT("Next >"));
         _button_cancel->set_active(false);
 
         _label_1->set_position(30, 120, width - 60, 30);
-        _label_1->set_text(TEXT("Extract: filename.dll"));
+        _label_1->set_text(TEXT("Initializing"));
         _label_1->set_visible(true);
         _progress->set_visible(true);
+
+        {
+            uint32_t range = _installer->files_count + 3; //+directory creation, uninstaller, registry
+            if (_installer->desktop_shortcut) range++;
+            if (_installer->menu_shortcut) range++;
+            if (_installer->add_to_path) range++;
+            _progress->set_range(range);
+        }
+
+        _thread = std::thread([](const Window *window, const Installer *installer) -> void
+        {
+            try
+            {
+                window->_label_1->set_text(TEXT("Creating directory"));
+                window->_progress->step();
+                Util::create(installer->directory, true);
+
+                installer->install_files([window](const tstring &message)
+                {
+                    window->_label_1->set_text(message);
+                    window->_progress->step();
+                });
+                window->_label_1->set_text(TEXT("Installing uninstall.exe"));
+                window->_progress->step();
+                installer->install_self();
+                window->_progress->step();
+                window->_label_1->set_text(TEXT("Updating registry"));
+                installer->install_registry();
+                if (installer->desktop_shortcut)
+                {
+                    window->_label_1->set_text(TEXT("Creating desktop shortcut"));
+                    window->_progress->step();
+                    installer->install_desktop_shortcut();
+                }
+                if (installer->menu_shortcut)
+                {
+                    window->_label_1->set_text(TEXT("Creating menu icon"));
+                    window->_progress->step();
+                    installer->install_menu_icon();
+                }
+                if (installer->add_to_path)
+                {
+                    window->_label_1->set_text(TEXT("Updating PATH"));
+                    window->_progress->step();
+                    installer->install_path();
+                }
+                window->_label_1->set_text(TEXT("Finished"));
+                window->_button_next->set_active(true);
+            }
+            catch (const std::exception& e)
+            {
+                Util::dialog_error(e.what());
+                exit(1); //TODO: proper way to do it?
+            }
+        }, this, this->_installer);
+        
         break;
     case State::finish:
         _label_title->set_text(TEXT("Completing " DEV_NAME_VERSION " Setup"));
-        _label_subtitle->set_text(TEXT("" DEV_NAME_VERSION " has been installed on your computer."));
+        _label_subtitle->set_text(TEXT(DEV_NAME_VERSION " has been installed on your computer."));
         _button_previous->set_active(true);
         _button_next->set_active(true);
         _button_next->set_text(TEXT("Finish"));
@@ -1113,26 +1375,118 @@ void Window::_refresh()
         _checkbox_1->set_check(_run_application);
         break;
     case State::uninstall_welcome:
+        _label_title->set_text(TEXT("Uninstall " DEV_NAME_VERSION));
+        _label_subtitle->set_text(TEXT("Remove " DEV_NAME_VERSION " from your computer."));
+        _button_previous->set_active(false);
+        _button_next->set_active(true);
+        _button_next->set_text(TEXT("Uninstall"));
+        _button_cancel->set_active(true);
+
+        _label_1->set_position(30, 120, width - 60, height - 210);
+        _label_1->set_text(TEXT(DEV_NAME_VERSION " will be uninstalled. Click Uninstall to start the uninstallation."));
+        _label_1->set_visible(true);
         break;
     case State::uninstall_uninstall:
+        _label_title->set_text(TEXT("Uninstalling"));
+        _label_subtitle->set_text(TEXT("Please wait while " DEV_NAME_VERSION " is being uninstalled."));
+        _button_previous->set_active(false);
+        _button_next->set_active(false);
+        _button_next->set_text(TEXT("Next >"));
+        _button_cancel->set_active(false);
+
+        _label_1->set_position(30, 120, width - 60, 30);
+        _label_1->set_text(TEXT("Initializing"));
+        _label_1->set_visible(true);
+        _progress->set_visible(true);
+
+        {
+            uint32_t range = _installer->files_count + 2; //+registry, self-removal
+            if (_installer->desktop_shortcut) range++;
+            if (_installer->menu_shortcut) range++;
+            if (_installer->add_to_path) range++;
+            _progress->set_range(range);
+        }
+
+        _thread = std::thread([](const Window *window, Installer *installer) -> void
+        {
+            try
+            {
+                installer->uninstall_files([window](const tstring &message)
+                {
+                    window->_label_1->set_text(message);
+                    window->_progress->step();
+                });
+
+                window->_label_1->set_text(TEXT("Updating registry"));
+                window->_progress->step();
+                installer->uninstall_registry();
+
+                if (installer->desktop_shortcut)
+                {
+                    window->_label_1->set_text(TEXT("Removing desktop shortcut"));
+                    window->_progress->step();
+                    installer->uninstall_desktop_shortcut();
+                }
+
+                if (installer->menu_shortcut)
+                {
+                    window->_label_1->set_text(TEXT("Removing menu icon"));
+                    window->_progress->step();
+                    installer->uninstall_menu_icon();
+                }
+
+                if (installer->add_to_path)
+                {
+                    window->_label_1->set_text(TEXT("Updating PATH"));
+                    window->_progress->step();
+                    installer->uninstall_path();
+                }
+
+                window->_progress->step();
+                CloseHandle(installer->handle);
+                installer->handle = INVALID_HANDLE_VALUE;
+                Installer::uninstall_self();
+            }
+            catch (const std::exception& e)
+            {
+                Util::dialog_error(e.what());
+                exit(1); //TODO: proper way to do it?
+            }
+        }, this, this->_installer);
+
         break;
     case State::uninstall_finish:
+        _label_title->set_text(TEXT("Completing " DEV_NAME_VERSION " uninstallation"));
+        _label_subtitle->set_text(TEXT(DEV_NAME_VERSION " has been removed from your computer."));
+        _button_previous->set_active(true);
+        _button_next->set_active(true);
+        _button_next->set_text(TEXT("Finish"));
+        _button_cancel->set_active(false);
         break;
     }
 }
 
 void Window::_button_browse_handler()
 {
-    tstring directory = Util::get_default_directory(_window_class.hInstance);
-    if (Util::dialog_directory(&directory, TEXT("Please select installation path")))
+    tstring dialog_directory = _installer->directory;
+    while (true)
     {
-        _edit_directory->set_text(directory);
+        DWORD directory_flags = GetFileAttributes(dialog_directory.c_str());
+        bool directory_exists = (directory_flags != INVALID_FILE_ATTRIBUTES && (directory_flags & FILE_ATTRIBUTE_DIRECTORY) != 0);
+        if (directory_exists) break;
+        Util::pop_slash(&dialog_directory);
+    }
+
+    if (Util::dialog_directory(&dialog_directory, TEXT("Please select installation path")))
+    {
+        _installer->directory = dialog_directory;
+        _edit_directory->set_text(dialog_directory);
     }
 }
 
 void Window::_button_previous_handler()
 {
-    if (_state != State::welcome)
+    if (_state != State::welcome && _state != State::uninstall_welcome)
     {
         _state = static_cast<State>(static_cast<int>(_state) - 1);
         _refresh();
@@ -1141,13 +1495,16 @@ void Window::_button_previous_handler()
 
 void Window::_button_next_handler()
 {
-    if (_state != State::finish)
+    if (_thread.joinable()) _thread.join();
+
+    if (_state != State::finish && _state != State::uninstall_finish)
     {
         _state = static_cast<State>(static_cast<int>(_state) + 1);
         _refresh();
     }
     else
     {
+        if (_run_application) _installer->run_application();
         DestroyWindow(_handle);
     }
 }
@@ -1159,30 +1516,43 @@ void Window::_button_cancel_handler()
 
 void Window::_checkbox_1_handler()
 {
-    _checkbox_1->set_check(!_checkbox_1->get_check());
+    bool check = !_checkbox_1->get_check();
+    _checkbox_1->set_check(check);
+    if (_state == State::components) _installer->desktop_shortcut = check;
+    else if (_state == State::finish) _run_application = check;
 }
 
 void Window::_checkbox_2_handler()
 {
-    _checkbox_2->set_check(!_checkbox_2->get_check());
+    bool check = !_checkbox_2->get_check();
+    _checkbox_2->set_check(check);
+    if (_state == State::components) _installer->menu_shortcut = check;
 }
 
 void Window::_checkbox_3_handler()
 {
-    _checkbox_3->set_check(!_checkbox_3->get_check());
+    bool check = !_checkbox_3->get_check();
+    _checkbox_3->set_check(check);
+    if (_state == State::components) _installer->add_to_path = check;
 }
 
 void Window::_checkbox_4_handler()
 {
-    _checkbox_4->set_check(!_checkbox_4->get_check());
+    bool check = !_checkbox_4->get_check();
+    _checkbox_4->set_check(check);
+    if (_state == State::components) _installer->install_for_all = check;
 }
 
 void Window::_close_handler()
 {
-    if (Util::dialog_close()) DestroyWindow(_handle);
+    if (!_thread.joinable() && Util::dialog_close()) DestroyWindow(_handle);
 }
 
-Window::Window(HINSTANCE hinstance, bool uninstall) : _state(uninstall ? State::uninstall_welcome : State::welcome)
+Window* Window::static_window = nullptr;
+
+bool Window::static_block_commands = false;
+
+Window::Window(HINSTANCE hinstance, Installer *installer) : _state(installer->is_uninstaller ? State::uninstall_welcome : State::welcome), _installer(installer)
 {
     //Parameters
     const TCHAR* name = TEXT("INSTALLER");
@@ -1208,7 +1578,7 @@ Window::Window(HINSTANCE hinstance, bool uninstall) : _state(uninstall ? State::
 int Window::run()
 {
     MSG message = { };
-    while (GetMessage(&message, NULL, 0, 0) > 0)
+    while (GetMessage(&message, NULL, 0, 0) > 0) //TODO: exceptions don't actually cause it to fail
     {
         TranslateMessage(&message);
         DispatchMessage(&message);
@@ -1233,34 +1603,38 @@ int _main(HINSTANCE hinstance)
         wchar_t** argv = CommandLineToArgvW(command, &argc);
         if (argv == nullptr) throw std::runtime_error("CommandLineToArgvW() failed");
         Util::MemoryGuard guard(argv);
+        std::unique_ptr<Installer> installer = std::unique_ptr<Installer>(new Installer(hinstance));
 
-        if (argc == 2 && wcscmp(argv[1], L"--uninstall") == 0) //Uninstall
+        if (!installer->is_uninstaller && argc == 1) //Install
         {
-            Window window(hinstance, true);
+            Window window(hinstance, installer.get());
             return window.run();
         }
-        else if (argc == 2 && wcscmp(argv[1], L"--quiet-uninstall") == 0) //Quiet uninstall
+        else if (installer->is_uninstaller && wcscmp(argv[1], L"--uninstall") == 0) //Uninstall
         {
-            Util::uninstall_files([](unsigned int, unsigned int) {});
-            Util::uninstall_registry();
-            Util::uninstall_desktop_shortcut();
-            Util::uninstall_menu_icon();
-            Util::uninstall_path();
-
-            Util::uninstall_self();
+            Window window(hinstance, installer.get());
+            return window.run();
+        }
+        else if (installer->is_uninstaller && argc == 2 && wcscmp(argv[1], L"--quiet-uninstall") == 0) //Quietly uninstall
+        {
+            installer->uninstall_files([](const tstring&) {});
+            installer->uninstall_registry();
+            if (installer->desktop_shortcut) installer->uninstall_desktop_shortcut();
+            if (installer->menu_shortcut) installer->uninstall_menu_icon();
+            if (installer->add_to_path) installer->uninstall_path();
+            installer.reset(nullptr);
+            Installer::uninstall_self();
             return 0;
         }
-        else if (argc == 3 && wcscmp(argv[1], L"--delete") == 0) //Delete
+        else if (installer->is_uninstaller && argc == 3 && wcscmp(argv[1], L"--delete") == 0) //Delete uninstaller (uninstall_self helper)
         {
             //Delete original
             std::wstring path = argv[2];
             while (!DeleteFileW(path.c_str())) {}
-            size_t last = path.rfind('\\');
-            if (last != std::wstring::npos)
-            {
-                path.resize(last + 1);
-                RemoveDirectoryW(path.c_str());
-            }
+
+            //Delete directory
+            try { Util::pop_slash(&path); RemoveDirectoryW(path.c_str()); }
+            catch (...) {}
 
             //Open nul
             SECURITY_ATTRIBUTES security_attributes = { 0 };
@@ -1268,38 +1642,23 @@ int _main(HINSTANCE hinstance)
             security_attributes.bInheritHandle = true;
             HANDLE nul = CreateFile(TEXT("nul"), 0, FILE_SHARE_READ, &security_attributes, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-            //Launch other process and give it all handles
+            //Launch dying process and give it all handles
             STARTUPINFO startup_info = { 0 };
             PROCESS_INFORMATION process_info = { 0 };
             startup_info.cb = sizeof(startup_info);
             startup_info.dwFlags |= STARTF_USESTDHANDLES;
             startup_info.hStdOutput = nul;
             startup_info.hStdError = startup_info.hStdOutput;
-            CreateProcess(NULL, TEXT("timeout /T 1"), NULL, NULL, true, 0, NULL, NULL, &startup_info, &process_info);
+            CreateProcess(NULL, TEXT("\"timeout\" /T 1"), NULL, NULL, true, 0, NULL, NULL, &startup_info, &process_info);
             CloseHandle(process_info.hProcess);
             CloseHandle(process_info.hThread);
             return 0;
         }
-        else //Install
-        {
-            Window window(hinstance, false);
-            return window.run();
-        }
+        else throw std::runtime_error("Invalid arguments");
     }
     catch (const std::exception& e)
     {
-        const TCHAR* text;
-        #if UNICODE
-            std::wstring wtext = Util::string_to_wstring(e.what());
-            text = wtext.c_str();
-        #else
-            text = e.what();
-        #endif
-        MessageBox(NULL,
-            TEXT("Are you sure you want to quit " DEV_NAME_VERSION " Setup"),
-            TEXT("Error"),
-            MB_ICONERROR | MB_OK);
-        std::cerr << e.what() << std::endl;
+        Util::dialog_error(e.what());
         return 1;
     }
 }

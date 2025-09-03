@@ -5,8 +5,9 @@
 # Create windows folder
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/windows/${DEV_FILE_NAME}/usr")
 
-# Define installer executable
+# Define installer executables
 add_executable(windows_installer WIN32 EXCLUDE_FROM_ALL)
+add_executable(windows_packager EXCLUDE_FROM_ALL)
 
 # Link installer resources
 devtemplate_configure_file(OUTPUT "${PROJECT_BINARY_DIR}/windows/installer.exe.manifest"
@@ -33,6 +34,9 @@ target_compile_definitions(windows_installer PRIVATE
     ${DEV_MACRO_NAME}_HOMEPAGE=${DEV_HOMEPAGE}
     ${DEV_MACRO_NAME}_EMAIL=${DEV_EMAIL}
     ${DEV_MACRO_NAME}_AUTHOR=${DEV_AUTHOR})
+    
+target_sources(windows_packager PRIVATE "executable/packager-win32.cpp")
+target_compile_definitions(windows_packager PRIVATE UNICODE)
 
 # Define pre-packaging target
-add_custom_target(windows_package DEPENDS ${DEV_PACKAGE_TARGETS} windows_installer)
+add_custom_target(windows_package DEPENDS ${DEV_PACKAGE_TARGETS} windows_installer windows_packager)

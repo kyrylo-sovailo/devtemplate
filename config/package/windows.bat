@@ -21,7 +21,7 @@ if not "%DEV_ERROR%" == "0" (
     exit /b 1
 )
 
-REM Initial CMake configuration
+REM Get CMake version
 for /F "tokens=3" %%I in ('cmake --version') do (
     set DEV_CMAKE_VERSION=%%I
     goto endfor1
@@ -50,7 +50,8 @@ if not exist "%DEV_BINARY_DIR%/windows" (
         exit /b 1
     )
 )
-set DEV_INSTALL_ROOT="%DEV_BINARY_DIR%/windows"
+REM TODO: find dynamically
+set DEV_INSTALL_ROOT="%DEV_BINARY_DIR%/windows/devtemplate"
 
 REM Secondary CMake configuration, build and installation
 if %DEV_CMAKE_MAJOR% LSS 3 (
@@ -96,4 +97,20 @@ if %DEV_NEW% GTR 0 (
     )
 )
 
-echo Success
+REM Cleanup
+cmake -P "%DEV_SOURCE_DIR%/config/script/check.cmake" -- "%DEV_BINARY_DIR%" "%DEV_INSTALL_ROOT%" "%DEV_INSTALL_ROOT%.deb"
+if errorlevel 1 (
+    echo windows.bat: cleaning of installation directory failed
+    exit /b 1
+)
+
+REM Package
+if not exist "%DEV_INSTALL_ROOT%.exe" (
+    "%DEV_BINARY_DIR%/windows_packager"
+    if errorlevel 1 (
+        echo windows.bat: creation of installer failed
+        exit /b 1
+    )
+)
+
+echo windows.bat: success

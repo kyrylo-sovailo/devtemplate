@@ -106,7 +106,7 @@ if (WIN32 AND DEV_FORCE_CRT)
     endif()
 endif()
 
-# Check if file exist
+# Check if file exists
 function(devtemplate_check_file DEV_VAR DEV_PATH)
     if (IS_ABSOLUTE "${DEV_PATH}")
         set(DEV_ABSOLUTE_PATH "${DEV_PATH}")
