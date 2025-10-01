@@ -8,14 +8,14 @@ if (NOT TARGET ${DEV_CMAKE_NAME})
 endif()
 
 # Define test
-add_executable(${DEV_CMAKE_NAME}_test)
+devtemplate_add_executable(${DEV_CMAKE_NAME}_test)
 list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME}_test)
-list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_test)
+list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_test)
 set_target_properties(${DEV_CMAKE_NAME}_test PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}-test$<$<CONFIG:Debug>:-debug>")
 
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE ${DEV_CMAKE_NAME})
-if (NOT WIN32)
+if (UNIX)
     find_package(GTest REQUIRED)
     target_link_libraries(${DEV_CMAKE_NAME}_test PRIVATE GTest::GTest)
 elseif (CMAKE_SIZEOF_VOID_P EQUAL 8)

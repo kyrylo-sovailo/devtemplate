@@ -1,6 +1,11 @@
+# This script reads install_manifest.txt and uninstalls listed files and empty directories (except for protected directories)
+# Arguments: PROJECT_BINARY_DIR
+
+# Parsing arguments
 set(PROJECT_BINARY_DIR "${CMAKE_ARGV4}")
 set(DEV_PRETEND False)
 
+# Creating list of protected directories
 set(DEV_PROTECTED)
 if (WIN32)
     set(DEV_PROTECTED                  "^.:[/\\]Program Files$")
@@ -30,11 +35,11 @@ foreach (DEV_FILEPATH IN LISTS DEV_FILEPATHS)
         endif()
     endif()
 endforeach()
+
+# Removing non-protected directories
+cmake_policy(SET CMP0057 OLD)
 list(SORT DEV_DIRPATHS ORDER DESCENDING)
 list(REMOVE_DUPLICATES DEV_DIRPATHS)
-
-# Removing directories
-cmake_policy(SET CMP0057 NEW)
 foreach (DEV_DIRPATH IN LISTS DEV_DIRPATHS)
     if ("${DEV_DIRPATH}" MATCHES "${DEV_PROTECTED}")
         continue()

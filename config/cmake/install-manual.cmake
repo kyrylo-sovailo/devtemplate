@@ -2,7 +2,7 @@
 # Install manual #
 ##################
 
-if (NOT WIN32)
+if (UNIX)
     # Dependencies
     if (NOT TARGET ${DEV_CMAKE_NAME})
         message(FATAL_ERROR "Target \"man\" does not exist, cannot install manual")

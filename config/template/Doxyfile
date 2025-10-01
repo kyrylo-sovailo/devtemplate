@@ -1,7 +1,7 @@
 PROJECT_NAME        = "${DEV_NAME}"
 PROJECT_BRIEF       = "${DEV_DESCRIPTION}"
 INPUT               = ${PROJECT_BINARY_DIR}/documentation.h ${DEV_INTERFACE_SOURCES}
-OUTPUT_DIRECTORY    = ${DEV_FILE_NAME}-${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH}
+OUTPUT_DIRECTORY    = ${DEV_FILE_NAME}
 RECURSIVE           = NO
 QUIET               = YES
 
@@ -14,7 +14,6 @@ PREDEFINED          = "${DEV_MACRO_NAME}_NAME=${DEV_NAME}" \
                     "${DEV_MACRO_NAME}_PATCH=${DEV_PATCH}" \
                     "${DEV_MACRO_NAME}_TYPE=${DEV_TYPE}" \
                     "${DEV_MACRO_NAME}_${DEV_TYPE}" \
-                    "${DEV_MACRO_NAME}_DESCRIPTION=${DEV_DESCRIPTION}" \
                     "${DEV_MACRO_NAME}_CATEGORY=${DEV_CATEGORY}" \
                     "${DEV_MACRO_NAME}_HOMEPAGE=${DEV_HOMEPAGE}" \
                     "${DEV_MACRO_NAME}_EMAIL=${DEV_EMAIL}" \

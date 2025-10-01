@@ -1,0 +1,13 @@
+Source: ${DEV_FILE_NAME}
+Build-Depends: debhelper, cmake, rsync, libgtest-dev, pybind11-dev
+Maintainer: ${DEV_AUTHOR} <${DEV_EMAIL}>
+Priority: optional
+Section: misc
+Homepage: ${DEV_HOMEPAGE}
+Standards-Version: 4.5.0
+
+Package: ${DEV_FILE_NAME}
+Architecture: any
+Depends: libc6, libstdc++6, libpng16-16, libx11-6, python3
+Description: ${DEV_DESCRIPTION}
+ ${DEV_EXTENDED_DESCRIPTION}

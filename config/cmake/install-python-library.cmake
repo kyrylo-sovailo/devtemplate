@@ -8,7 +8,7 @@ if (NOT TARGET ${DEV_CMAKE_NAME}_python)
 endif()
 
 # Install Python wrapper
-if (NOT WIN32)
+if (UNIX)
     if ("${Python_SITELIB}" MATCHES "^/usr/")
         string(REGEX REPLACE "^/usr/" "" DEV_PYTHON_PATH "${Python_SITELIB}")
     else()

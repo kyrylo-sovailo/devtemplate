@@ -8,15 +8,15 @@ if (NOT TARGET ${DEV_CMAKE_NAME})
 endif()
 
 # Define library
-add_library(${DEV_CMAKE_NAME}_python SHARED)
-list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_python)
+devtemplate_add_library(${DEV_CMAKE_NAME}_python SHARED)
+list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_python)
 set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}$<$<CONFIG:Debug>:-debug>")
 set_target_properties(${DEV_CMAKE_NAME}_python PROPERTIES PREFIX "")
 
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE ${DEV_CMAKE_NAME})
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
-if (NOT WIN32)
+if (UNIX)
     find_package(pybind11 CONFIG REQUIRED)
 else()
     find_package(pybind11 CONFIG REQUIRED HINTS "${Python_SITELIB}/pybind11/share/cmake/pybind11")

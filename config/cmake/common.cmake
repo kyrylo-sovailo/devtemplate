@@ -7,7 +7,7 @@ include(GNUInstallDirs)
 
 # Global variables
 unset(DEV_EXPORT_TARGETS)    #List of targets that should be exported via CMake file
-unset(DEV_PACKAGE_TARGETS)   #List of all targets that should be made before packaging
+unset(DEV_CORE_TARGETS)   #List of all targets that should be made before packaging
 
 # CMake version
 execute_process(COMMAND "${CMAKE_COMMAND}" --version OUTPUT_VARIABLE DEV_CMAKE_VERSION ERROR_VARIABLE DEV_CMAKE_VERSION_ERROR RESULT_VARIABLE DEV_CMAKE_VERSION_RESULT)
@@ -65,6 +65,20 @@ if (WIN32 AND DEV_FORCE_CRT)
 endif()
 
 # Functions
+function(devtemplate_add_executable TARGET_NAME)
+    add_executable(${TARGET_NAME} ${ARGN})
+    if (UNIX AND (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel"))
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND strip --strip-unneeded "$<TARGET_FILE:${TARGET_NAME}>")
+    endif()
+endfunction()
+
+function(devtemplate_add_library TARGET_NAME)
+    add_library(${TARGET_NAME} ${ARGN})
+    if (UNIX AND (CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel"))
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND strip --strip-unneeded "$<TARGET_FILE:${TARGET_NAME}>")
+    endif()
+endfunction()
+
 function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
     get_target_property(DEV_PATHS ${DEV_TARGET} ${DEV_PROPERTY})
     foreach(DEV_PATH IN LISTS DEV_PATHS)
@@ -74,12 +88,28 @@ function(devtemplate_expand_property DEV_TARGET DEV_PROPERTY)
     set_target_properties(${DEV_TARGET} PROPERTIES ${DEV_PROPERTY} "${DEV_RELATIVE_PATHS}")
 endfunction()
 
+function(devtemplate_copy_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_OUTPUT_PATH)
+    get_filename_component(DEV_OUTPUT_NAME "${DEV_OUTPUT_PATH}" NAME)
+    
+    add_custom_command(OUTPUT "${DEV_OUTPUT_PATH}"
+        COMMAND cmake -E copy "${DEV_INPUT_PATH}" "${DEV_OUTPUT_PATH}"
+        DEPENDS "${DEV_INPUT_PATH}"
+        COMMENT "Copying ${DEV_OUTPUT_NAME}"
+        VERBATIM)
+    if (DEV_ALL)
+        set(DEV_ALL "ALL")
+    else()
+        set(DEV_ALL "")
+    endif()
+    add_custom_target(${DEV_TARGET_NAME} ${DEV_ALL} DEPENDS "${DEV_OUTPUT_PATH}")
+endfunction()
+
 function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_OUTPUT_PATH)
     get_filename_component(DEV_OUTPUT_NAME "${DEV_OUTPUT_PATH}" NAME)
 
     file(READ "${DEV_INPUT_PATH}" DEV_INPUT)
-    if (EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
-        file(READ "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" DEV_OLD_ENVIRONMENT)
+    if (EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake")
+        file(READ "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake" DEV_OLD_ENVIRONMENT)
     else()
         set(DEV_OLD_ENVIRONMENT)
     endif()
@@ -91,14 +121,14 @@ function(devtemplate_configure_file DEV_TARGET_NAME DEV_ALL DEV_INPUT_PATH DEV_O
         endif()
     endforeach()
     if (NOT "${DEV_ENVIRONMENT}" STREQUAL "${DEV_OLD_ENVIRONMENT}")
-        file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_ENVIRONMENT}")
-    elseif(NOT EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
-        file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake")
+        file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake" "${DEV_ENVIRONMENT}")
+    elseif(NOT EXISTS "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake")
+        file(WRITE "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake")
     endif()
     
     add_custom_command(OUTPUT "${DEV_OUTPUT_PATH}"
-        COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/script/configure.cmake" "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake" "${DEV_OUTPUT_PATH}"
-        DEPENDS "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_OUTPUT_NAME}.cmake"
+        COMMAND cmake -P "${PROJECT_SOURCE_DIR}/config/cmake/script/configure.cmake" "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake" "${DEV_OUTPUT_PATH}"
+        DEPENDS "${DEV_INPUT_PATH}" "${PROJECT_BINARY_DIR}/environment/${DEV_TARGET_NAME}.cmake"
         COMMENT "Generating ${DEV_OUTPUT_NAME}"
         VERBATIM)
     if (DEV_ALL)

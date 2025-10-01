@@ -1,0 +1,71 @@
+# This script reads install_manifest.txt, deletes files in installation directory that are not present in the manifest and detects files newer then the indicator file. If any changes in files are detected, the indicator file is deleted.
+# Arguments: PROJECT_BINARY_DIR DEV_INSTALL_ROOT_DIR DEV_INDICATOR_FILE
+
+# Parsing arguments
+set(PROJECT_BINARY_DIR "${CMAKE_ARGV4}")
+set(DEV_INSTALL_ROOT_DIR "${CMAKE_ARGV5}")
+set(DEV_INDICATOR_FILE "${CMAKE_ARGV6}")
+set(DEV_PRETEND FALSE)
+
+# Creating list of protected files
+set(DEV_PROTECTED "DEBIAN$|DEBIAN/control$|DEBIAN/triggers$")
+
+# Get list of installed files and directories, detect files newer than the indicator file
+if (EXISTS "${DEV_INDICATOR_FILE}")
+    set(DEV_INDICATOR_FILE_EXISTS TRUE)
+else()
+    set(DEV_INDICATOR_FILE_EXISTS FALSE)
+endif()
+file(STRINGS "${PROJECT_BINARY_DIR}/install_manifest.txt" DEV_FILEPATHS)
+list(SORT DEV_FILEPATHS ORDER DESCENDING)
+foreach (DEV_FILEPATH IN LISTS DEV_FILEPATHS)
+    if (NOT EXISTS "${DEV_FILEPATH}")
+        message(FATAL_ERROR "File ${DEV_FILEPATH} is missing")
+    endif()
+    if (DEV_INDICATOR_FILE_EXISTS AND "${DEV_FILEPATH}" IS_NEWER_THAN "${DEV_INDICATOR_FILE}")
+        message("-- Newer than manifest: ${DEV_FILEPATH}")
+        set(DEV_CHANGED TRUE)
+    endif()
+
+    set(DEV_OLD_DIRPATH "${DEV_FILEPATH}")
+    get_filename_component(DEV_DIRPATH "${DEV_FILEPATH}" DIRECTORY)
+    list(APPEND DEV_DIRPATHS "${DEV_DIRPATH}")
+    while ((NOT "${DEV_DIRPATH}" STREQUAL "${DEV_INSTALL_ROOT_DIR}") AND (NOT "${DEV_DIRPATH}" STREQUAL "${DEV_OLD_DIRPATH}"))
+        set(DEV_OLD_DIRPATH "${DEV_DIRPATH}")
+        get_filename_component(DEV_DIRPATH "${DEV_DIRPATH}" DIRECTORY)
+        list(APPEND DEV_DIRPATHS "${DEV_DIRPATH}")
+    endwhile()
+endforeach()
+list(SORT DEV_DIRPATHS ORDER DESCENDING)
+list(REMOVE_DUPLICATES DEV_DIRPATHS)
+
+# Remove destination files and directories (except protected)
+file(GLOB_RECURSE DEV_ENTRIES LIST_DIRECTORIES TRUE "${DEV_INSTALL_ROOT_DIR}/*")
+list(SORT DEV_ENTRIES ORDER DESCENDING)
+foreach (DEV_ENTRY IN LISTS DEV_ENTRIES)
+    if ("${DEV_ENTRY}" MATCHES "${DEV_PROTECTED}")
+        continue()
+    endif()
+
+    list(FIND DEV_FILEPATHS "${DEV_ENTRY}" DEV_FILEPATHS_I)
+    list(FIND DEV_DIRPATHS "${DEV_ENTRY}" DEV_DIRPATHS_I)
+    if (${DEV_FILEPATHS_I} EQUAL -1 AND ${DEV_DIRPATHS_I} EQUAL -1)
+        message("-- Not in manifest: ${DEV_ENTRY}")
+        set(DEV_CHANGED TRUE)
+        if (NOT DEV_PRETEND)
+            file(REMOVE_RECURSE "${DEV_ENTRY}")
+            if (EXISTS "${DEV_ENTRY}")
+                message(WARNING "Could not remove ${DEV_ENTRY}")
+            endif()
+        endif()
+    endif()
+endforeach()
+
+# Remove indicator file
+if (DEV_INDICATOR_FILE_EXISTS AND DEV_CHANGED)
+    message("-- Removing: ${DEV_INDICATOR_FILE}")
+    file(REMOVE "${DEV_INDICATOR_FILE}")
+    if (EXISTS "${DEV_INDICATOR_FILE}")
+        message(WARNING "Could not remove ${DEV_INDICATOR_FILE}")
+    endif()
+endif()

@@ -1,6 +1,6 @@
-# Welcome to Devtemplate v0.0.0
+# Welcome to Devtemplate v1.0.0
 
-Template repository for CMake/C++ stack
+Not Template repository for CMake/C++ stack
 
 ### What this library is?
  - Devtemplate is a minimalistic CMake-centered library that implements a lot features that many libraries have. It is a good starting point in devolvement of your own CMake/C++ library.
@@ -23,7 +23,8 @@ Template repository for CMake/C++ stack
  - etc.
 
 ### Supported operative systems
- - Debian (binary `.deb` files)
+ - Debian binary (`.deb` files)
+ - Debian source (`.dsc` files)
 
 ### Troubleshooting
  - `Mismatch detected for 'RuntimeLibrary'`
@@ -38,4 +39,4 @@ This is a Windows-specific problem that exists because some of the libraries you
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-### Generated on Tue, 19 Mar 2024 00:34:57 UTC
+### Generated on Wed, 01 Oct 2025 20:55:43

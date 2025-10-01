@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --buildsystem=cmake --builddirectory=build
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=Release
+
+override_dh_auto_build:
+	cmake --build $(CURDIR)/build --target core
+
+override_dh_install:
+	install -D -m 644 $(CURDIR)/config/static/debian_binary/triggers debian/$(shell dh_listpackages)/DEBIAN/triggers
+	dh_install

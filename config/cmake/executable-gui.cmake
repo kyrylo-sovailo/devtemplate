@@ -8,9 +8,9 @@ if (NOT TARGET ${DEV_CMAKE_NAME})
 endif()
 
 # Define executable
-add_executable(${DEV_CMAKE_NAME}_executable_gui)
+devtemplate_add_executable(${DEV_CMAKE_NAME}_executable_gui)
 list(APPEND DEV_EXPORT_TARGETS ${DEV_CMAKE_NAME}_executable_gui)
-list(APPEND DEV_PACKAGE_TARGETS ${DEV_CMAKE_NAME}_executable_gui)
+list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_executable_gui)
 set_target_properties(${DEV_CMAKE_NAME}_executable_gui PROPERTIES OUTPUT_NAME "${DEV_FILE_NAME}-executable-gui$<$<CONFIG:Debug>:-debug>")
 if (WIN32)
     set_target_properties(${DEV_CMAKE_NAME}_executable_gui PROPERTIES WIN32_EXECUTABLE ON)
@@ -19,7 +19,7 @@ endif()
 
 # Link dependencies
 target_link_libraries(${DEV_CMAKE_NAME}_executable_gui PRIVATE ${DEV_CMAKE_NAME})
-if (NOT WIN32)
+if (UNIX)
     find_package(X11 REQUIRED)
     find_package(PNG REQUIRED)
     if (${DEV_CMAKE_MAJOR} GREATER 3 OR (${DEV_CMAKE_MAJOR} EQUAL 3 AND ${DEV_CMAKE_MINOR} GREATER_EQUAL 14))

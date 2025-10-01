@@ -23,7 +23,8 @@ ${DEV_DESCRIPTION}
  - etc.
 
 ### Supported operative systems
- - Debian (binary `.deb` files)
+ - Debian binary (`.deb` files)
+ - Debian source (`.dsc` files)
 
 ### Troubleshooting
  - `Mismatch detected for 'RuntimeLibrary'`
