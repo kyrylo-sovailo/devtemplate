@@ -1,6 +1,6 @@
-# Welcome to ${DEV_NAME} v${DEV_MAJOR}.${DEV_MINOR}.${DEV_PATCH}
+# Welcome to @DEV_NAME@ v@DEV_VERSION@
 
-${DEV_DESCRIPTION}
+@DEV_DESCRIPTION@
 
 ### What this library is?
  - Devtemplate is a minimalistic CMake-centered library that implements a lot features that many libraries have. It is a good starting point in devolvement of your own CMake/C++ library.
@@ -24,7 +24,8 @@ ${DEV_DESCRIPTION}
 
 ### Supported operative systems
  - Debian binary (`.deb` files)
- - Debian source (`.dsc` files)
+ - Debian source (`.dsc` + `.tar.gz` files)
+ - Gentoo source (`.ebuild` + `.xml` + `.tar.gz` files)
 
 ### Troubleshooting
  - `Mismatch detected for 'RuntimeLibrary'`
@@ -39,4 +40,4 @@ This is a Windows-specific problem that exists because some of the libraries you
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-### Generated on ${DEV_TIMESTAMP}
+### Generated on @DEV_TIMESTAMP@

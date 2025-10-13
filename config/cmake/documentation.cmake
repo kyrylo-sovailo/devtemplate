@@ -7,21 +7,23 @@ if (NOT TARGET ${DEV_CMAKE_NAME})
     message(FATAL_ERROR "Target \"${DEV_CMAKE_NAME}\" does not exist, cannot generate documentation")
 endif()
 
-if (UNIX)
-    # Generate changelog
-    devtemplate_configure_file(${DEV_CMAKE_NAME}_changelog_raw FALSE "${PROJECT_SOURCE_DIR}/config/template/changelog" "${PROJECT_BINARY_DIR}/changelog")
-
-    # Compress changelog
-    add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/changelog.gz"
-        COMMAND gzip -9n "${PROJECT_BINARY_DIR}/changelog" --stdout > "${PROJECT_BINARY_DIR}/changelog.gz"
-        DEPENDS "${PROJECT_BINARY_DIR}/changelog"
-        COMMENT "Generating changelog.gz"
-        VERBATIM)
-    add_custom_target(${DEV_CMAKE_NAME}_changelog DEPENDS "${PROJECT_BINARY_DIR}/changelog.gz")
+# Generate changelog
+if (DEV_DOCUMENTATION_CHANGELOG_NAME)
+    devtemplate_configure_compress(${DEV_CMAKE_NAME}_changelog_raw ${DEV_CMAKE_NAME}_changelog "${PROJECT_SOURCE_DIR}/config/template/changelog" "${PROJECT_BINARY_DIR}/${DEV_DOCUMENTATION_CHANGELOG_NAME}")
+    list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_changelog)
 endif()
 
 # Generate copyright
-devtemplate_configure_file(${DEV_CMAKE_NAME}_copyright FALSE "${PROJECT_SOURCE_DIR}/config/template/copyright" "${PROJECT_BINARY_DIR}/copyright")
+if (DEV_DOCUMENTATION_COPYRIGHT_NAME)
+    devtemplate_configure_compress(${DEV_CMAKE_NAME}_copyright_raw ${DEV_CMAKE_NAME}_copyright "${PROJECT_SOURCE_DIR}/config/template/copyright" "${PROJECT_BINARY_DIR}/${DEV_DOCUMENTATION_COPYRIGHT_NAME}")
+    list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_copyright)
+endif()
+
+# Generate readme
+if (DEV_DOCUMENTATION_README_NAME)
+    devtemplate_configure_compress(${DEV_CMAKE_NAME}_readme_raw ${DEV_CMAKE_NAME}_readme "${PROJECT_SOURCE_DIR}/config/template/README.md" "${PROJECT_BINARY_DIR}/${DEV_DOCUMENTATION_README_NAME}")
+    list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_readme)
+endif()
 
 # Generate Doxyfile
 devtemplate_configure_file(${DEV_CMAKE_NAME}_doxyfile FALSE "${PROJECT_SOURCE_DIR}/config/template/Doxyfile" "${PROJECT_BINARY_DIR}/Doxyfile")
@@ -40,7 +42,4 @@ add_custom_command(OUTPUT "${PROJECT_BINARY_DIR}/documentation.stamp"
     COMMENT "Generating documentation"
     VERBATIM)
 add_custom_target(doc DEPENDS "${PROJECT_BINARY_DIR}/documentation.stamp")
-list(APPEND DEV_CORE_TARGETS doc ${DEV_CMAKE_NAME}_copyright)
-if (UNIX)
-    list(APPEND DEV_CORE_TARGETS ${DEV_CMAKE_NAME}_changelog)
-endif()
+list(APPEND DEV_CORE_TARGETS doc)

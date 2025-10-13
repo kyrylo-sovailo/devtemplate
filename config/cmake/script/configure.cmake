@@ -22,4 +22,4 @@ include("${SOURCE_ENVIRONMENT}")
 
 # Configuring
 file(REMOVE "${DESTINATION}")
-configure_file("${SOURCE}" "${DESTINATION}")
+configure_file("${SOURCE}" "${DESTINATION}" @ONLY)

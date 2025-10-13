@@ -1,10 +1,10 @@
-Package: ${DEV_FILE_NAME}
-Architecture: ${DEV_PROCESSOR}
+Package: @DEV_FILE_NAME@
+Architecture: @DEV_PROCESSOR@
 Depends: libc6, libstdc++6, libpng16-16, libx11-6, python3
-Homepage: ${DEV_HOMEPAGE}
-Maintainer: ${DEV_AUTHOR} <${DEV_EMAIL}>
+Homepage: @DEV_HOMEPAGE@
+Maintainer: @DEV_AUTHOR@ <@DEV_EMAIL@>
 Priority: optional
 Section: misc
-Version: ${DEV_MAJOR}.${DEV_MINOR}
-Description: ${DEV_DESCRIPTION}
- ${DEV_EXTENDED_DESCRIPTION} 
+Version: @DEV_MAJOR@.@DEV_MINOR@
+Description: @DEV_DESCRIPTION@
+ @DEV_EXTENDED_DESCRIPTION@ 

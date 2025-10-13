@@ -79,7 +79,7 @@ if %DEV_NEW% GTR 0 (
         exit /b 1
     )
 ) else (
-    cmake -DCMAKE_INSTALL_PREFIX:PATH="%DEV_INSTALL_ROOT%" "%DEV_SOURCE_DIR%"
+    cmake -DCMAKE_INSTALL_PREFIX="%DEV_INSTALL_ROOT%" "%DEV_SOURCE_DIR%"
     if errorlevel 1 (
         echo windows.bat: CMake configuration failed
         exit /b 1
