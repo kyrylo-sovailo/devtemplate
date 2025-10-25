@@ -2,6 +2,7 @@
 SCRIPT="package_gentoo_source.sh"
 source "$(dirname $(readlink -f "$0"))/common.sh" $@
 if [ $? -ne 0 ]; then exit 1; fi
+configure_and_get_variables gentoo
 
 # CMake build
 printf "${PROGRESS}cmake --build \"${DEV_BINARY_DIR}\" --target package_gentoo_source${RESET}"
@@ -38,3 +39,7 @@ if [ ${DEV_CHANGES} -ne 0 ]; then
     echo MISC metadata.xml ${DEV_SIZE} MD5 ${DEV_MD5} | tee -a "${DEV_BINARY_DIR}/gentoo_source/Manifest"
 fi
 printf "${PROGRESS}success${RESET}"
+echo "You may now instal ${DEV_FILE_NAME} by"
+echo "1) moving gentoo_source/${DEV_FILE_NAME}-${DEV_VERSION}.ebuild, gentoo_source/Manifest and gentoo_source/metadata.xml to /var/db"
+echo "2) moving gentoo_source/${DEV_FILE_NAME}-${DEV_VERSION}.tar.gz to DISTDIR"
+echo "3) running 'emerge ${DEV_FILE_NAME}'"
