@@ -29,10 +29,10 @@ find "${DEV_BINARY_DIR}/install" -type f | while IFS= read -r DEV_FILE; do
 done
 
 # Create package
-if [ ! -f "${DEV_BINARY_DIR}/redhat_binary/${DEV_FILE_NAME}-${DEV_VERSION}.rpm" ]; then #File does not exist
+if [ ! -f "${DEV_BINARY_DIR}/redhat_binary/${DEV_FILE_NAME}-${DEV_VERSION}.rpm" ]; then #Package does not exist
     DEV_CHANGES=1
 fi
-if [ ${DEV_CHANGES} -eq 0 ]; then #File newer than package
+if [ ${DEV_CHANGES} -eq 0 ]; then #Source newer than package
     DEV_CHANGES=$(find "${DEV_BINARY_DIR}/install" -type f -newer "${DEV_BINARY_DIR}/redhat_binary/${DEV_FILE_NAME}-${DEV_VERSION}.rpm" | wc -l)
 fi
 if [ ${DEV_CHANGES} -eq 0 ]; then #Metafile newer than package
@@ -57,8 +57,10 @@ if [ ${DEV_CHANGES} -ne 0 ]; then
     if [ $? -ne 0 ]; then printf "${ERROR}compression failed${RESET}"; exit 1; fi
     #Create package
     printf "${PROGRESS}rpmbuild --define \"_topdir ${DEV_TEMP_DIRECTORY}\" -bb \"${DEV_TEMP_DIRECTORY}/SPECS/${DEV_FILE_NAME}-${DEV_VERSION}.spec\"${RESET}"
-    rpmbuild --define "_topdir ${DEV_TEMP_DIRECTORY}" -bs "${DEV_TEMP_DIRECTORY}/SPECS/${DEV_FILE_NAME}-${DEV_VERSION}.spec"
+    rpmbuild --define "_topdir ${DEV_TEMP_DIRECTORY}" -bb "${DEV_TEMP_DIRECTORY}/SPECS/${DEV_FILE_NAME}-${DEV_VERSION}.spec"
     if [ $? -ne 0 ]; then printf "${ERROR}creation of .rpm package failed${RESET}"; exit 1; fi
+    cp "${DEV_TEMP_DIRECTORY}/RPMS/${DEV_FILE_NAME}-${DEV_VERSION}-1.rpm" "${DEV_BINARY_DIR}/redhat_binary/${DEV_FILE_NAME}-${DEV_VERSION}.rpm"
+    if [ $? -ne 0 ]; then printf "${ERROR}file copying failed${RESET}"; exit 1; fi
 fi
 
 printf "${PROGRESS}success${RESET}"

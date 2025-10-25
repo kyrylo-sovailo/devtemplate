@@ -34,15 +34,17 @@ if [ ${DEV_CHANGES} -ne 0 ]; then
     mkdir "${DEV_TEMP_DIRECTORY}/BUILDROOT/"
     #Copy files
     cp "${DEV_BINARY_DIR}/redhat_source/${DEV_FILE_NAME}-${DEV_VERSION}.spec" "${DEV_TEMP_DIRECTORY}/SPECS"
-    cp "${DEV_BINARY_DIR}/redhat_source/${DEV_FILE_NAME}-${DEV_VERSION}.tar.gz" "${DEV_TEMP_DIRECTORY}/SOURCE"
+    cp "${DEV_BINARY_DIR}/redhat_source/${DEV_FILE_NAME}-${DEV_VERSION}.tar.gz" "${DEV_TEMP_DIRECTORY}/SOURCES"
     #Create package
     printf "${PROGRESS}rpmbuild --define \"_topdir ${DEV_TEMP_DIRECTORY}\" -bs \"${DEV_TEMP_DIRECTORY}/SPECS/${DEV_FILE_NAME}-${DEV_VERSION}.spec\"${RESET}"
     rpmbuild --define "_topdir ${DEV_TEMP_DIRECTORY}" -bs "${DEV_TEMP_DIRECTORY}/SPECS/${DEV_FILE_NAME}-${DEV_VERSION}.spec"
     if [ $? -ne 0 ]; then printf "${ERROR}creation of .src.rpm package failed${RESET}"; exit 1; fi
+    cp "${DEV_TEMP_DIRECTORY}/SRPMS/${DEV_FILE_NAME}-${DEV_VERSION}-1.src.rpm" "${DEV_BINARY_DIR}/redhat_source/${DEV_FILE_NAME}-${DEV_VERSION}.src.rpm"
+    if [ $? -ne 0 ]; then printf "${ERROR}file copying failed${RESET}"; exit 1; fi
 fi
 
 printf "${PROGRESS}success${RESET}"
 echo "You may now build binary ${DEV_FILE_NAME}-${DEV_VERSION}.rpm by running one of the following"
 echo "1) rpmdev-setuptree"
-echo "2) rpm -ivh redhat_source/${DEV_FILE_NAME}-${DEV_VERSION}.rpm"
+echo "2) rpm -ivh redhat_source/${DEV_FILE_NAME}-${DEV_VERSION}.src.rpm"
 echo "3) rpmbuild -bb ~/rpmbuild/SPECS/${DEV_FILE_NAME}.spec"

@@ -120,10 +120,10 @@ copy_source_files() {
     DEV_DESTINATION_DIR="$1"
 
     if [ -n "${DEV_RELATIVE_BINARY_DIR}" ]; then
-        printf "${ERROR}rsync --archive \"${DEV_SOURCE_DIR}/\" \"${DEV_DESTINATION_DIR}/\" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*' --exclude=\"/${DEV_RELATIVE_BINARY_DIR}/\"${RESET}"; exit 1; fi
+        printf "${PROGRESS}rsync --archive \"${DEV_SOURCE_DIR}/\" \"${DEV_DESTINATION_DIR}/\" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*' --exclude=\"/${DEV_RELATIVE_BINARY_DIR}/\"${RESET}"
         rsync --archive "${DEV_SOURCE_DIR}/" "${DEV_DESTINATION_DIR}/" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*' --exclude="/${DEV_RELATIVE_BINARY_DIR}/"
     else
-        printf "${ERROR}rsync --archive \"${DEV_SOURCE_DIR}/\" \"${DEV_DESTINATION_DIR}/\" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*'${RESET}"; exit 1; fi
+        printf "${PROGRESS}rsync --archive \"${DEV_SOURCE_DIR}/\" \"${DEV_DESTINATION_DIR}/\" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*'${RESET}"
         rsync --archive "${DEV_SOURCE_DIR}/" "${DEV_DESTINATION_DIR}/" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*'
     fi
     if [ $? -ne 0 ]; then printf "${ERROR}file copying failed${RESET}"; exit 1; fi
