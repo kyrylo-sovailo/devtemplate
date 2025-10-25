@@ -7,7 +7,7 @@ License:        MIT
 URL:            @DEV_HOMEPAGE@
 Source0:        @DEV_FILE_NAME@-@DEV_VERSION@.tar.gz
 
-BuildArch:      @DEV_PROCESSOR@
+BuildRequires:  cmake, gcc
 Requires:       glibc, libstdc++, libpng16, libX11, python3
 
 %description
@@ -17,12 +17,14 @@ Requires:       glibc, libstdc++, libpng16, libX11, python3
 %setup -q
 
 %build
-# Nothing to do
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX="/usr" -DDEV_FLAVOR=redhat
+cmake --build . --target core		
 
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}/
-cp -a * %{buildroot}/
+cd build
+cmake --install . --prefix %{buildroot}
 
 %files
 %{_bindir}/*

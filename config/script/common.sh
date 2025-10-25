@@ -69,13 +69,13 @@ configure_and_get_variables() {
 }
 
 # Checks if tar.gz file is up to date
-check_tar() {
+check_source_tar() {
     DEV_TAR_PATH="$1"
-    DEV_SOURCE_DIR="$2"
-    DEV_BINARY_DIR="$3"
 
     DEV_CHANGES=0
-    if [ ! -f "$1" ]; then DEV_CHANGES=1; fi #File does not exist
+    if [ ! -f "$1" ]; then #File does not exist
+        DEV_CHANGES=1
+    fi
     if [ ${DEV_CHANGES} -eq 0 ]; then #Source files newer then the archive
         if [ -n "${DEV_RELATIVE_BINARY_DIR}" ]; then
             DEV_CHANGES=$(cd "${DEV_SOURCE_DIR}" && find -type f -newer "${DEV_TAR_PATH}" ! -regex '^./[^/]*.md$' ! -regex '^./[^/]*Config.cmake$' ! -wholename '*/.*' ! -wholename "./${DEV_RELATIVE_BINARY_DIR}/*" | wc -l)
@@ -94,19 +94,14 @@ check_tar() {
             DEV_CHANGES=1
         fi
     fi
-
-    return ${DEV_CHANGES}
 }
-export -f check_tar
+export -f check_source_tar
 
 # Checks if tar.gz file is up to date and generates it if not
-update_tar() {
+update_source_tar() {
     DEV_TAR_PATH="$1"
-    DEV_SOURCE_DIR="$2"
-    DEV_BINARY_DIR="$3"
 
-    check_tar "${DEV_TAR_PATH}" "${DEV_SOURCE_DIR}" "${DEV_BINARY_DIR}"
-    DEV_CHANGES=$?
+    check_source_tar "${DEV_TAR_PATH}"
     if [ ${DEV_CHANGES} -ne 0 ]; then
         if [ -n "${DEV_RELATIVE_BINARY_DIR}" ]; then
             printf "${PROGRESS}(cd \"${DEV_SOURCE_DIR}\" && tar --create --gzip --no-wildcards-match-slash --file \"${DEV_TAR_PATH}\" --transform=\"s|^\./|${DEV_FILE_NAME}-${DEV_VERSION}/|\" --exclude='./*.md' --exclude='./*Config.cmake' --exclude='./.*' --exclude=\"./${DEV_RELATIVE_BINARY_DIR}/*\" .)${RESET}"
@@ -115,22 +110,22 @@ update_tar() {
             printf "${PROGRESS}(cd \"${DEV_SOURCE_DIR}\" && tar --create --gzip --no-wildcards-match-slash --file \"${DEV_TAR_PATH}\" --transform=\"s|^\./|${DEV_FILE_NAME}-${DEV_VERSION}/|\" --exclude='./*.md' --exclude='./*Config.cmake' --exclude='./.*' .)${RESET}"
             (cd "${DEV_SOURCE_DIR}" && tar --create --gzip --no-wildcards-match-slash --file "${DEV_TAR_PATH}" --transform="s|^\./|${DEV_FILE_NAME}-${DEV_VERSION}/|" --exclude='./*.md' --exclude='./*Config.cmake' --exclude='./.*' .)
         fi
-        if [ $? -ne 0 ]; then printf "${ERROR}Tarball creation failed${RESET}"; exit 1; fi
+        if [ $? -ne 0 ]; then printf "${ERROR}tarball creation failed${RESET}"; exit 1; fi
     fi
-    return ${DEV_CHANGES}
 }
-export -f update_tar
+export -f update_source_tar
 
 # Copies source files
-copy_source() {
+copy_source_files() {
     DEV_DESTINATION_DIR="$1"
-    DEV_SOURCE_DIR="$2"
-    DEV_BINARY_DIR="$3"
 
     if [ -n "${DEV_RELATIVE_BINARY_DIR}" ]; then
+        printf "${ERROR}rsync --archive \"${DEV_SOURCE_DIR}/\" \"${DEV_DESTINATION_DIR}/\" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*' --exclude=\"/${DEV_RELATIVE_BINARY_DIR}/\"${RESET}"; exit 1; fi
         rsync --archive "${DEV_SOURCE_DIR}/" "${DEV_DESTINATION_DIR}/" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*' --exclude="/${DEV_RELATIVE_BINARY_DIR}/"
     else
+        printf "${ERROR}rsync --archive \"${DEV_SOURCE_DIR}/\" \"${DEV_DESTINATION_DIR}/\" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*'${RESET}"; exit 1; fi
         rsync --archive "${DEV_SOURCE_DIR}/" "${DEV_DESTINATION_DIR}/" --exclude='/*.md' --exclude='/*Config.cmake' --exclude='/.*'
     fi
+    if [ $? -ne 0 ]; then printf "${ERROR}file copying failed${RESET}"; exit 1; fi
 }
-export -f copy_source
+export -f copy_source_files

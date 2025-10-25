@@ -9,7 +9,7 @@ printf "${PROGRESS}cmake --build \"${DEV_BINARY_DIR}\" --target package_debian_b
 cmake --build "${DEV_BINARY_DIR}" --target package_debian_binary
 if [ $? -ne 0 ]; then printf "${ERROR}building target package_debian_binary failed${RESET}"; exit 1; fi
 
-# Install
+# Update local directory
 if [ ${DEV_CMAKE_CAN_INSTALL} -gt 0 ]; then
     printf "${PROGRESS}cmake --install \"${DEV_BINARY_DIR}\" --prefix \"${DEV_BINARY_DIR}/install/usr\"${RESET}"
     cmake --install "${DEV_BINARY_DIR}" --prefix "${DEV_BINARY_DIR}/install/usr"
@@ -20,7 +20,7 @@ else
     if [ $? -ne 0 ]; then printf "${ERROR}installation to local directory failed${RESET}"; exit 1; fi
 fi
 DEV_CHANGES=0
-find "${DEV_BINARY_DIR}/install" -type f | while IFS= read -r DEV_FILE; do
+find "${DEV_BINARY_DIR}/install" -type f | while IFS= read -r DEV_FILE; do #File not in manifest
     # TODO: replace by .cmake script?
     if ! grep -qxF "${DEV_FILE}" "${DEV_BINARY_DIR}/install_manifest.txt"; then
         rm "${DEV_FILE}"
@@ -29,13 +29,13 @@ find "${DEV_BINARY_DIR}/install" -type f | while IFS= read -r DEV_FILE; do
 done
 
 # Create package
-if [ ! -f "${DEV_BINARY_DIR}/debian_binary/${DEV_FILE_NAME}_${DEV_VERSION}.deb" ]; then
+if [ ! -f "${DEV_BINARY_DIR}/debian_binary/${DEV_FILE_NAME}_${DEV_VERSION}.deb" ]; then #File does not exist
     DEV_CHANGES=1
 fi
-if [ ${DEV_CHANGES} -eq 0 ]; then
+if [ ${DEV_CHANGES} -eq 0 ]; then #File newer than package
     DEV_CHANGES=$(find "${DEV_BINARY_DIR}/install" -type f -newer "${DEV_BINARY_DIR}/debian_binary/${DEV_FILE_NAME}_${DEV_VERSION}.deb" | wc -l)
 fi
-if [ ${DEV_CHANGES} -eq 0 ]; then
+if [ ${DEV_CHANGES} -eq 0 ]; then #Metafile newer than package
     for DEV_META_FILE in control triggers; do
         if [ "${DEV_BINARY_DIR}/debian_binary/${DEV_META_FILE}" -nt "${DEV_BINARY_DIR}/debian_binary/${DEV_FILE_NAME}_${DEV_VERSION}.deb" ]; then
             DEV_CHANGES=1
@@ -43,20 +43,25 @@ if [ ${DEV_CHANGES} -eq 0 ]; then
     done
 fi
 if [ ${DEV_CHANGES} -ne 0 ]; then
+    #Create temporary directory
     DEV_TEMP_DIRECTORY=$(mktemp -d)
     trap 'rm -rf "${DEV_TEMP_DIRECTORY}"' EXIT
     mkdir -p "${DEV_TEMP_DIRECTORY}/${DEV_FILE_NAME}/DEBIAN"
+    #Copy files
     for DEV_META_FILE in control triggers; do
         cp "${DEV_BINARY_DIR}/debian_binary/${DEV_META_FILE}" "${DEV_TEMP_DIRECTORY}/${DEV_FILE_NAME}/DEBIAN/"
     done
     cp -r "${DEV_BINARY_DIR}/install/"* "${DEV_TEMP_DIRECTORY}/${DEV_FILE_NAME}/"
     find "${DEV_TEMP_DIRECTORY}" -type d -exec chmod 755 {} \;
+    #Create package
     printf "${PROGRESS}dpkg-deb --root-owner-group --build \"${DEV_TEMP_DIRECTORY}/${DEV_FILE_NAME}\"${RESET}"
     dpkg-deb --root-owner-group --build "${DEV_TEMP_DIRECTORY}/${DEV_FILE_NAME}"
     if [ $? -ne 0 ]; then printf "${ERROR}creation of .deb package failed${RESET}"; exit 1; fi
+    #Copy package
     cp "${DEV_TEMP_DIRECTORY}/${DEV_FILE_NAME}.deb" "${DEV_BINARY_DIR}/debian_binary/${DEV_FILE_NAME}_${DEV_VERSION}.deb"
     if [ $? -ne 0 ]; then printf "${ERROR}file copying failed${RESET}"; exit 1; fi
 fi
+
 printf "${PROGRESS}success${RESET}"
 echo "You may now install ${DEV_FILE_NAME}_${DEV_VERSION}.deb by running"
 echo "1) apt install debian_binary/${DEV_FILE_NAME}_${DEV_VERSION}.deb"
