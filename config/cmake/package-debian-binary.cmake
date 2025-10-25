@@ -8,7 +8,7 @@ if (UNIX)
 
     # Generate control file
     string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" DEV_PROCESSOR)
-    if("${DEV_PROCESSOR}" MATCHES "^(alpha|arm|armel|armhf|arm64|hppa|ia64|m68k|mips|mipsel|mips64el|powerpc|powerpcspe|ppc64|ppc64el|riscv64|s390|s390x|sh4|sparc|sparc64|x32)$")
+    if("${DEV_PROCESSOR}" MATCHES "^(alpha|arm|armel|armhf|arm64|hppa|i386|amd64|ia64|m68k|mips|mipsel|mips64el|powerpc|powerpcspe|ppc64|ppc64el|riscv64|s390|s390x|sh4|sparc|sparc64|x32)$")
         # nothing to do
     elseif("${DEV_PROCESSOR}" MATCHES "^(x86_64|x64)$")
         set(DEV_PROCESSOR "amd64")

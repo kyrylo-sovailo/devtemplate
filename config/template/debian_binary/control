@@ -7,4 +7,4 @@ Priority: optional
 Section: misc
 Version: @DEV_MAJOR@.@DEV_MINOR@
 Description: @DEV_DESCRIPTION@
- @DEV_EXTENDED_DESCRIPTION@ 
+ @DEV_EXTENDED_DESCRIPTION@

@@ -1,0 +1,31 @@
+Name:           @DEV_FILE_NAME@
+Version:        @DEV_VERSION@
+Release:        1%{?dist}
+Summary:        @DEV_DESCRIPTION@
+
+License:        MIT
+URL:            @DEV_HOMEPAGE@
+Source0:        @DEV_FILE_NAME@-@DEV_VERSION@.tar.gz
+
+BuildArch:      @DEV_PROCESSOR@
+Requires:       glibc, libstdc++, libpng16, libX11, python3
+
+%description
+@DEV_EXTENDED_DESCRIPTION@
+
+%prep
+%setup -c -T
+
+%build
+# Nothing to do
+
+%install
+rm -rf %{buildroot}
+mkdir %{buildroot}
+tar --extract --ungzip --strip-components=1 --file %{SOURCE0} -C %{buildroot}
+
+%files
+
+%changelog
+* @DEV_WEEKDAY@ @DEV_MONTH3@ @DEV_DAY@ @DEV_YEAR@ @DEV_AUTHOR@ <@DEV_EMAIL@> - @DEV_VERSION@
+- Initial commit

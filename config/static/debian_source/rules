@@ -4,7 +4,7 @@
 	dh $@ --buildsystem=cmake --builddirectory=build
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="/usr"
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="/usr" -DDEV_FLAVOR=debian
 
 override_dh_auto_build:
 	cmake --build $(CURDIR)/build --target core

@@ -13,7 +13,7 @@ BDEPEND="dev-build/cmake net-misc/rsync"
 
 src_configure() {
 	local mycmakeargs=(
-		-DDEV_FLAVOR="gentoo"
+		-DDEV_FLAVOR=gentoo
 		-DCMAKE_INSTALL_PREFIX="/usr"
 	)
 	cmake_src_configure
