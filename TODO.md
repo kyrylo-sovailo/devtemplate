@@ -1,0 +1,5 @@
+ - [ ] Port to Windows
+ - [ ] Port to Arch
+ - [ ] Port to RPM
+ - [ ] Make -Werror only appear in debug builds
+ - [ ] Port to Tinycore

@@ -1,4 +1,4 @@
-# Welcome to Devtemplate v1.0.0
+# Welcome to Devtemplate v1.0.2
 
 Template repository for CMake/C++ stack
 
@@ -24,7 +24,8 @@ Template repository for CMake/C++ stack
 
 ### Supported operative systems
  - Debian binary (`.deb` files)
- - Debian source (`.dsc` files)
+ - Debian source (`.dsc` + `.tar.gz` files)
+ - Gentoo source (`.ebuild` + `.xml` + `.tar.gz` files)
 
 ### Troubleshooting
  - `Mismatch detected for 'RuntimeLibrary'`
@@ -39,4 +40,4 @@ This is a Windows-specific problem that exists because some of the libraries you
  5. Change templates of manifest files in `config/template`. Package dependencies are to be filled in manually!
  6. Run `config/package/<os-name>.sh` script to produce a package file native to the selected operative system
 
-### Generated on Thu, 02 Oct 2025 19:31:10
+### Generated on Thu, 09 Apr 2026 04:57:13

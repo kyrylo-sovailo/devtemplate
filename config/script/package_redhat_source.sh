@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env sh
+
 SCRIPT="package_redhat_source.sh"
 source "$(dirname $(readlink -f "$0"))/common.sh" $@
 if [ $? -ne 0 ]; then exit 1; fi

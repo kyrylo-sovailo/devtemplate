@@ -87,22 +87,59 @@ elseif("${DEV_FLAVOR}" STREQUAL "gentoo")
 endif()
 
 # Compiler identification
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set(DEV_COMPILER "MSVC")
-    set(DEV_COMPILER_STYLE "MSVC")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(DEV_COMPILER "GNU")
-    set(DEV_COMPILER_STYLE "GNU")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(DEV_COMPILER "Clang")
-    if ("${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}" STREQUAL "MSVC")
-        set(DEV_COMPILER_STYLE "MSVC")
-    else()
-        set(DEV_COMPILER_STYLE "GNU")
-    endif()
-else()
+if(CMAKE_C_COMPILER_ID AND NOT CMAKE_CXX_COMPILER_ID)
+    set(DEV_COMPILER "${CMAKE_C_COMPILER_ID}")
+elseif(NOT CMAKE_C_COMPILER_ID AND CMAKE_CXX_COMPILER_ID)
     set(DEV_COMPILER "${CMAKE_CXX_COMPILER_ID}")
-    set(DEV_COMPILER_STYLE "${CMAKE_CXX_COMPILER_ID}")
+elseif(CMAKE_C_COMPILER_ID AND CMAKE_CXX_COMPILER_ID AND ("${CMAKE_C_COMPILER_ID}" STREQUAL "${CMAKE_CXX_COMPILER_ID}"))
+    set(DEV_COMPILER "${CMAKE_C_COMPILER_ID}")
+else()
+    set(DEV_COMPILER "unknown")
+endif()
+if("${DEV_COMPILER}" STREQUAL "MSVC")
+    set(DEV_COMPILER_STYLE "MSVC")
+elseif(("${DEV_COMPILER}" STREQUAL "GNU") OR ("${DEV_COMPILER}" STREQUAL "AppleClang"))
+    set(DEV_COMPILER_STYLE "GNU")
+elseif("${DEV_COMPILER}" STREQUAL "Clang")
+    if(CMAKE_C_COMPILER_FRONTEND_VARIANT AND NOT CMAKE_CXX_COMPILER_FRONTEND_VARIANT)
+        set(DEV_COMPILER_STYLE "${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+    elseif(NOT CMAKE_C_COMPILER_FRONTEND_VARIANT AND CMAKE_CXX_COMPILER_FRONTEND_VARIANT)
+        set(DEV_COMPILER_STYLE "${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}")
+    elseif(CMAKE_C_COMPILER_FRONTEND_VARIANT AND CMAKE_CXX_COMPILER_FRONTEND_VARIANT AND ("${CMAKE_C_COMPILER_FRONTEND_VARIANT}" STREQUAL "${CMAKE_CXX_COMPILER_FRONTEND_VARIANT}"))
+        set(DEV_COMPILER_STYLE "${CMAKE_C_COMPILER_FRONTEND_VARIANT}")
+    else()
+        set(DEV_COMPILER_STYLE "unknown")
+    endif()
+endif()
+
+# Compiler options
+if("${COMPILER_STYLE}" STREQUAL "GNU")
+    add_compile_options(-Wall -Wextra -pedantic)
+    add_compile_options(-Wconversion -Wsign-conversion -Wmissing-declarations -Wstrict-prototypes -Wunreachable-code)
+    add_compile_options(-Werror)
+    if("${COMPILER}" STREQUAL "GNU")
+        add_compile_options(-fanalyzer)
+    endif()
+    add_link_options(-Wl,--no-undefined)
+    #add_compile_options(-ffunction-sections -fdata-sections)
+    #add_link_options(-Wl,--gc-sections,--print-gc-sections)
+elseif("${COMPILER_STYLE}" STREQUAL "MSVC")
+    add_compile_options(/Wall)
+    # Warnings that come out of nowhere:
+    add_compile_options(/wd4668) #C4668: Macro is not defined as a preprocessor macro
+    add_compile_options(/wd4820) #C4820: N bytes padding added after data member
+    add_compile_options(/wd5039) #C5039: Pointer or reference to potentially throwing function passed to 'extern "C"' function under -EHc
+    add_compile_options(/wd5045) #C5045: Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+    
+    # Warnings about things that are not bugs but features:
+    add_compile_options(/wd4127) #C4127: Conditional expression is constant
+    add_compile_options(/wd4464) #C4464: Relative include path contains '..'
+    
+    # There are a lot more warnings (mostly security), but they are impossible to fix (MSVC analyzer is dumber than GCC) and Windows is not the primary platform
+    # Therefore I decided that I don't care
+endif()
+if(WIN32)
+    add_compile_definitions(WIN32)
 endif()
 
 # CRT forcing (This section is sponsored by some smarty pants from Google who made GTest static by default)
@@ -129,6 +166,32 @@ if (WIN32 AND DEV_FORCE_CRT)
         message(FATAL_ERROR "Invalid DEV_FORCE_CRT")
     endif()
 endif()
+
+# Custom add source files
+function(devtemplate_target_sources TARGET_NAME)
+    target_sources(${TARGET_NAME} ${ARGN})
+    math(EXPR ARGC_MINUS_ONE "${ARGC} - 1")
+    set(OPTIONS INTERFACE PUBLIC PRIVATE)
+    foreach(I RANGE 1 ${ARGC_WITHOUT_RESERVED} 1)
+        if("${ARGV${I}}" IN_LIST OPTIONS)
+            continue()
+        endif()
+        set(FILE "${ARGV${I}}")
+        if(IS_ABSOLUTE "${FILE}")
+            file(RELATIVE_PATH RELATIVE_FILE "${CMAKE_SOURCE_DIR}" "${FILE}")
+        else()
+            set(RELATIVE_FILE "${FILE}")
+        endif()
+        get_filename_component(BASENAME_FILE "${FILE}" NAME)
+        get_source_file_property(DEFINITIONS "${FILE}" COMPILE_DEFINITIONS)
+        if("${DEFINITIONS}" STREQUAL "NOTFOUND")
+            set(DEFINITIONS "")
+        endif()
+        list(APPEND DEFINITIONS "__RELATIVE_FILE__=\"${RELATIVE_FILE}\"")
+        list(APPEND DEFINITIONS "__BASENAME_FILE__=\"${BASENAME_FILE}\"")
+        set_source_files_properties("${FILE}" PROPERTIES COMPILE_DEFINITIONS "${DEFINITIONS}")
+    endforeach()
+endfunction()
 
 # Custom add executable
 function(devtemplate_add_executable TARGET_NAME)

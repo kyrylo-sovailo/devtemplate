@@ -24,4 +24,4 @@ endif()
 target_link_libraries(${DEV_CMAKE_NAME}_python PRIVATE pybind11::module)
 
 # Define executable sources
-target_sources(${DEV_CMAKE_NAME}_python PRIVATE "python/python.cpp")
+devtemplate_target_sources(${DEV_CMAKE_NAME}_python PRIVATE "python/python.cpp")

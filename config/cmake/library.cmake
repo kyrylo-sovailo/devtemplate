@@ -34,8 +34,8 @@ else()
 endif()
 
 # Define headers and sources
-target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
+devtemplate_target_sources(${DEV_CMAKE_NAME} INTERFACE "include/devtemplate/devtemplate.h")
 if (NOT "${DEV_TYPE}" STREQUAL "INTERFACE")
-    target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
+    devtemplate_target_sources(${DEV_CMAKE_NAME} PRIVATE "source/source.cpp")
 endif()
 devtemplate_expand_property(${DEV_CMAKE_NAME} INTERFACE_SOURCES)

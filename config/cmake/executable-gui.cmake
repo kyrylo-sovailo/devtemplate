@@ -68,9 +68,9 @@ endif()
 
 # Define sources
 if (WIN32)
-    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
+    devtemplate_target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-win32.cpp")
 else()
-    target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-x11.cpp")
+    devtemplate_target_sources(${DEV_CMAKE_NAME}_executable_gui PRIVATE "executable/executable-x11.cpp")
 endif()
 
 # Define "run_gui" command

@@ -27,7 +27,7 @@ elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
 endif()
 
 # Define sources
-target_sources(${DEV_CMAKE_NAME}_test PRIVATE "executable/test.cpp")
+devtemplate_target_sources(${DEV_CMAKE_NAME}_test PRIVATE "executable/test.cpp")
 
 # Define "test" command
 add_custom_target(test COMMAND ${DEV_CMAKE_NAME}_test)
