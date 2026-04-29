@@ -14,22 +14,22 @@
 #define STRING2(s) #s
 #define STRING(s) STRING2(s)
 
-std::string get_directory()
+static std::string get_directory()
 {
     std::string path(128, '\0');
     while (true)
     {
-        int len = readlink("/proc/self/exe", &path[0], path.length());
-        if (len < 0) throw std::runtime_error("Failed to read executabe path");
-        else if (len == path.length()) path.resize(path.size() * 2);
+        ssize_t len = readlink("/proc/self/exe", &path[0], path.length());
+        if (len < 0) throw std::runtime_error("Failed to read executable path");
+        else if ((size_t)len == path.length()) path.resize(path.size() * 2);
         else break;
     }
-    if (path.find_last_of('/') == std::string::npos) throw std::runtime_error("Failed to read executabe directory");
+    if (path.find_last_of('/') == std::string::npos) throw std::runtime_error("Failed to read executable directory");
     path.resize(path.find_last_of('/'));
     return path;
 }
 
-void load_icon(const std::string directory, std::vector<unsigned long> *data, unsigned int size)
+static void load_icon(const std::string directory, std::vector<unsigned long> *data, unsigned int size)
 {
     //Find png
     std::string size_string = std::to_string(size) + "x" + std::to_string(size);
@@ -90,7 +90,7 @@ void load_icon(const std::string directory, std::vector<unsigned long> *data, un
         data->push_back((image[i * 4 + 0] << 16) | (image[i * 4 + 1] << 8) | (image[i * 4 + 2]) | (image[i * 4 + 3] << 24));
 }
 
-void load_icons(Display *display, Window window)
+static void load_icons(Display *display, Window window)
 {
     Atom _NET_WM_ICON = XInternAtom(display, "_NET_WM_ICON", false);
     std::string directory = get_directory();
@@ -102,10 +102,10 @@ void load_icons(Display *display, Window window)
     load_icon(directory, &data, 64);
     load_icon(directory, &data, 128);
     load_icon(directory, &data, 256);
-    XChangeProperty(display, window, _NET_WM_ICON, XA_CARDINAL, 32, PropModeReplace, (unsigned char*) data.data(), data.size());
+    XChangeProperty(display, window, _NET_WM_ICON, XA_CARDINAL, 32, PropModeReplace, (unsigned char*) data.data(), (int)data.size());
 }
 
-void startup_notification(int screen, Display *display, Window window)
+static void startup_notification(int screen, Display *display, Window window)
 {
     Atom _NET_STARTUP_INFO_BEGIN = XInternAtom(display, "_NET_STARTUP_INFO_BEGIN", false);
     Atom _NET_STARTUP_INFO = XInternAtom(display, "_NET_STARTUP_INFO", false);
@@ -172,9 +172,9 @@ int main()
                 #endif
                 std::string text = devtemplate::Devtemplate::version() + (correct ? " is functioning correctly" : " is malfunctioning");
                 
-                XDrawString(display, window, DefaultGC(display, screen), 10, 20, text.c_str(), text.size());
+                XDrawString(display, window, DefaultGC(display, screen), 10, 20, text.c_str(), (int)text.size());
             }
-            else if ((event.type == ClientMessage) && (event.xclient.data.l[0] == WM_DELETE_WINDOW))
+            else if ((event.type == ClientMessage) && ((Atom)event.xclient.data.l[0] == WM_DELETE_WINDOW))
             {
                 break;
             }
