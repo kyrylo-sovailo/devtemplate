@@ -170,7 +170,7 @@ endif()
 # Custom add source files
 function(devtemplate_target_sources TARGET_NAME)
     target_sources(${TARGET_NAME} ${ARGN})
-    math(EXPR ARGC_MINUS_ONE "${ARGC} - 1")
+    math(EXPR ARGC_MINUS_RESERVED "${ARGC} - 1")
     set(OPTIONS INTERFACE PUBLIC PRIVATE)
     foreach(I RANGE 1 ${ARGC_WITHOUT_RESERVED} 1)
         if("${ARGV${I}}" IN_LIST OPTIONS)
