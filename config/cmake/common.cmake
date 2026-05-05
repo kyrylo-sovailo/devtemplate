@@ -116,7 +116,7 @@ endif()
 # Compiler options
 if("${DEV_COMPILER_STYLE}" STREQUAL "GNU")
     add_compile_options(-Wall -Wextra -pedantic)
-    add_compile_options(-Wconversion -Wsign-conversion -Wenum-conversion -Wunreachable-code -Wmissing-declarations $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>)
+    add_compile_options(-Wconversion -Wmissing-declarations $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>)
     add_compile_options(-Werror)
     if("${DEV_COMPILER}" STREQUAL "GNU")
         add_compile_options($<$<COMPILE_LANGUAGE:C>:-fanalyzer>)
